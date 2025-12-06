@@ -2,8 +2,8 @@
 body {
     margin: 0;
     font-family: sans-serif;
-    /* Base dark background for contrast */
-    background: linear-gradient(to bottom, #111111 0%, #333333 100%);
+    /* CHANGE: Gradient now fades from dark grey at the top to white at the bottom */
+    background: linear-gradient(to bottom, #111111 0%, #FFFFFF 100%);
     color: white;
 }
 
