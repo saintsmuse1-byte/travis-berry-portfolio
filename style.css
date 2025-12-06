@@ -22,8 +22,8 @@ body {
 h1 {
     /* Font: Trebuchet MS is a clean, modern sans-serif font */
     font-family: 'Trebuchet MS', sans-serif; 
-    font-size: 5em; 
-    letter-spacing: 5px;
+    font-size: 10em; 
+    letter-spacing: 8px;
     margin-bottom: 30px;
 }
 
