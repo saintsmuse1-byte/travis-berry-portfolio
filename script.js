@@ -1,20 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const farLayer = document.getElementById('snow-layer-far');
-    const midLayer = document.getElementById('snow-layer-mid');
-    const closeLayer = document.getElementById('snow-layer-close');
+    // Only target the one remaining layer
+    const snowLayer = document.getElementById('snow-layer');
 
-    const speedFar = 0.2; 
-    const speedMid = 0.4; 
-    const speedClose = 0.6; 
+    // Define one scroll speed (we'll make it medium/fast)
+    const speed = 0.5; 
 
     function updateSnow() {
         const scrollPosition = window.pageYOffset;
 
-        farLayer.style.transform = `translateY(${scrollPosition * speedFar}px)`;
-        midLayer.style.transform = `translateY(${scrollPosition * speedMid}px)`;
-        closeLayer.style.transform = `translateY(${scrollPosition * speedClose}px)`;
+        // Apply movement to the single layer
+        snowLayer.style.transform = `translateY(${scrollPosition * speed}px)`;
     }
 
     window.addEventListener('scroll', updateSnow);
-    updateSnow();
 });
