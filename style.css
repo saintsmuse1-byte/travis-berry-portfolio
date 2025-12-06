@@ -62,19 +62,19 @@ h1 {
 
 /* CRITICAL: YOU WILL EDIT THESE LINES LATER */
 #snow-layer-far {
-    background-image: url('YOUR_SMALLEST_DOT_PNG_URL_HERE'); 
+    background-image: url(https://cdn.prod.website-files.com/693197df39b5f0a0bb5c3ce3/6932e9bcccbf4af9ab68e364_smallest%20snow%20layer.PNG); 
     background-size: 200px 200px;
     opacity: 0.8; 
 }
 
 #snow-layer-mid {
-    background-image: url('YOUR_MEDIUM_DOT_PNG_URL_HERE'); 
+    background-image: url(https://cdn.prod.website-files.com/693197df39b5f0a0bb5c3ce3/6932eca1ad7c6aa1de478b7e_medium%20snow%20image%20.PNG); 
     background-size: 150px 150px;
     opacity: 0.85; 
 }
 
 #snow-layer-close {
-    background-image: url('YOUR_LARGEST_FLAKE_PNG_URL_HERE'); 
+    background-image: url(https://cdn.prod.website-files.com/693197df39b5f0a0bb5c3ce3/6932ed4ef5d8b07f91876689_snow%20layer%203%20snowflakes.PNG); 
     background-size: 250px 250px;
     opacity: 0.9; 
 }
