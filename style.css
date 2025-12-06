@@ -13,7 +13,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 50px; /* Height of the bar */
+    height: 50px; /* Thinner height */
     display: flex;
     align-items: center;
     padding: 0 40px;
@@ -29,23 +29,25 @@ body {
 .nav-brand {
     /* STYLES FOR THE SMALL "LOGO" IN THE NAVBAR */
     font-family: 'Trebuchet MS', sans-serif; 
-    font-size: 1.2em; /* Small font size */
+    font-size: 1.2em; /* Smaller font size */
     letter-spacing: 2px;
 }
 
 .nav-logo-accent {
+    /* Styles for the 'BERRY' part of the logo */
     font-family: Georgia, serif; 
     font-weight: 300; 
     font-size: 0.9em; 
     padding-left: 5px; 
 }
+
 /* --- MAIN PAGE CONTENT --- */
 .main-content {
     /* Centers content horizontally on the page */
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* Pushes content down to clear the 70px fixed navbar */
+    /* Pushes content down to clear the fixed navbar */
     padding-top: 100px; 
     padding-bottom: 10vh;
     position: relative; 
@@ -115,19 +117,6 @@ h1 {
     font-size: 2em;
 }
 
-/* --- NEW ART SHOWCASE SECTION --- */
-.art-section {
-    background-color: #FFFFFF; 
-    color: #333333; 
-    padding: 50px 20px;
-    text-align: center;
-    min-height: 100vh; 
-}
-.art-section h2 {
-    font-size: 2.5em;
-    margin-bottom: 40px;
-}
-
 /* --- NEW CSS-ONLY CONTINUOUS SNOW EFFECT (Floating Snowflakes) --- */
 
 /* Base snowflake styles */
@@ -180,15 +169,22 @@ h1 {
 .snowflake:nth-of-type(8){left:80%;animation-delay:0s}.snowflake:nth-of-type(9){left:90%;animation-delay:1.5s}.snowflake:nth-of-type(9) .inner{animation-delay:3s}
 .snowflake:nth-of-type(10){left:25%;animation-delay:0s}
 .snowflake:nth-of-type(11){left:65%;animation-delay:2.5s}
+
 /* --- STYLES FOR ART SHOWCASE & SCROLL REVEAL --- */
 
-/* Adjust padding for the section */
+/* Updated Art Section Styles (Replaces the old, simpler art-section block) */
 .art-section {
     background-color: #FFFFFF; 
     color: #333333; 
+    /* Increased padding for layout */
     padding: 100px 40px; 
     text-align: center;
     min-height: 100vh; 
+}
+
+.art-section h2 {
+    font-size: 2.5em;
+    margin-bottom: 40px;
 }
 
 /* New Art Grid Container */
@@ -208,12 +204,12 @@ h1 {
     /* Animation definition: 1 second long, smooth ease-out */
     transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
     
-    /* Initial starting position (from YouTube video effect) */
+    /* Initial starting position (for scroll reveal effect) */
     opacity: 0;
     transform: translateY(50px);
 }
 
-/* Ensure image fits container */
+/* Ensures images (and links) fit container */
 .art-item img {
     width: 100%;
     height: auto;
