@@ -70,7 +70,7 @@ h1 {
 #snow-layer {
     /* --- THE FINAL SNOWFLAKE URL IS HERE --- */
     background-image: url('https://cdn.prod.website-files.com/693197df39b5f0a0bb5c3ce3/6932ed4ef5d8b07f91876689_snow%20layer%203%20snowflakes.PNG'); 
-    background-size: 400px 400px; /* Large, defined flakes */
+    background-size: 250px 250px; /* Large, defined flakes */
     opacity: 0.9; 
 }
 
