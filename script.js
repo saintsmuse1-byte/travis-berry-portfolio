@@ -56,3 +56,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.addEventListener('scroll', updateSnow);
 });
+// --- SCROLL REVEAL IMPLEMENTATION (Intersection Observer) ---
+
+// 1. Define the Observer and its action
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        // Check if the element has entered the viewport
+        if (entry.isIntersecting) {
+            // Add the final state class to trigger the CSS animation
+            entry.target.classList.add('is-revealed');
+            
+            // Stop observing it once it's been revealed
+            observer.unobserve(entry.target);
+        }
+    });
+}, {
+    // Options: Trigger the animation when the element is 15% up from the bottom of the screen
+    rootMargin: '0px 0px -15% 0px' 
+});
+
+// 2. Tell the Observer which elements to watch
+const artItems = document.querySelectorAll('.art-item');
+
+artItems.forEach(item => {
+    observer.observe(item);
+});
