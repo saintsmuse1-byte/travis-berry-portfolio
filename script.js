@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const snowLayer = document.getElementById('snow-layer');
 
     // Define one scroll speed (we'll make it medium/fast)
-    const speed = 0.5; 
+    const speed = 0.1; 
 
     function updateSnow() {
         const scrollPosition = window.pageYOffset;
