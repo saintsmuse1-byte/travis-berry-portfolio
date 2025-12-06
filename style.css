@@ -1,0 +1,85 @@
+/* --- UNIVERSAL STYLES & LAYOUT --- */
+body {
+    margin: 0;
+    font-family: sans-serif;
+    background: linear-gradient(to bottom, #111111 0%, #333333 100%);
+    color: white;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10vh 0; 
+    position: relative; 
+    z-index: 10; 
+    min-height: 200vh; /* Creates enough vertical space to test scrolling */
+}
+
+h1 {
+    font-size: 4em;
+    letter-spacing: 5px;
+    margin-bottom: 30px;
+}
+
+/* --- IMAGE & CIRCLE STYLES --- */
+.circle-wrapper {
+    width: 350px;
+    height: 350px;
+    margin: 0 auto; 
+    overflow: hidden; 
+    border-radius: 50%;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7), 0 0 10px 5px #00FFFF; 
+}
+
+.circle-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- SNOW LAYER STYLES (Fixed & Tiled) --- */
+
+.snow-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 999;
+}
+
+.snow-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-repeat: repeat; 
+    background-color: transparent; 
+}
+
+/* CRITICAL: YOU WILL EDIT THESE LINES LATER */
+#snow-layer-far {
+    background-image: url('YOUR_SMALLEST_DOT_PNG_URL_HERE'); 
+    background-size: 200px 200px;
+    opacity: 0.8; 
+}
+
+#snow-layer-mid {
+    background-image: url('YOUR_MEDIUM_DOT_PNG_URL_HERE'); 
+    background-size: 150px 150px;
+    opacity: 0.85; 
+}
+
+#snow-layer-close {
+    background-image: url('YOUR_LARGEST_FLAKE_PNG_URL_HERE'); 
+    background-size: 250px 250px;
+    opacity: 0.9; 
+}
+
+.scroll-filler {
+    margin-top: 100vh;
+    font-size: 2em;
+}
