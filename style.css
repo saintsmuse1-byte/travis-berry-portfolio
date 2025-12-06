@@ -221,3 +221,23 @@ h1 {
     opacity: 1;
     transform: translateY(0);
 }
+/* --- FIXES FOR ART SHOWCASE LINKS --- */
+
+/* Ensures the clickable area (the link) fills the entire grid item */
+.art-item a {
+    display: block;
+    width: 100%;
+    height: 100%;
+    
+    /* Removes the default blue color and underline from the link */
+    color: inherit; 
+    text-decoration: none;
+}
+
+/* Ensures images are prioritized and clickable */
+.art-item img {
+    /* (This block should already be in your CSS, but double-check it's there) */
+    width: 100%;
+    height: auto;
+    display: block;
+}
