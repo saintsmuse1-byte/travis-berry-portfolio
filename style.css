@@ -22,15 +22,15 @@ body {
 h1 {
     /* Font: Trebuchet MS is a clean, modern sans-serif font */
     font-family: 'Trebuchet MS', sans-serif; 
-    font-size: 10em; 
+    font-size: 8em; 
     letter-spacing: 8px;
     margin-bottom: 30px;
 }
 
 /* --- IMAGE & CIRCLE STYLES --- */
 .circle-wrapper {
-    width: 350px;
-    height: 350px;
+    width: 400px;
+    height: 400px;
     margin: 0 auto;
     overflow: hidden;
     border-radius: 50%; /* Ensures the wrapper is a perfect circle */
@@ -67,7 +67,7 @@ h1 {
     background-repeat: repeat;
     background-color: transparent;
     /* Pushes snow layer 100% down below the viewport */
-    transform: translateY(60vh); /* Starts closer to the bottom edge */
+    transform: translateY(50vh); /* Starts closer to the bottom edge */
 }
 
 /* The single snow layer styling, using the new ID and large flakes */
