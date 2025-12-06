@@ -13,7 +13,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 40px; /* Height of the bar */
+    height: 50px; /* Height of the bar */
     display: flex;
     align-items: center;
     padding: 0 40px;
@@ -33,6 +33,12 @@ body {
     letter-spacing: 2px;
 }
 
+.nav-logo-accent {
+    font-family: Georgia, serif; 
+    font-weight: 300; 
+    font-size: 0.9em; 
+    padding-left: 5px; 
+}
 /* --- MAIN PAGE CONTENT --- */
 .main-content {
     /* Centers content horizontally on the page */
@@ -174,3 +180,48 @@ h1 {
 .snowflake:nth-of-type(8){left:80%;animation-delay:0s}.snowflake:nth-of-type(9){left:90%;animation-delay:1.5s}.snowflake:nth-of-type(9) .inner{animation-delay:3s}
 .snowflake:nth-of-type(10){left:25%;animation-delay:0s}
 .snowflake:nth-of-type(11){left:65%;animation-delay:2.5s}
+/* --- STYLES FOR ART SHOWCASE & SCROLL REVEAL --- */
+
+/* Adjust padding for the section */
+.art-section {
+    background-color: #FFFFFF; 
+    color: #333333; 
+    padding: 100px 40px; 
+    text-align: center;
+    min-height: 100vh; 
+}
+
+/* New Art Grid Container */
+.art-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns for a tiled layout */
+    gap: 40px; /* Space between tiles */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 50px;
+}
+
+/* 1. INITIAL STATE: Hidden, moved down, and ready to animate */
+.art-item {
+    overflow: hidden;
+    
+    /* Animation definition: 1 second long, smooth ease-out */
+    transition: opacity 1s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94); 
+    
+    /* Initial starting position (from YouTube video effect) */
+    opacity: 0;
+    transform: translateY(50px);
+}
+
+/* Ensure image fits container */
+.art-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* 2. FINAL STATE: Applied by JavaScript when element scrolls into view */
+.art-item.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
