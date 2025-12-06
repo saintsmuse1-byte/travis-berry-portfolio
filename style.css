@@ -1,3 +1,56 @@
+/* --- UNIVERSAL STYLES & LAYOUT --- */
+body {
+    margin: 0;
+    font-family: sans-serif;
+    /* Use the same background color/gradient as before */
+    background: linear-gradient(to bottom, #111111 0%, #333333 100%);
+    color: white;
+}
+
+.main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10vh 0; 
+    position: relative; 
+    z-index: 10; 
+    min-height: 200vh; 
+}
+
+h1 {
+    font-size: 4em;
+    letter-spacing: 5px;
+    margin-bottom: 30px;
+}
+
+/* --- IMAGE & CIRCLE STYLES --- */
+.circle-wrapper {
+    width: 350px;
+    height: 350px;
+    margin: 0 auto; 
+    overflow: hidden; 
+    border-radius: 50%;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.7), 0 0 10px 5px #00FFFF; 
+}
+
+.circle-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- SNOW LAYER STYLES (Single Layer) --- */
+
+.snow-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 999;
+}
+
 /* 2. Common Layer Styles */
 .snow-layer {
     position: absolute;
@@ -5,18 +58,21 @@
     left: 0;
     width: 100%;
     height: 100%;
-    /* Ensures background image tiles */
     background-repeat: repeat; 
-    /* Ensures layers are visible */
     background-color: transparent; 
-    /* --- Ensures snow starts off-screen --- */
+    /* --- HIDES SNOW OFF-SCREEN ON LOAD --- */
     transform: translateY(-500px); 
 }
 
 /* 3. Unique Layer Images and Sizes (Only one layer now) */
-
 #snow-layer {
-    background-image: url(https://cdn.prod.website-files.com/693197df39b5f0a0bb5c3ce3/6932ed4ef5d8b07f91876689_snow%20layer%203%20snowflakes.PNG); /* Use your preferred layer URL here */
+    /* REMEMBER TO INSERT YOUR IMAGE URL HERE */
+    background-image: url('YOUR_SMALLEST_DOT_PNG_URL_HERE'); 
     background-size: 400px 400px; /* Bigger flakes */
     opacity: 0.9; 
+}
+
+.scroll-filler {
+    margin-top: 100vh;
+    font-size: 2em;
 }
