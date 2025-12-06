@@ -63,7 +63,7 @@ h1 {
     background-color: transparent; 
     /* --- HIDES SNOW OFF-SCREEN ON LOAD --- */
     /* This makes the layer start 500px above the top edge */
-    transform: translateY(-500px); 
+    transform: translateY(500px); 
 }
 
 /* The single snow layer styling, using the new ID and large flakes */
