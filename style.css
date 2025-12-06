@@ -13,7 +13,7 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 70px; /* Height of the bar */
+    height: 50px; /* Height of the bar */
     display: flex;
     align-items: center;
     padding: 0 40px;
@@ -29,7 +29,7 @@ body {
 .nav-brand {
     /* STYLES FOR THE SMALL "LOGO" IN THE NAVBAR */
     font-family: 'Trebuchet MS', sans-serif; 
-    font-size: 1.5em; /* Small font size */
+    font-size: 1.2em; /* Small font size */
     letter-spacing: 2px;
 }
 
