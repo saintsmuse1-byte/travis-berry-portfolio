@@ -1,27 +1,36 @@
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Elements
-    const snowContainer = document.querySelector('.snow-container'); // Controls the fade-in/out
-    const snowLayer = document.getElementById('snow-layer'); // Controls the movement
+    const snowContainer = document.querySelector('.snow-container');
+    const snowLayer = document.getElementById('snow-layer');
 
     // 2. Settings
-    const speed = 0.08; // Very slow speed for gentle fall
-    const triggerPoint = 700; // Snow appears only after 700px of scroll
+    const speed = 0.08; 
+    const triggerFadeIn = 700;   // Snow appears after 700px of scroll
+    const triggerFadeOut = 1200; // Snow starts disappearing after 1200px of scroll
 
     function updateSnow() {
         const scrollPosition = window.pageYOffset;
 
-        // --- APPEARANCE CONTROL ---
-        if (scrollPosition > triggerPoint) {
-            // Fades the snow in smoothly once the trigger point is passed
+        // --- APPEARANCE AND FADE-OUT CONTROL ---
+        if (scrollPosition > triggerFadeOut) {
+            // Fades OUT completely before the white section
+            snowContainer.style.opacity = '0';
+        } else if (scrollPosition > triggerFadeIn) {
+            // Snow is fully visible
             snowContainer.style.opacity = '1';
         } else {
-            // Snow is invisible (opacity 0)
+            // Snow is invisible (at the top of the page)
             snowContainer.style.opacity = '0';
         }
 
         // --- MOVEMENT CONTROL ---
-        // Applies movement regardless of opacity, pulling it up slowly (0.08)
-        snowLayer.style.transform = `translateY(${scrollPosition * speed}px)`;
+        // Snow movement stops entirely past the fade-out point
+        if (scrollPosition < triggerFadeOut) {
+             snowLayer.style.transform = `translateY(${scrollPosition * speed}px)`;
+        } else {
+            // This holds the snow layer fixed once the effect is over
+            snowLayer.style.transform = `translateY(${triggerFadeOut * speed}px)`;
+        }
     }
 
     window.addEventListener('scroll', updateSnow);
