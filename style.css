@@ -20,12 +20,9 @@ body {
 }
 
 h1 {
-    /* --- NEW FONT FAMILY --- */
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
-    
-    /* --- NEW FONT SIZE (adjust this value as needed) --- */
+    /* Font: Trebuchet MS is a clean, modern sans-serif font */
+    font-family: 'Trebuchet MS', sans-serif; 
     font-size: 5em; 
-    
     letter-spacing: 5px;
     margin-bottom: 30px;
 }
