@@ -65,7 +65,7 @@ h1 {
     background-repeat: repeat;
     background-color: transparent;
     /* Pushes snow layer 100% down below the viewport */
-    transform: translateY(80vh); /* Starts closer to the bottom edge */
+    transform: translateY(60vh); /* Starts closer to the bottom edge */
 }
 
 /* The single snow layer styling, using the new ID and large flakes */
