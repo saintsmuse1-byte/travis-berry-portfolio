@@ -20,7 +20,12 @@ body {
 }
 
 h1 {
-    font-size: 4em;
+    /* --- NEW FONT FAMILY --- */
+    font-family: 'Varela', serif; 
+    
+    /* --- NEW FONT SIZE (adjust this value as needed) --- */
+    font-size: 5em; 
+    
     letter-spacing: 5px;
     margin-bottom: 30px;
 }
