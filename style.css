@@ -2,18 +2,20 @@
 body {
     margin: 0;
     font-family: sans-serif;
-    /* Use the same background color/gradient as before */
+    /* Base dark background for contrast */
     background: linear-gradient(to bottom, #111111 0%, #333333 100%);
     color: white;
 }
 
 .main-content {
+    /* Centers content horizontally on the page */
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 10vh 0; 
     position: relative; 
     z-index: 10; 
+    /* Ensures the page is long enough to scroll and trigger the animation */
     min-height: 200vh; 
 }
 
@@ -29,7 +31,7 @@ h1 {
     height: 350px;
     margin: 0 auto; 
     overflow: hidden; 
-    border-radius: 50%;
+    border-radius: 50%; /* Ensures the wrapper is a perfect circle */
     box-shadow: 0 0 40px rgba(0, 0, 0, 0.7), 0 0 10px 5px #00FFFF; 
 }
 
@@ -47,11 +49,10 @@ h1 {
     left: 0;
     width: 100vw;
     height: 100vh;
-    pointer-events: none;
+    pointer-events: none; /* Allows clicks to pass through the snow */
     z-index: 999;
 }
 
-/* 2. Common Layer Styles */
 .snow-layer {
     position: absolute;
     top: 0;
@@ -61,17 +62,19 @@ h1 {
     background-repeat: repeat; 
     background-color: transparent; 
     /* --- HIDES SNOW OFF-SCREEN ON LOAD --- */
+    /* This makes the layer start 500px above the top edge */
     transform: translateY(-500px); 
 }
 
-/* 3. Unique Layer Images and Sizes (Only one layer now) */
+/* The single snow layer styling, using the new ID and large flakes */
 #snow-layer {
-    /* REMEMBER TO INSERT YOUR IMAGE URL HERE */
-    background-image: url('YOUR_SMALLEST_DOT_PNG_URL_HERE'); 
-    background-size: 400px 400px; /* Bigger flakes */
+    /* --- THE FINAL SNOWFLAKE URL IS HERE --- */
+    background-image: url('https://cdn.prod.website-files.com/693197df39b5f0a0bb5c3ce3/6932ed4ef5d8b07f91876689_snow%20layer%203%20snowflakes.PNG'); 
+    background-size: 400px 400px; /* Large, defined flakes */
     opacity: 0.9; 
 }
 
+/* Placeholder space to enable scrolling */
 .scroll-filler {
     margin-top: 100vh;
     font-size: 2em;
