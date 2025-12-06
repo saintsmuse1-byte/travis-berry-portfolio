@@ -21,7 +21,7 @@ body {
 
 h1 {
     /* --- NEW FONT FAMILY --- */
-    font-family: 'Varela', serif; 
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
     
     /* --- NEW FONT SIZE (adjust this value as needed) --- */
     font-size: 5em; 
