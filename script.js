@@ -1,8 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     // 1. Elements
-    const snowContainer = document.querySelector('.snow-container');
-    const snowLayer = document.getElementById('snow-layer');
-
+    // The Parallax System
+    const parallaxSnowContainer = document.querySelector('.snow-container'); 
+    const parallaxSnowLayer = document.getElementById('snow-layer'); 
+    
+    // The NEW Floating System
+    const floatingSnowContainer = document.querySelector('.snowflakes'); // <--- NEW ELEMENT
+    
     // 2. Settings
     const speed = 0.08; 
     const triggerFadeIn = 700;   // Snow appears after 700px of scroll
@@ -11,26 +15,32 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateSnow() {
         const scrollPosition = window.pageYOffset;
 
-        // --- APPEARANCE AND FADE-OUT CONTROL ---
+        // --- APPEARANCE AND FADE-OUT CONTROL for BOTH snow layers ---
         if (scrollPosition > triggerFadeOut) {
             // Fades OUT completely before the white section
-            snowContainer.style.opacity = '0';
+            parallaxSnowContainer.style.opacity = '0';
+            floatingSnowContainer.style.opacity = '0'; // <--- APPLIES FADE OUT
         } else if (scrollPosition > triggerFadeIn) {
             // Snow is fully visible
-            snowContainer.style.opacity = '1';
+            parallaxSnowContainer.style.opacity = '1';
+            floatingSnowContainer.style.opacity = '1'; // <--- APPLIES FADE IN
         } else {
             // Snow is invisible (at the top of the page)
-            snowContainer.style.opacity = '0';
+            parallaxSnowContainer.style.opacity = '0';
+            floatingSnowContainer.style.opacity = '0'; // <--- INVISIBLE AT TOP
         }
 
-        // --- MOVEMENT CONTROL ---
+        // --- MOVEMENT CONTROL (Only for Parallax Layer) ---
         // Snow movement stops entirely past the fade-out point
         if (scrollPosition < triggerFadeOut) {
-             snowLayer.style.transform = `translateY(${scrollPosition * speed}px)`;
+             parallaxSnowLayer.style.transform = `translateY(${scrollPosition * speed}px)`;
         } else {
-            // This holds the snow layer fixed once the effect is over
-            snowLayer.style.transform = `translateY(${triggerFadeOut * speed}px)`;
+            // This holds the parallax layer fixed once the effect is over
+            parallaxSnowLayer.style.transform = `translateY(${triggerFadeOut * speed}px)`;
         }
+        
+        // NOTE: The floatingSnowContainer handles its own movement via CSS @keyframes,
+        // so we only control its visibility (opacity) here.
     }
 
     window.addEventListener('scroll', updateSnow);
