@@ -2,7 +2,7 @@
 body {
     margin: 0;
     font-family: sans-serif;
-    /* CHANGE: Gradient now fades from dark grey at the top to white at the bottom */
+    /* Gradient fades from dark grey at the top to white at the bottom for transition */
     background: linear-gradient(to bottom, #111111 0%, #FFFFFF 100%);
     color: white;
 }
@@ -20,7 +20,7 @@ body {
 }
 
 h1 {
-    /* Font: Trebuchet MS is a clean, modern sans-serif font */
+    /* Updated Font and Size */
     font-family: 'Trebuchet MS', sans-serif; 
     font-size: 8em; 
     letter-spacing: 8px;
@@ -29,11 +29,13 @@ h1 {
 
 /* --- IMAGE & CIRCLE STYLES --- */
 .circle-wrapper {
+    /* Updated Size */
     width: 400px;
     height: 400px;
     margin: 0 auto;
     overflow: hidden;
     border-radius: 50%; /* Ensures the wrapper is a perfect circle */
+    /* Updated Shadow: White outer glow (top-left), Black outer shadow (bottom-right), White inner glow (top-left) */
     box-shadow: -3px -3px 5px rgba(255, 255, 255, 1), 10px 10px 10px rgba(0, 0, 0, 1), inset 5px -5px 10px 1px rgba(255, 255, 255, 0.7);
 }
 
@@ -43,7 +45,7 @@ h1 {
     object-fit: cover;
 }
 
-/* --- SNOW LAYER STYLES (Single Layer) --- */
+/* --- SCROLL-TRIGGERED SNOW LAYER (The Parallax Effect) --- */
 
 .snow-container {
     position: fixed;
@@ -53,9 +55,9 @@ h1 {
     height: 100vh;
     pointer-events: none;
     z-index: 999;
-    /* --- HIDES SNOW COMPLETELY ON LOAD --- */
+    /* Controlled by JS opacity */
     opacity: 0;
-    transition: opacity 0.5s ease-in-out; /* Adds the smooth fade-in effect */
+    transition: opacity 0.5s ease-in-out; 
 }
 
 .snow-layer {
@@ -66,15 +68,14 @@ h1 {
     height: 100%;
     background-repeat: repeat;
     background-color: transparent;
-    /* Pushes snow layer 100% down below the viewport */
-    transform: translateY(60vh); /* Starts closer to the bottom edge */
+    /* Starts closer to the bottom edge */
+    transform: translateY(60vh); 
 }
 
 /* The single snow layer styling, using the new ID and large flakes */
 #snow-layer {
-    /* --- THE FINAL SNOWFLAKE URL IS HERE --- */
     background-image: url('https://cdn.prod.website-files.com/693197df39b5f0a0bb5c3ce3/6932ed4ef5d8b07f91876689_snow%20layer%203%20snowflakes.PNG');
-    background-size: 250px 250px; /* Large, defined flakes */
+    background-size: 250px 250px; 
     opacity: 0.9;
 }
 
@@ -83,26 +84,37 @@ h1 {
     margin-top: 100vh;
     font-size: 2em;
 }
+
 /* --- NEW ART SHOWCASE SECTION --- */
 .art-section {
     background-color: #FFFFFF; /* Ensures the section is pure white */
-    color: #333333; /* Text color needs to be dark against the white background */
+    color: #333333; 
     padding: 50px 20px;
     text-align: center;
-    min-height: 100vh; /* Gives you plenty of space for artwork */
+    min-height: 100vh; 
 }
 .art-section h2 {
     font-size: 2.5em;
     margin-bottom: 40px;
 }
-/* --- NEW CSS-ONLY CONTINUOUS SNOW EFFECT --- */
 
-/* customizable snowflake styling */
+/* --- NEW CSS-ONLY CONTINUOUS SNOW EFFECT (Floating Snowflakes) --- */
+
+/* Base snowflake styles (Merged and Cleaned) */
 .snowflake {
     color: #fff;
     font-size: 1em;
     font-family: Arial, sans-serif;
     text-shadow: 0 0 5px #000;
+    position: fixed;
+    top: -10%;
+    z-index: 9999;
+    user-select: none;
+    cursor: default;
+    pointer-events: none;
+    animation-name: snowflakes-shake;
+    animation-duration: 3s;
+    animation-timing-function: ease-in-out;
 }
  
 /* Animations for fall and shake */
@@ -121,19 +133,6 @@ h1 {
     50% { transform: translateX(80px) }
 }
 
-/* Base snowflake styles */
-.snowflake {
-    position: fixed;
-    top: -10%;
-    z-index: 9999;
-    user-select: none;
-    cursor: default;
-    pointer-events: none;
-    animation-name: snowflakes-shake;
-    animation-duration: 3s;
-    animation-timing-function: ease-in-out;
-}
-
 .snowflake .inner {
     animation-duration: 10s;
     animation-name: snowflakes-fall;
@@ -149,4 +148,5 @@ h1 {
 .snowflake:nth-of-type(5){left:50%;animation-delay:3s}.snowflake:nth-of-type(5) .inner{animation-delay:8s}
 .snowflake:nth-of-type(6){left:60%;animation-delay:2s}.snowflake:nth-of-type(7){left:70%;animation-delay:1s}.snowflake:nth-of-type(7) .inner{animation-delay:2.5s}
 .snowflake:nth-of-type(8){left:80%;animation-delay:0s}.snowflake:nth-of-type(9){left:90%;animation-delay:1.5s}.snowflake:nth-of-type(9) .inner{animation-delay:3s}
-.snowflake:nth-of-type(10){left:25%;animation-delay:0s}.snowflake:nth-of-type(11){left:65%;animation-delay:2.5s}
+.snowflake:nth-of-type(10){left:25%;animation-delay:0s}
+.snowflake:nth-of-type(11){left:65%;animation-delay:2.5s}
