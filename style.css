@@ -1,31 +1,224 @@
-/* --- LAYOUT & FONTS --- */
-body { margin: 0; font-family: sans-serif; background: linear-gradient(to bottom, #111111 0%, #FFFFFF 100%); color: white; }
-.main-content { display: flex; flex-direction: column; align-items: center; padding-top: 100px; min-height: 200vh; position: relative; z-index: 10;}
+/* --- UNIVERSAL STYLES & LAYOUT --- */
+body {
+    margin: 0;
+    font-family: sans-serif;
+    /* Gradient fades from dark grey at the top to white at the bottom for transition */
+    background: linear-gradient(to bottom, #111111 0%, #FFFFFF 100%);
+    color: white;
+}
 
-/* --- FROSTED NAVBAR --- */
-.navbar { position: fixed; top: 0; width: 100%; height: 50px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; padding: 0 40px; }
-.nav-brand { font-family: 'Trebuchet MS', sans-serif; font-size: 1.2em; letter-spacing: 2px; }
-.nav-logo-accent { font-family: Georgia, serif; font-weight: 300; font-size: 0.9em; padding-left: 5px; }
+/* --- NEW FIXED NAVIGATION BAR (FROSTED GLASS) --- */
+.navbar {
+    position: fixed; /* Makes the bar stay visible at the top */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50px; /* Thinner height */
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    z-index: 1000; /* Ensures it is always on top */
+    
+    /* FROSTED GLASS EFFECT */
+    background: rgba(255, 255, 255, 0.05); 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
 
-/* --- PROFILE CIRCLE --- */
-.circle-wrapper { width: 350px; height: 350px; border-radius: 50%; overflow: hidden; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-.circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+.nav-brand {
+    /* STYLES FOR THE SMALL "LOGO" IN THE NAVBAR */
+    font-family: 'Trebuchet MS', sans-serif; 
+    font-size: 1.2em; /* Smaller font size */
+    letter-spacing: 2px;
+}
 
-/* --- STOP-MOTION --- */
-#stop-motion-container { width: 250px; height: 250px; position: relative; margin-top: 20px; }
-.stop-motion-frame { width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; transition: opacity 0.1s linear; }
+.nav-logo-accent {
+    /* Styles for the 'BERRY' part of the logo */
+    font-family: Georgia, serif; 
+    font-weight: 300; 
+    font-size: 0.9em; 
+    padding-left: 5px; 
+}
 
-/* --- SNOW SCROLLING (Parallax) --- */
-.snow-container { position: fixed; top: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999; opacity: 0; transition: opacity 0.5s; }
-.snow-layer { position: absolute; width: 100%; height: 100%; background-image: url('https://cdn.prod.website-files.com/693197df39b5f0a0bb5c3ce3/6932ed4ef5d8b07f91876689_snow%20layer%203%20snowflakes.PNG'); transform: translateY(60vh); }
+/* --- MAIN PAGE CONTENT --- */
+.main-content {
+    /* Centers content horizontally on the page */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Pushes content down to clear the fixed navbar */
+    padding-top: 100px; 
+    padding-bottom: 10vh;
+    position: relative; 
+    z-index: 10;
+    min-height: 200vh;
+}
 
-/* --- CSS SNOWFLAKES --- */
-.snowflake { color: #fff; position: fixed; top: -10%; z-index: 9999; animation: fall 10s linear infinite; }
-@keyframes fall { to { transform: translateY(110vh); } }
+h1 {
+    /* STYLES FOR THE LARGE, CENTERED HEADING (Your original) */
+    font-family: 'Trebuchet MS', sans-serif; 
+    font-size: 8em; 
+    letter-spacing: 8px;
+    margin-bottom: 30px; 
+}
 
-/* --- ART GRID (Reveal effect) --- */
-.art-section { background: #FFFFFF; color: #333; padding: 100px 40px; text-align: center; }
-.art-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; }
-.art-item { opacity: 0; transform: translateY(50px); transition: 1s ease-out; }
-.art-item.is-revealed { opacity: 1; transform: translateY(0); }
-.art-item img { width: 100%; display: block; }
+
+/* --- IMAGE & CIRCLE STYLES --- */
+.circle-wrapper {
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: 50%;
+    box-shadow: -3px -3px 5px rgba(255, 255, 255, 1), 10px 10px 10px rgba(0, 0, 0, 1), inset 5px -5px 10px 1px rgba(255, 255, 255, 0.7);
+}
+
+.circle-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* --- SCROLL-TRIGGERED SNOW LAYER (The Parallax Effect) --- */
+
+.snow-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out; 
+}
+
+.snow-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-repeat: repeat;
+    background-color: transparent;
+    transform: translateY(60vh); 
+}
+
+#snow-layer {
+    background-image: url('https://cdn.prod.website-files.com/693197df39b5f0a0bb5c3ce3/6932ed4ef5d8b07f91876689_snow%20layer%203%20snowflakes.PNG');
+    background-size: 250px 250px; 
+    opacity: 0.9;
+}
+
+/* Placeholder space to enable scrolling */
+.scroll-filler {
+    margin-top: 100vh;
+    font-size: 2em;
+}
+
+/* --- NEW CSS-ONLY CONTINUOUS SNOW EFFECT (Floating Snowflakes) --- */
+
+/* Base snowflake styles */
+.snowflake {
+    color: #fff;
+    font-size: 1em;
+    font-family: Arial, sans-serif;
+    text-shadow: 0 0 5px #000;
+    position: fixed;
+    top: -10%;
+    z-index: 9999;
+    user-select: none;
+    cursor: default;
+    pointer-events: none;
+    animation-name: snowflakes-shake;
+    animation-duration: 3s;
+    animation-timing-function: ease-in-out;
+}
+ 
+/* Animations for fall and shake */
+.snowflake, .snowflake .inner {
+    animation-iteration-count: infinite;
+    animation-play-state: running;
+}
+
+@keyframes snowflakes-fall {
+    0% { transform: translateY(0) }
+    100% { transform: translateY(110vh) }
+}
+
+@keyframes snowflakes-shake {
+    0%, 100% { transform: translateX(0) }
+    50% { transform: translateX(80px) }
+}
+
+.snowflake .inner {
+    animation-duration: 10s;
+    animation-name: snowflakes-fall;
+    animation-timing-function: linear;
+}
+
+/* Individual snowflake positions and delays */
+.snowflake:nth-of-type(0){left:1%;animation-delay:0s}.snowflake:nth-of-type(0) .inner{animation-delay:0s}
+.snowflake:first-of-type{left:10%;animation-delay:1s}.snowflake:first-of-type .inner,.snowflake:nth-of-type(8) .inner{animation-delay:1s}
+.snowflake:nth-of-type(2){left:20%;animation-delay:.5s}.snowflake:nth-of-type(2) .inner,.snowflake:nth-of-type(6) .inner{animation-delay:6s}
+.snowflake:nth-of-type(3){left:30%;animation-delay:2s}.snowflake:nth-of-type(11) .inner,.snowflake:nth-of-type(3) .inner{animation-delay:4s}
+.snowflake:nth-of-type(4){left:40%;animation-delay:2s}.snowflake:nth-of-type(10) .inner,.snowflake:nth-of-type(4) .inner{animation-delay:2s}
+.snowflake:nth-of-type(5){left:50%;animation-delay:3s}.snowflake:nth-of-type(5) .inner{animation-delay:8s}
+.snowflake:nth-of-type(6){left:60%;animation-delay:2s}.snowflake:nth-of-type(7){left:70%;animation-delay:1s}.snowflake:nth-of-type(7) .inner{animation-delay:2.5s}
+.snowflake:nth-of-type(8){left:80%;animation-delay:0s}.snowflake:nth-of-type(9){left:90%;animation-delay:1.5s}.snowflake:nth-of-type(9) .inner{animation-delay:3s}
+.snowflake:nth-of-type(10){left:25%;animation-delay:0s}
+.snowflake:nth-of-type(11){left:65%;animation-delay:2.5s}
+
+/* --- STYLES FOR ART SHOWCASE & SCROLL REVEAL --- */
+
+/* Updated Art Section Styles (Replaces the old, simpler art-section block) */
+.art-section {
+    background-color: #FFFFFF; 
+    color: #333333; 
+    /* Increased padding for layout */
+    padding: 100px 40px; 
+    text-align: center;
+    min-height: 100vh; 
+}
+
+.art-section h2 {
+    font-size: 2.5em;
+    margin-bottom: 40px;
+}
+
+/* New Art Grid Container */
+.art-grid {
+    /* 1. LAYOUT: Three columns of equal width */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    
+    /* 2. GAP: Adds space between the images */
+    gap: 30px; 
+    
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 50px;
+}
+
+/* 3. STAGGERED BRICK EFFECT: */
+/* Target every 3rd item starting from the 4th item (the start of the second row) */
+/* We move these items up and shift the rest of the content up to fill the gap. */
+.art-item:nth-child(3n + 4) {
+    margin-top: -150px; /* Adjust this value to control the brick stagger height */
+}
+
+
+/* NOTE: The INITIAL STATE and FINAL STATE styles for .art-item should remain as they are: */
+/*
+.art-item {
+    ...
+    opacity: 0;
+    transform: translateY(50px);
+}
+.art-item.is-revealed {
+    ...
+    opacity: 1;
+    transform: translateY(0);
+}
+*/
