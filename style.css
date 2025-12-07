@@ -1,77 +1,31 @@
-/* --- UNIVERSAL STYLES --- */
-body {
-    margin: 0;
-    font-family: sans-serif;
-    background: linear-gradient(to bottom, #111111 0%, #FFFFFF 100%);
-    color: white;
-}
+/* --- LAYOUT & FONTS --- */
+body { margin: 0; font-family: sans-serif; background: linear-gradient(to bottom, #111111 0%, #FFFFFF 100%); color: white; }
+.main-content { display: flex; flex-direction: column; align-items: center; padding-top: 100px; min-height: 200vh; position: relative; z-index: 10;}
 
-.main-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 100px;
-    min-height: 200vh;
-}
+/* --- FROSTED NAVBAR --- */
+.navbar { position: fixed; top: 0; width: 100%; height: 50px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; padding: 0 40px; }
+.nav-brand { font-family: 'Trebuchet MS', sans-serif; font-size: 1.2em; letter-spacing: 2px; }
+.nav-logo-accent { font-family: Georgia, serif; font-weight: 300; font-size: 0.9em; padding-left: 5px; }
 
-/* --- NAVIGATION BAR --- */
-.navbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    height: 50px;
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(8px);
-    z-index: 1000;
-}
+/* --- PROFILE CIRCLE --- */
+.circle-wrapper { width: 350px; height: 350px; border-radius: 50%; overflow: hidden; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- CIRCLE PROFILE --- */
-.circle-wrapper {
-    width: 350px;
-    height: 350px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-bottom: 40px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-}
+/* --- STOP-MOTION --- */
+#stop-motion-container { width: 250px; height: 250px; position: relative; margin-top: 20px; }
+.stop-motion-frame { width: 100%; height: 100%; object-fit: contain; position: absolute; top: 0; left: 0; transition: opacity 0.1s linear; }
 
-.circle-wrapper img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
+/* --- SNOW SCROLLING (Parallax) --- */
+.snow-container { position: fixed; top: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 999; opacity: 0; transition: opacity 0.5s; }
+.snow-layer { position: absolute; width: 100%; height: 100%; background-image: url('https://cdn.prod.website-files.com/693197df39b5f0a0bb5c3ce3/6932ed4ef5d8b07f91876689_snow%20layer%203%20snowflakes.PNG'); transform: translateY(60vh); }
 
-/* --- NEW HERO BOTTOM ROW (The Staggered Layout) --- */
-.hero-bottom-row {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    width: 100%;
-    max-width: 900px; /* Adjust based on how wide you want the row */
-}
+/* --- CSS SNOWFLAKES --- */
+.snowflake { color: #fff; position: fixed; top: -10%; z-index: 9999; animation: fall 10s linear infinite; }
+@keyframes fall { to { transform: translateY(110vh); } }
 
-#stop-motion-container, .placeholder-slot {
-    width: 120px; /* Small size to fit 6 in a row */
-    height: 120px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.stop-motion-frame {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* --- ART SECTION & GRID --- */
-.art-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-/* Base snowflake styles */
-.snowflake { color: #fff; position: fixed; top: -10%; z-index: 9999; }
+/* --- ART GRID (Reveal effect) --- */
+.art-section { background: #FFFFFF; color: #333; padding: 100px 40px; text-align: center; }
+.art-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; max-width: 1200px; margin: 0 auto; }
+.art-item { opacity: 0; transform: translateY(50px); transition: 1s ease-out; }
+.art-item.is-revealed { opacity: 1; transform: translateY(0); }
+.art-item img { width: 100%; display: block; }
