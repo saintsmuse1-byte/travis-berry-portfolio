@@ -3,7 +3,7 @@ body {
     margin: 0;
     font-family: sans-serif;
     /* Gradient fades from dark grey at the top to white at the bottom for transition */
-    background: linear-gradient(to bottom, #111111 0%, #FFFFFF 100%);
+    background: linear-gradient(to bottom, #0f152e 0%, #FFFFFF 100%);
     color: white;
 }
 
