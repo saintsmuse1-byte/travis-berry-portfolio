@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 1. VIDEO HOVER PLAYBACK
-    const videoContainer = document.querySelector('.video-hover-container');
+    const vidContainer = document.querySelector('.video-link');
     const video = document.querySelector('.hover-video');
 
-    if (videoContainer && video) {
-        videoContainer.addEventListener('mouseenter', () => video.play());
-        videoContainer.addEventListener('mouseleave', () => {
+    if (vidContainer && video) {
+        vidContainer.addEventListener('mouseenter', () => video.play());
+        vidContainer.addEventListener('mouseleave', () => {
             video.pause();
-            video.currentTime = 0; // Reset to start
+            video.currentTime = 0;
         });
     }
 
