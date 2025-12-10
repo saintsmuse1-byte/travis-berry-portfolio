@@ -26,7 +26,7 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 .snowflakes { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     pointer-events: none; z-index: 1001; 
-    transition: opacity 0.5s ease-out; /* Controls general fade out */
+    transition: opacity 0.5s ease-out; 
 }
 
 /* Base falling snowflake style */
@@ -45,20 +45,31 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 
 @keyframes fall { to { transform: translateY(110vh); } }
 
-/* LANDING CLUMP: Initially hidden and positioned near the bottom */
+/* LANDING CLUMP: Starts 70% down the screen, invisible, ready to drop */
 .snowflake.landing { 
     opacity: 0; 
-    top: auto; /* Handled by JS */
-    bottom: 0; 
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out; 
-    /* Ensures they stay visually large */
+    top: 70%; 
+    bottom: auto; 
+    transform: none; 
+    transition: opacity 0.2s ease-out; 
     font-size: 2em;
+    left: 0; 
 }
+/* Random horizontal offsets for the clump */
+.snowflake.landing:nth-child(9) { left: 15%; }
+.snowflake.landing:nth-child(10) { left: 25%; }
+.snowflake.landing:nth-child(11) { left: 35%; }
+.snowflake.landing:nth-child(12) { left: 45%; }
+.snowflake.landing:nth-child(13) { left: 55%; }
+.snowflake.landing:nth-child(14) { left: 65%; }
+.snowflake.landing:nth-child(15) { left: 75%; }
+.snowflake.landing:nth-child(16) { left: 85%; }
+.snowflake.landing:nth-child(17) { left: 5%; }
+.snowflake.landing:nth-child(18) { left: 90%; }
 
-/* STATE TRIGGERED BY JAVASCRIPT: Makes the clump appear and slightly float */
+/* STATE TRIGGERED BY JAVASCRIPT */
 .snowflakes.landing-active .snowflake.landing { 
     opacity: 1; 
-    transform: translateY(-50px); /* Lifts them slightly off the bottom */
 }
 
 
