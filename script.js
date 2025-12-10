@@ -25,64 +25,76 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 3. SNOW LANDING AND DISAPPEARANCE EFFECT
     const snowflakesContainer = document.querySelector('.snowflakes');
-    const fallingFlakes = document.querySelectorAll('.snowflake:not(.landing)');
     const landingFlakes = document.querySelectorAll('.snowflake.landing');
-    const heroBottom = document.querySelector('.main-content').offsetHeight;
+    const regularFlakes = document.querySelectorAll('.snowflake.regular');
+    const heroContent = document.querySelector('.main-content');
     
-    // Set landing flakes to their initial random horizontal positions
+    // Calculate the Y position where the flakes should "land"
+    const landingYPosition = heroContent.offsetHeight - 50; 
+    
+    // The scroll position where the landing transition should start
+    const startScrollZone = heroContent.offsetHeight - window.innerHeight;
+    
+    // The scroll position where the snow should be completely gone
+    const endScrollZone = heroContent.offsetHeight + 100;
+
+    // Set landing flakes to initial staggered horizontal positions
     landingFlakes.forEach((flake) => {
+        // Random horizontal position for the clump
         flake.style.left = `${Math.random() * 90 + 5}%`;
     });
 
     window.addEventListener('scroll', () => {
         const scrollPos = window.scrollY;
-        
-        // Defines the short scroll zone where the action happens
-        const startZone = heroBottom * 0.9;
-        const endZone = heroBottom + 100; // 100px into the white section
-        const inZone = scrollPos >= startZone && scrollPos <= endZone;
 
-        if (inZone) {
-            const progress = (scrollPos - startZone) / (endZone - startZone);
-            
-            // --- LANDING EFFECT ---
-            // Move landing flakes up (sudden appearance)
-            if (progress < 0.2) { // 0% to 20% progress: Suddenly appear and move up quickly
-                 landingFlakes.forEach(flake => {
-                    flake.style.opacity = '1';
-                    flake.style.transform = `translateY(${window.innerHeight - 50}px)`; // Just above the bottom of viewport
-                });
-            }
-            
-            // --- DISAPPEARANCE ---
-            // 20% to 100% progress: All snow (falling and landing) quickly fades out
-            if (progress >= 0.2) {
-                // Fade out from 1 to 0 over the rest of the zone
-                const fadeOut = 1 - ((progress - 0.2) / 0.8); 
-                snowflakesContainer.style.opacity = fadeOut;
-
-                // Stop falling flakes visually before the container reaches 0 opacity
-                fallingFlakes.forEach(flake => {
-                    flake.style.top = `${flake.offsetTop}px`; // Fix their current vertical position
-                    flake.style.animation = 'none'; // Stop falling
-                });
-
-                // Move landing flakes below the fold and hide them
-                landingFlakes.forEach(flake => {
-                    flake.style.transform = `translateY(${window.innerHeight + 100}px)`;
-                });
-            }
-
-        } else if (scrollPos < startZone) {
-            // Before the zone: Standard falling snow, full opacity
+        if (scrollPos < startScrollZone) {
+            // --- STANDARD FALLING ZONE ---
             snowflakesContainer.style.opacity = '1';
-            fallingFlakes.forEach(flake => {
-                flake.style.animation = 'fall 10s linear infinite';
+            
+            // Ensure regular flakes are still animating and visible
+            regularFlakes.forEach(flake => {
+                flake.style.animationPlayState = 'running';
+                flake.style.opacity = '1';
             });
+            // Keep landing flakes hidden
             landingFlakes.forEach(flake => flake.style.opacity = '0');
 
-        } else if (scrollPos > endZone) {
-            // After the zone: All snow is gone
+        } else if (scrollPos >= startScrollZone && scrollPos <= endScrollZone) {
+            // --- LANDING AND FADE ZONE ---
+            
+            // Calculate progress through the transition (0 to 1)
+            const progress = (scrollPos - startScrollZone) / (endScrollZone - startScrollZone);
+
+            // CLUMP APPEARANCE & LANDING: First 50% of the zone
+            if (progress < 0.5) {
+                const landingProgress = progress * 2; // Scales to 0 to 1
+                const moveUpAmount = (window.innerHeight - landingYPosition) * landingProgress;
+                
+                // Opacity fades in quickly
+                const clumpOpacity = Math.min(1, landingProgress * 2);
+
+                landingFlakes.forEach(flake => {
+                    // Flake moves from its starting point (90vh) up to the landing Y position
+                    flake.style.transform = `translateY(${landingYPosition - moveUpAmount}px)`;
+                    flake.style.opacity = clumpOpacity;
+                });
+                
+                // All snow (regular + landing) fades out as we hit the white section
+                snowflakesContainer.style.opacity = 1 - landingProgress; 
+
+            } else {
+                // FADE OUT COMPLETE
+                snowflakesContainer.style.opacity = '0';
+            }
+            
+            // Stop regular flakes from falling down further, fixing the "horizontal line" issue
+            regularFlakes.forEach(flake => {
+                flake.style.animationPlayState = 'paused';
+                flake.style.opacity = '0';
+            });
+
+        } else if (scrollPos > endScrollZone) {
+            // --- BELOW ART SECTION ---
             snowflakesContainer.style.opacity = '0';
         }
     });
