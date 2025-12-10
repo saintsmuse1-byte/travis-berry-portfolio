@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. ART REVEAL (for portfolio items)
+    // 2. ART REVEAL
     const artObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.art-item').forEach(item => artObserver.observe(item));
 
-    // 3. SNOW LANDING AND DISAPPEARANCE EFFECT (using IntersectionObserver)
+    // 3. SNOW LANDING AND DISAPPEARANCE EFFECT
     const snowflakesContainer = document.querySelector('.snowflakes');
     const regularFlakes = document.querySelectorAll('.snowflake.regular');
     const artSection = document.querySelector('.art-section');
@@ -36,25 +36,21 @@ document.addEventListener('DOMContentLoaded', () => {
     snowSentinel.style.width = '100%';
     document.querySelector('.main-content').appendChild(snowSentinel);
 
-    // --- LANDING OBSERVER ---
+    // --- LANDING OBSERVER (Triggers the sudden appearance/landing) ---
     const landingObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // Sentinel is entering viewport: Start landing and fade out.
-                
-                // 1. Trigger the clump to appear and float up slightly
+                // Sentinel is entering viewport:
+                // 1. Makes the clump instantly appear by adding the class
                 snowflakesContainer.classList.add('landing-active');
                 
-                // 2. Start the general fade out (smooth disappearance)
-                snowflakesContainer.style.opacity = '0';
-                
-                // 3. Stop the falling flakes' animation so they don't continue to scroll down the page
+                // 2. Stop the regular flakes' animation immediately to hold them in place
                 regularFlakes.forEach(flake => {
                     flake.style.animationPlayState = 'paused';
                 });
 
             } else if (entry.boundingClientRect.top > 0) {
-                // Sentinel is above, but still in the dark section (scrolling back up)
+                // Sentinel is above (scrolling back up)
                 
                 // Reset to standard falling
                 snowflakesContainer.classList.remove('landing-active');
@@ -65,26 +61,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }, {
-        // Set root margin to trigger the event 100px BEFORE the element hits the very top of the viewport
-        rootMargin: '-100px 0px 0px 0px',
+        // Trigger the event 200px BEFORE the bottom of the hero section is visible at the top of the viewport
+        rootMargin: '-200px 0px 0px 0px',
         threshold: 0
     });
     
-    // Start observing the invisible sentinel element
     landingObserver.observe(snowSentinel);
 
-    // --- FINAL FADE OUT OBSERVER (Backup for when scrolling into the art section) ---
-    const finalFadeObserver = new IntersectionObserver((entries) => {
+    // --- FADE OUT OBSERVER (Gently fades everything out over the white section) ---
+    const fadeOutObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                // Art section is visible: Ensure snow is gone
-                snowflakesContainer.style.opacity = '0';
-            }
+            // Calculate opacity based on how much of the art section is showing
+            const visibility = entry.intersectionRatio; // 0 to 1
+            
+            // Invert the visibility to get a fade out (1 to 0)
+            snowflakesContainer.style.opacity = 1 - visibility;
         });
     }, {
-        // Trigger when 50% of the art section is visible
-        threshold: 0.5 
+        // Observe the entire art section, reporting visibility constantly
+        threshold: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1] 
     });
 
-    finalFadeObserver.observe(artSection);
+    fadeOutObserver.observe(artSection);
 });
