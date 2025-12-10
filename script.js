@@ -26,9 +26,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. SNOW LANDING AND DISAPPEARANCE EFFECT
     const snowflakesContainer = document.querySelector('.snowflakes');
     const regularFlakes = document.querySelectorAll('.snowflake.regular');
-    const landingFlakes = document.querySelectorAll('.snowflake.landing');
     const artSection = document.querySelector('.art-section');
     const heroContent = document.querySelector('.main-content');
+    
+    // Select the flakes by their new layers
+    const frontFlakes = document.querySelectorAll('.front-flake');
+    const midFlakes = document.querySelectorAll('.mid-flake');
+    const backFlakes = document.querySelectorAll('.back-flake');
 
     // Calculate the distance the landing flakes need to travel (from top: 50% to the hero bottom)
     const landingStartTop = window.innerHeight * 0.5; // CSS top: 50%
@@ -36,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropDistance = landingEndTop - landingStartTop;
 
     // Set initial random horizontal positions for the 35 landing flakes
-    landingFlakes.forEach(flake => {
+    [...frontFlakes, ...midFlakes, ...backFlakes].forEach(flake => {
         // Random horizontal position for the clump, ensuring they are staggered
         flake.style.left = `${Math.random() * 95}%`;
     });
@@ -55,14 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (entry.isIntersecting) {
                 // Sentinel is entering viewport:
                 
-                // 1. Makes the clump instantly appear by adding the class
+                // 1. Makes the clump instantly appear by adding the class (opacity/scale/delay takes effect)
                 snowflakesContainer.classList.add('landing-active');
                 
-                // 2. Make the 35 flakes immediately drop/land to the bottom edge
-                landingFlakes.forEach(flake => {
-                    // This creates the sudden drop effect
-                    flake.style.transform = `translateY(${dropDistance + 20}px)`; 
-                });
+                // 2. Make all layers immediately drop/land to the bottom edge
+                // The CSS transition time and delay will now control the staggered drop speed.
+                const landingTransform = `translateY(${dropDistance + 20}px)`; 
+                
+                frontFlakes.forEach(flake => { flake.style.transform = landingTransform; });
+                midFlakes.forEach(flake => { flake.style.transform = landingTransform; });
+                backFlakes.forEach(flake => { flake.style.transform = landingTransform; });
 
                 // 3. Stop the regular flakes' animation immediately to hold them in place
                 regularFlakes.forEach(flake => {
@@ -75,17 +81,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Reset to standard falling
                 snowflakesContainer.classList.remove('landing-active');
                 snowflakesContainer.style.opacity = '1';
-                landingFlakes.forEach(flake => {
-                    flake.style.transform = 'translateY(0px)'; // Reset transform for reset
+
+                // Reset all landing flake transforms
+                [...frontFlakes, ...midFlakes, ...backFlakes].forEach(flake => {
+                    flake.style.transform = 'translateY(0px)'; 
                 });
+
                 regularFlakes.forEach(flake => {
                     flake.style.animationPlayState = 'running';
                 });
             }
         });
     }, {
-        // Trigger the event 200px BEFORE the bottom of the hero section is visible at the top of the viewport
-        rootMargin: '-200px 0px 0px 0px',
+        // Trigger the event earlier to allow for the 2-second staggered fall
+        rootMargin: '-400px 0px 0px 0px',
         threshold: 0
     });
     
