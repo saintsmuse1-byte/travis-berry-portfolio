@@ -11,91 +11,80 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. ART REVEAL
-    const observer = new IntersectionObserver((entries) => {
+    // 2. ART REVEAL (for portfolio items)
+    const artObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-revealed');
-                observer.unobserve(entry.target);
+                artObserver.unobserve(entry.target);
             }
         });
     }, { rootMargin: '0px 0px -10% 0px' });
 
-    document.querySelectorAll('.art-item').forEach(item => observer.observe(item));
+    document.querySelectorAll('.art-item').forEach(item => artObserver.observe(item));
 
-    // 3. SNOW LANDING AND DISAPPEARANCE EFFECT
+    // 3. SNOW LANDING AND DISAPPEARANCE EFFECT (using IntersectionObserver)
     const snowflakesContainer = document.querySelector('.snowflakes');
-    const landingFlakes = document.querySelectorAll('.snowflake.landing');
     const regularFlakes = document.querySelectorAll('.snowflake.regular');
-    const heroContent = document.querySelector('.main-content');
-    
-    // Calculate the Y position where the flakes should "land"
-    const landingYPosition = heroContent.offsetHeight - 50; 
-    
-    // The scroll position where the landing transition should start
-    const startScrollZone = heroContent.offsetHeight - window.innerHeight;
-    
-    // The scroll position where the snow should be completely gone
-    const endScrollZone = heroContent.offsetHeight + 100;
+    const artSection = document.querySelector('.art-section');
 
-    // Set landing flakes to initial staggered horizontal positions
-    landingFlakes.forEach((flake) => {
-        // Random horizontal position for the clump
-        flake.style.left = `${Math.random() * 90 + 5}%`;
-    });
+    // Create a sentinel element to track the scroll position at the bottom of the hero section
+    const snowSentinel = document.createElement('div');
+    snowSentinel.style.height = '1px';
+    snowSentinel.style.position = 'absolute';
+    snowSentinel.style.bottom = '0';
+    snowSentinel.style.width = '100%';
+    document.querySelector('.main-content').appendChild(snowSentinel);
 
-    window.addEventListener('scroll', () => {
-        const scrollPos = window.scrollY;
-
-        if (scrollPos < startScrollZone) {
-            // --- STANDARD FALLING ZONE ---
-            snowflakesContainer.style.opacity = '1';
-            
-            // Ensure regular flakes are still animating and visible
-            regularFlakes.forEach(flake => {
-                flake.style.animationPlayState = 'running';
-                flake.style.opacity = '1';
-            });
-            // Keep landing flakes hidden
-            landingFlakes.forEach(flake => flake.style.opacity = '0');
-
-        } else if (scrollPos >= startScrollZone && scrollPos <= endScrollZone) {
-            // --- LANDING AND FADE ZONE ---
-            
-            // Calculate progress through the transition (0 to 1)
-            const progress = (scrollPos - startScrollZone) / (endScrollZone - startScrollZone);
-
-            // CLUMP APPEARANCE & LANDING: First 50% of the zone
-            if (progress < 0.5) {
-                const landingProgress = progress * 2; // Scales to 0 to 1
-                const moveUpAmount = (window.innerHeight - landingYPosition) * landingProgress;
+    // --- LANDING OBSERVER ---
+    const landingObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Sentinel is entering viewport: Start landing and fade out.
                 
-                // Opacity fades in quickly
-                const clumpOpacity = Math.min(1, landingProgress * 2);
-
-                landingFlakes.forEach(flake => {
-                    // Flake moves from its starting point (90vh) up to the landing Y position
-                    flake.style.transform = `translateY(${landingYPosition - moveUpAmount}px)`;
-                    flake.style.opacity = clumpOpacity;
+                // 1. Trigger the clump to appear and float up slightly
+                snowflakesContainer.classList.add('landing-active');
+                
+                // 2. Start the general fade out (smooth disappearance)
+                snowflakesContainer.style.opacity = '0';
+                
+                // 3. Stop the falling flakes' animation so they don't continue to scroll down the page
+                regularFlakes.forEach(flake => {
+                    flake.style.animationPlayState = 'paused';
                 });
-                
-                // All snow (regular + landing) fades out as we hit the white section
-                snowflakesContainer.style.opacity = 1 - landingProgress; 
 
-            } else {
-                // FADE OUT COMPLETE
+            } else if (entry.boundingClientRect.top > 0) {
+                // Sentinel is above, but still in the dark section (scrolling back up)
+                
+                // Reset to standard falling
+                snowflakesContainer.classList.remove('landing-active');
+                snowflakesContainer.style.opacity = '1';
+                regularFlakes.forEach(flake => {
+                    flake.style.animationPlayState = 'running';
+                });
+            }
+        });
+    }, {
+        // Set root margin to trigger the event 100px BEFORE the element hits the very top of the viewport
+        rootMargin: '-100px 0px 0px 0px',
+        threshold: 0
+    });
+    
+    // Start observing the invisible sentinel element
+    landingObserver.observe(snowSentinel);
+
+    // --- FINAL FADE OUT OBSERVER (Backup for when scrolling into the art section) ---
+    const finalFadeObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Art section is visible: Ensure snow is gone
                 snowflakesContainer.style.opacity = '0';
             }
-            
-            // Stop regular flakes from falling down further, fixing the "horizontal line" issue
-            regularFlakes.forEach(flake => {
-                flake.style.animationPlayState = 'paused';
-                flake.style.opacity = '0';
-            });
-
-        } else if (scrollPos > endScrollZone) {
-            // --- BELOW ART SECTION ---
-            snowflakesContainer.style.opacity = '0';
-        }
+        });
+    }, {
+        // Trigger when 50% of the art section is visible
+        threshold: 0.5 
     });
+
+    finalFadeObserver.observe(artSection);
 });
