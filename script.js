@@ -30,18 +30,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroContent = document.querySelector('.main-content');
     
     // Select the flakes by their new layers
+    const landingFlakes = document.querySelectorAll('.snowflake.landing');
     const frontFlakes = document.querySelectorAll('.front-flake');
     const midFlakes = document.querySelectorAll('.mid-flake');
     const backFlakes = document.querySelectorAll('.back-flake');
 
     // Calculate the distance the landing flakes need to travel (from top: 50% to the hero bottom)
-    const landingStartTop = window.innerHeight * 0.5; // CSS top: 50%
-    const landingEndTop = heroContent.offsetHeight;
-    const dropDistance = landingEndTop - landingStartTop;
+    // We use getBoundingClientRect to get the live position of the hero content bottom edge
+    const heroBottomY = heroContent.getBoundingClientRect().bottom + window.scrollY;
+    
+    // The drop distance is the difference between the starting position (50vh) and the hero bottom
+    const dropDistance = heroBottomY - (window.innerHeight * 0.5);
 
     // Set initial random horizontal positions for the 35 landing flakes
-    [...frontFlakes, ...midFlakes, ...backFlakes].forEach(flake => {
-        // Random horizontal position for the clump, ensuring they are staggered
+    landingFlakes.forEach(flake => {
         flake.style.left = `${Math.random() * 95}%`;
     });
 
@@ -56,26 +58,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- LANDING OBSERVER (Triggers the sudden appearance and drop) ---
     const landingObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
+            // Check scroll direction: only trigger landing when scrolling DOWN (or at the bottom)
+            const isScrollingDown = entry.boundingClientRect.top < 0; 
+            
             if (entry.isIntersecting) {
-                // Sentinel is entering viewport:
-                
-                // 1. Makes the clump instantly appear by adding the class (opacity/scale/delay takes effect)
+                // 1. Makes the clump instantly appear (opacity/scale/delay takes effect)
                 snowflakesContainer.classList.add('landing-active');
                 
                 // 2. Make all layers immediately drop/land to the bottom edge
-                // The CSS transition time and delay will now control the staggered drop speed.
+                // The +20px accounts for the difference between 'top: 50%' and the final landing point
                 const landingTransform = `translateY(${dropDistance + 20}px)`; 
                 
                 frontFlakes.forEach(flake => { flake.style.transform = landingTransform; });
                 midFlakes.forEach(flake => { flake.style.transform = landingTransform; });
                 backFlakes.forEach(flake => { flake.style.transform = landingTransform; });
 
-                // 3. Stop the regular flakes' animation immediately to hold them in place
+                // 3. Stop the regular flakes' animation immediately
                 regularFlakes.forEach(flake => {
                     flake.style.animationPlayState = 'paused';
                 });
 
-            } else if (entry.boundingClientRect.top > 0) {
+            } else if (!isScrollingDown) {
                 // Sentinel is above (scrolling back up)
                 
                 // Reset to standard falling
@@ -83,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 snowflakesContainer.style.opacity = '1';
 
                 // Reset all landing flake transforms
-                [...frontFlakes, ...midFlakes, ...backFlakes].forEach(flake => {
+                landingFlakes.forEach(flake => {
                     flake.style.transform = 'translateY(0px)'; 
                 });
 
@@ -93,8 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }, {
-        // Trigger the event earlier to allow for the 2-second staggered fall
-        rootMargin: '-400px 0px 0px 0px',
+        // Trigger the effect earlier to give the 2-second fall space to happen
+        rootMargin: '-200px 0px 0px 0px', 
         threshold: 0
     });
     
