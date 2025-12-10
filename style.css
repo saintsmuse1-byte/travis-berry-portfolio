@@ -45,31 +45,22 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 
 @keyframes fall { to { transform: translateY(110vh); } }
 
-/* LANDING CLUMP: Starts 70% down the screen, invisible, ready to drop */
+/* LANDING CLUMP: Starts high, invisible, ready to drop */
 .snowflake.landing { 
     opacity: 0; 
-    top: 70%; 
+    top: 50%; /* Start higher up so they drop further */
     bottom: auto; 
+    /* Removed explicit 'left' positions here */
     transform: none; 
-    transition: opacity 0.2s ease-out; 
+    transition: opacity 0.2s ease-out, transform 0.5s ease-out; /* Added transform transition for the drop */
     font-size: 2em;
-    left: 0; 
 }
-/* Random horizontal offsets for the clump */
-.snowflake.landing:nth-child(9) { left: 15%; }
-.snowflake.landing:nth-child(10) { left: 25%; }
-.snowflake.landing:nth-child(11) { left: 35%; }
-.snowflake.landing:nth-child(12) { left: 45%; }
-.snowflake.landing:nth-child(13) { left: 55%; }
-.snowflake.landing:nth-child(14) { left: 65%; }
-.snowflake.landing:nth-child(15) { left: 75%; }
-.snowflake.landing:nth-child(16) { left: 85%; }
-.snowflake.landing:nth-child(17) { left: 5%; }
-.snowflake.landing:nth-child(18) { left: 90%; }
 
-/* STATE TRIGGERED BY JAVASCRIPT */
+/* STATE TRIGGERED BY JAVASCRIPT: Makes the clump appear and drop/land */
 .snowflakes.landing-active .snowflake.landing { 
     opacity: 1; 
+    /* Use translateY to drop them to the bottom of the hero section */
+    /* Final position will be calculated in JS and held by transform */
 }
 
 
