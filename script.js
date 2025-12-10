@@ -26,7 +26,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. SNOW LANDING AND DISAPPEARANCE EFFECT
     const snowflakesContainer = document.querySelector('.snowflakes');
     const regularFlakes = document.querySelectorAll('.snowflake.regular');
+    const landingFlakes = document.querySelectorAll('.snowflake.landing');
     const artSection = document.querySelector('.art-section');
+    const heroContent = document.querySelector('.main-content');
+
+    // Calculate the distance the landing flakes need to travel (from top: 50% to the hero bottom)
+    const landingStartTop = window.innerHeight * 0.5; // CSS top: 50%
+    const landingEndTop = heroContent.offsetHeight;
+    const dropDistance = landingEndTop - landingStartTop;
+
+    // Set initial random horizontal positions for the 35 landing flakes
+    landingFlakes.forEach(flake => {
+        // Random horizontal position for the clump, ensuring they are staggered
+        flake.style.left = `${Math.random() * 95}%`;
+    });
 
     // Create a sentinel element to track the scroll position at the bottom of the hero section
     const snowSentinel = document.createElement('div');
@@ -34,17 +47,24 @@ document.addEventListener('DOMContentLoaded', () => {
     snowSentinel.style.position = 'absolute';
     snowSentinel.style.bottom = '0';
     snowSentinel.style.width = '100%';
-    document.querySelector('.main-content').appendChild(snowSentinel);
+    heroContent.appendChild(snowSentinel);
 
-    // --- LANDING OBSERVER (Triggers the sudden appearance/landing) ---
+    // --- LANDING OBSERVER (Triggers the sudden appearance and drop) ---
     const landingObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 // Sentinel is entering viewport:
+                
                 // 1. Makes the clump instantly appear by adding the class
                 snowflakesContainer.classList.add('landing-active');
                 
-                // 2. Stop the regular flakes' animation immediately to hold them in place
+                // 2. Make the 35 flakes immediately drop/land to the bottom edge
+                landingFlakes.forEach(flake => {
+                    // This creates the sudden drop effect
+                    flake.style.transform = `translateY(${dropDistance + 20}px)`; 
+                });
+
+                // 3. Stop the regular flakes' animation immediately to hold them in place
                 regularFlakes.forEach(flake => {
                     flake.style.animationPlayState = 'paused';
                 });
@@ -55,6 +75,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Reset to standard falling
                 snowflakesContainer.classList.remove('landing-active');
                 snowflakesContainer.style.opacity = '1';
+                landingFlakes.forEach(flake => {
+                    flake.style.transform = 'translateY(0px)'; // Reset transform for reset
+                });
                 regularFlakes.forEach(flake => {
                     flake.style.animationPlayState = 'running';
                 });
