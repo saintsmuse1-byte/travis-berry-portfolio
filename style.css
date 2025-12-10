@@ -12,19 +12,18 @@ body { margin: 0; font-family: sans-serif; background: linear-gradient(to bottom
 }
 h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8px; margin-bottom: 30px; }
 
-/* INCREASED SIZE AND HIGHER OVERLAP */
+/* Profile Image Size and Overlap */
 .circle-wrapper { 
-    width: 450px; /* Bigger */
-    height: 450px; /* Bigger */
+    width: 450px; 
+    height: 450px; 
     overflow: hidden; border-radius: 50%; 
     box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-    /* MOVED HIGHER: More aggressive negative margin for overlap */
     margin-top: -150px; 
 }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
 /* --- FALLING SNOW SYSTEM --- */
-.snowflakes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1001; transition: opacity 0.5s ease-out; /* Add transition for main fade out */ }
+.snowflakes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1001; transition: opacity 0.5s ease-out; }
 .snowflake { color: #fff; position: absolute; top: -10%; animation: fall 10s linear infinite; }
 .snowflake:nth-child(1) { left: 10%; animation-delay: 0s; }
 .snowflake:nth-child(2) { left: 25%; animation-delay: 2s; }
@@ -37,14 +36,13 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 
 @keyframes fall { to { transform: translateY(110vh); } }
 
-/* LANDING SNOW: Initially invisible and disabled */
+/* LANDING SNOW: Starts slightly above the landing spot */
 .snowflake.landing { 
     opacity: 0; 
-    top: 100%; /* Start at the bottom of the viewport */
+    top: 90vh; 
     animation: none; 
-    transition: transform 0.1s linear, opacity 0.1s linear; /* Quick movement/fade */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out; 
 }
-
 
 /* --- BRICK ART DISPLAY --- */
 .art-section { background: #FFFFFF; color: #333; padding: 100px 20px; position: relative; z-index: 200; }
