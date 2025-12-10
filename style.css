@@ -51,7 +51,7 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
     top: 50%; /* Start higher up so they drop further */
     bottom: auto; 
     transform: none; 
-    /* Base transition time for all flakes */
+    /* Base transition time for all flakes (2s for slow drop) */
     transition: opacity 0.2s ease-out, transform 2s ease-out; 
     font-size: 2em;
     left: 0; 
