@@ -23,8 +23,17 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
 /* --- FALLING SNOW SYSTEM --- */
-.snowflakes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1001; transition: opacity 0.5s ease-out; }
-.snowflake { color: #fff; position: absolute; top: -10%; animation: fall 10s linear infinite; }
+.snowflakes { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+    pointer-events: none; z-index: 1001; 
+    transition: opacity 0.5s ease-out; /* Controls general fade out */
+}
+
+/* Base falling snowflake style */
+.snowflake { color: #fff; position: absolute; top: -10%; }
+
+/* Regular falling flakes (CSS animated) */
+.snowflake.regular { animation: fall 10s linear infinite; }
 .snowflake:nth-child(1) { left: 10%; animation-delay: 0s; }
 .snowflake:nth-child(2) { left: 25%; animation-delay: 2s; }
 .snowflake:nth-child(3) { left: 40%; animation-delay: 4s; }
@@ -36,13 +45,22 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 
 @keyframes fall { to { transform: translateY(110vh); } }
 
-/* LANDING SNOW: Starts slightly above the landing spot */
+/* LANDING CLUMP: Initially hidden and positioned near the bottom */
 .snowflake.landing { 
     opacity: 0; 
-    top: 90vh; 
-    animation: none; 
-    transition: transform 0.3s ease-out, opacity 0.3s ease-out; 
+    top: auto; /* Handled by JS */
+    bottom: 0; 
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out; 
+    /* Ensures they stay visually large */
+    font-size: 2em;
 }
+
+/* STATE TRIGGERED BY JAVASCRIPT: Makes the clump appear and slightly float */
+.snowflakes.landing-active .snowflake.landing { 
+    opacity: 1; 
+    transform: translateY(-50px); /* Lifts them slightly off the bottom */
+}
+
 
 /* --- BRICK ART DISPLAY --- */
 .art-section { background: #FFFFFF; color: #333; padding: 100px 20px; position: relative; z-index: 200; }
