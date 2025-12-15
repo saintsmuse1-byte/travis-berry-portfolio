@@ -1,35 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
+    
     // 1. VIDEO HOVER PLAYBACK
-    const videoContainer = document.querySelector('.video-hover-container');
+    const vidContainer = document.querySelector('.video-link');
     const video = document.querySelector('.hover-video');
 
-    if (videoContainer && video) {
-        videoContainer.addEventListener('mouseenter', () => video.play());
-        videoContainer.addEventListener('mouseleave', () => {
+    if (vidContainer && video) {
+        vidContainer.addEventListener('mouseenter', () => video.play());
+        vidContainer.addEventListener('mouseleave', () => {
             video.pause();
-            video.currentTime = 0; // Reset to start
+            // Reset video to start when leaving the hover area
+            video.currentTime = 0;
         });
     }
 
     // 2. ART REVEAL
-    const observer = new IntersectionObserver((entries) => {
+    // Uses IntersectionObserver to reveal art items as they scroll into view
+    const artObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-revealed');
-                observer.unobserve(entry.target);
+                artObserver.unobserve(entry.target);
             }
         });
-    }, { rootMargin: '0px 0px -15% 0px' });
+    }, { rootMargin: '0px 0px -10% 0px' });
 
-    document.querySelectorAll('.art-item').forEach(item => observer.observe(item));
+    document.querySelectorAll('.art-item').forEach(item => artObserver.observe(item));
 
-    // 3. SNOW LOGIC
-    const snowContainer = document.querySelector('.snow-container');
-    const snowLayer = document.getElementById('snow-layer');
-    window.addEventListener('scroll', () => {
-        let scrollPos = window.scrollY;
-        if (scrollPos > 500 && scrollPos < 1500) { snowContainer.style.opacity = '1'; } 
-        else { snowContainer.style.opacity = '0'; }
-        snowLayer.style.transform = `translateY(${scrollPos * 0.08}px)`;
-    });
+    // 3. SNOW LOGIC REMOVED
+    // The continuous falling snow is handled entirely by CSS animation now.
 });
