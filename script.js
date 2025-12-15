@@ -7,7 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // RUNNER ANIMATION ELEMENTS
     const runnerContainer = document.getElementById('runner-container');
-    const runnerBoy = document.getElementById('runner-boy');
+    // We now select the IMG element
+    const runnerBoy = document.getElementById('runner-boy'); 
 
     // CRITICAL: Check if elements are found. If not, stop the script.
     if (!artSection || !mainContent || !runnerContainer || !runnerBoy) {
@@ -40,10 +41,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- RUNNER ANIMATION LOGIC ---
     
-    // Simplified function to guarantee a fixed 800px scroll animation range
     function getAnimationBounds() {
         const endPoint = artSection.offsetTop; 
-        const ANIMATION_HEIGHT = 800; // Guaranteed 800px of scrolling space
+        const ANIMATION_HEIGHT = 800; 
         const startPoint = endPoint - ANIMATION_HEIGHT; 
         const animationRange = ANIMATION_HEIGHT;
 
@@ -71,8 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // 3. Determine the current frame index
             const frameIndex = Math.min(Math.floor(scrollProgress * NUM_FRAMES), NUM_FRAMES - 1);
             
-            // 4. Set the current frame image
-            runnerBoy.style.backgroundImage = `url(${RUNNER_FRAMES[frameIndex]})`;
+            // 4. Set the current frame image using the SRC attribute (THE FIX)
+            // Only update if the frame has changed to reduce DOM manipulation
+            if (runnerBoy.src !== RUNNER_FRAMES[frameIndex]) {
+                runnerBoy.src = RUNNER_FRAMES[frameIndex];
+            }
 
             // 5. Make the container visible
             runnerContainer.style.opacity = '1';
