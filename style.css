@@ -1,99 +1,94 @@
-/* --- UNIVERSAL & NAVBAR --- */
-body { margin: 0; font-family: sans-serif; background: linear-gradient(to bottom, #1b1d26 0%, #FFFFFF 100%); color: white; overflow-x: hidden; }
-.navbar { position: fixed; top: 0; width: 100%; height: 50px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; padding: 0 40px; }
-.nav-brand { font-family: 'Trebuchet MS', sans-serif; font-size: 1.2em; letter-spacing: 2px; }
-.nav-logo-accent { font-family: Georgia, serif; font-weight: 300; font-size: 0.9em; padding-left: 5px; }
-
-/* --- HERO & IMAGE OVERLAP --- */
-.main-content { 
-    display: flex; flex-direction: column; align-items: center; 
-    padding-top: 100px; padding-bottom: 10vh; 
-    min-height: 100vh; position: relative; z-index: 10; 
-}
-h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8px; margin-bottom: 30px; }
-
-/* Profile Image Size and Overlap */
-.circle-wrapper { 
-    width: 450px; 
-    height: 450px; 
-    overflow: hidden; border-radius: 50%; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-    margin-top: -150px; 
-}
-.circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-
-/* --- FALLING SNOW SYSTEM --- */
-.snowflakes { 
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    pointer-events: none; z-index: 1001; 
-    transition: opacity 0.5s ease-out; 
+/* --- UPDATED ART SHOWCASE --- */
+.art-section {
+    background-color: #FFFFFF;
+    color: #333333;
+    padding: 100px 40px;
+    text-align: center;
+    /* Keeps the art section strictly separate from the dark hero */
+    min-height: 100vh;
 }
 
-/* Base falling snowflake style */
-.snowflake { color: #fff; position: absolute; top: -10%; }
-
-/* Regular falling flakes (CSS animated) */
-.snowflake.regular { animation: fall 10s linear infinite; }
-.snowflake:nth-child(1) { left: 10%; animation-delay: 0s; }
-.snowflake:nth-child(2) { left: 25%; animation-delay: 2s; }
-.snowflake:nth-child(3) { left: 40%; animation-delay: 4s; }
-.snowflake:nth-child(4) { left: 55%; animation-delay: 1s; }
-.snowflake:nth-child(5) { left: 70%; animation-delay: 5s; }
-.snowflake:nth-child(6) { left: 85%; animation-delay: 3s; }
-.snowflake:nth-child(7) { left: 95%; animation-delay: 7s; }
-.snowflake:nth-child(8) { left: 5%; animation-delay: 8s; }
-
-@keyframes fall { to { transform: translateY(110vh); } }
-
-/* LANDING CLUMP: Starts high, invisible, ready to drop */
-.snowflake.landing { 
-    opacity: 0; 
-    top: 50%; /* Start higher up so they drop further */
-    bottom: auto; 
-    transform: none; 
-    /* Base transition time for all flakes (2s for slow drop) */
-    transition: opacity 0.2s ease-out, transform 2s ease-out; 
-    font-size: 2em;
-    left: 0; 
+.art-grid {
+    display: grid;
+    /* Forces exactly 3 columns and prevents sideways stretching */
+    grid-template-columns: repeat(3, minmax(0, 1fr)); 
+    gap: 60px 30px; 
+    max-width: 900px; /* Rigid width to keep it on the screen */
+    margin: 0 auto;
+    padding-top: 100px;
 }
 
-/* --- LANDING LAYERS FOR STAGGERED EFFECT --- */
-
-/* Layer 1: Back (Smallest, Slowest to drop, longest delay) */
-.snowflake.back-flake { 
-    transform: scale(0.6); 
-    opacity: 0.5; /* Slightly fainter for depth */
-    transition-delay: 0.6s; /* Appear and drop last */
+/* THE BRICK EFFECT */
+.art-item:nth-child(2n) {
+    transform: translateY(40px);
 }
 
-/* Layer 2: Mid (Medium size and speed) */
-.snowflake.mid-flake { 
-    transform: scale(1.0); 
-    transition-delay: 0.3s; /* Appear and drop second */
+/* INITIAL STATE for scroll reveal */
+.art-item {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1s ease-out, transform 1s ease-out;
 }
 
-/* Layer 3: Front (Largest, Fastest to drop, shortest delay) */
-.snowflake.front-flake { 
-    transform: scale(1.4); 
-    transition-delay: 0s; /* Appear and drop first */
+.art-item.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-
-/* STATE TRIGGERED BY JAVASCRIPT: Makes the clump appear and drop/land */
-.snowflakes.landing-active .snowflake.landing { 
-    opacity: 1; 
-    /* transform will be set dynamically in JS */
+/* INTERACTIVE ASPECT RATIO CONTAINER */
+.art-item a {
+    position: relative;
+    display: block;
+    width: 100%;
+    /* Forces the height based on width (2 parts wide, 3 parts high) */
+    aspect-ratio: 2 / 3; 
+    overflow: hidden; /* CRITICAL: Clips the zoom effect inside the box */
+    border-radius: 4px;
 }
 
+/* Image Zoom and Object-fit */
+.art-item img, 
+.art-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Prevents stretching */
+    display: block;
+    transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
 
-/* --- BRICK ART DISPLAY --- */
-.art-section { background: #FFFFFF; color: #333; padding: 100px 20px; position: relative; z-index: 200; }
-.art-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
-.brick-row { display: flex; justify-content: center; gap: 30px; }
-.art-item { width: 280px; opacity: 0; transform: translateY(50px); transition: 1s ease-out; }
-.art-item.is-revealed { opacity: 1; transform: translateY(0); }
-.art-item a { position: relative; display: block; aspect-ratio: 2/3; overflow: hidden; border-radius: 4px; }
-.art-item img, .hover-video { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-.art-item a:hover img, .art-item a:hover video { transform: scale(1.1); }
+/* Hover Zoom Logic */
+.art-item a:hover img,
+.art-item a:hover video {
+    transform: scale(1.1);
+}
 
-.art-label { position: absolute; bottom: 15px; left: 15px; z-index: 5; color: rgba(255, 255, 255, 0.6); font-size: 1.5em; font-weight: 800; text-transform: uppercase; pointer-events: none; }
+/* SEMI-TRANSPARENT FLOATING TEXT (Bottom-Left) */
+.art-label {
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
+    width: auto;
+    max-width: 85%; /* Prevents text from going off-edge */
+    
+    background: none;
+    color: rgba(255, 255, 255, 0.6); /* White and semi-transparent */
+    font-size: 1.8em; 
+    font-weight: 800; /* Bold/Thick */
+    font-family: 'Trebuchet MS', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    
+    /* Forces text to one line */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    pointer-events: none; 
+    z-index: 5;
+    transition: color 0.3s ease;
+}
+
+/* Makes label slightly clearer on hover */
+.art-item a:hover .art-label {
+    color: rgba(255, 255, 255, 0.95);
+}
