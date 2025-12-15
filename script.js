@@ -1,34 +1,36 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // Select necessary elements
+    // --- SMOOTH SCROLL VARIABLES ---
+    const smoothContent = document.getElementById('smooth-content');
+    if (!smoothContent) {
+        console.error("Missing #smooth-content element for scroll smoothing.");
+        return;
+    }
+    let currentScroll = 0; 
+    let targetScroll = 0;  
+    const SMOOTHING_FACTOR = 0.08; 
+    
+    // --- ALL EXISTING VARIABLES ---
     const artSection = document.querySelector('.art-section');
     const snowflakesContainer = document.querySelector('.snowflakes');
     const mainContent = document.querySelector('.main-content');
     const circleWrapper = document.querySelector('.circle-wrapper'); 
-    
-    // RUNNER ANIMATION ELEMENTS
     const runnerContainer = document.getElementById('runner-container');
     const runnerBoy = document.getElementById('runner-boy'); 
 
     if (!artSection || !mainContent || !runnerContainer || !runnerBoy || !circleWrapper) {
-        console.error("Missing required HTML elements. Cannot run animation.");
+        console.error("Missing required HTML elements for animation.");
         return; 
     }
     
-    // File paths and dimensions
+    // File paths and dimensions (Unchanged)
     const RUNNER_FRAMES = [
-        'images/boy 1.PNG',
-        'images/boy 2.PNG',
-        'images/boy 3.PNG',
-        'images/boy 4.PNG',
-        'images/boy 1.PNG',
-        'images/boy 2.PNG',
-        'images/boy 3.PNG',
-        'images/boy 4.PNG'
+        'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG',
+        'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'
     ];
     const NUM_FRAMES = RUNNER_FRAMES.length;
-    const BOY_WIDTH = 350; // Must match CSS width
-
+    const BOY_WIDTH = 350; 
+    
     // 1. VIDEO HOVER PLAYBACK (Kept for completeness)
     const vidContainer = document.querySelector('.video-link');
     const video = document.querySelector('.hover-video');
@@ -41,20 +43,36 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- SMOOTH SCROLL FUNCTION ---
+    function smoothScrollLoop() {
+        // Calculate the difference between target and current position
+        currentScroll += (targetScroll - currentScroll) * SMOOTHING_FACTOR;
+        
+        // Apply the smooth transform to the content wrapper
+        smoothContent.style.transform = `translateY(${-currentScroll}px)`;
+        
+        // Use the smoothed scroll position to run the animation
+        updateRunnerAnimation(currentScroll);
+
+        requestAnimationFrame(smoothScrollLoop);
+    }
+    
+    // Listen for native scroll and update the target scroll position
+    window.addEventListener('scroll', () => {
+        targetScroll = window.scrollY;
+    });
+
+    // Start the smooth scroll loop
+    smoothScrollLoop();
+
+
     // --- RUNNER ANIMATION LOGIC ---
     
     function getAnimationBounds() {
-        // Find the top of the main content area (where the heading starts)
+        // Animation timing remains the same as the final successful setup
         const mainContentTop = mainContent.offsetTop; 
-        
-        // 1. CRITICAL START ADJUSTMENT: Start high up, just below the banner/headline.
-        // We set the start point 100px down from the top of the main content section.
-        const startPoint = mainContentTop + 200; 
-        
-        // 2. CRITICAL END ADJUSTMENT: Use a shorter vertical distance to guarantee
-        // the animation finishes before the white art section starts covering it.
+        const startPoint = mainContentTop + 100; 
         const ANIMATION_HEIGHT = 800; 
-        
         const endPoint = startPoint + ANIMATION_HEIGHT;
         const animationRange = ANIMATION_HEIGHT;
 
@@ -62,13 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     let { startPoint, endPoint, animationRange } = getAnimationBounds();
-
-    let isTicking = false;
     let currentFrameIndex = -1; 
 
-    function updateRunnerAnimation() {
-        const scrollY = window.scrollY;
-
+    function updateRunnerAnimation(scrollY) {
         // Check if the scroll position is within the animation range
         if (scrollY >= startPoint && scrollY <= endPoint && animationRange > 0) {
             
@@ -102,32 +116,33 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (scrollY > endPoint) {
             // After the animation ends
             runnerContainer.style.opacity = '0'; // Hide
-            // Ensure the boy is positioned at the far right when he disappears
             const finalPosition = Math.max(0, window.innerWidth - BOY_WIDTH);
             runnerBoy.style.transform = `translateX(${finalPosition}px)`;
             currentFrameIndex = -1;
         }
-
-        isTicking = false;
     }
 
-    // Throttle scroll events for better performance
-    window.addEventListener('scroll', () => {
-        if (!isTicking) {
-            window.requestAnimationFrame(updateRunnerAnimation);
-            isTicking = true;
-        }
-    });
+    // --- RECALCULATION & INITIALIZATION ---
     
-    // Recalculate positions on window resize or load
+    // IMPORTANT: When resizing, recalculate bounds AND the total height
     window.addEventListener('resize', () => {
         ({ startPoint, endPoint, animationRange } = getAnimationBounds());
-        updateRunnerAnimation();
+        
+        // FIX: Recalculate body height on resize
+        const totalHeight = smoothContent.clientHeight;
+        document.body.style.height = `${totalHeight}px`;
     });
     
+    // CRITICAL FIX: Only set the body height once all content is loaded.
     window.addEventListener('load', () => {
         ({ startPoint, endPoint, animationRange } = getAnimationBounds());
-        updateRunnerAnimation();
+        
+        // FIX: Set total scrollable height to enable scrolling
+        const totalHeight = smoothContent.clientHeight;
+        document.body.style.height = `${totalHeight}px`;
+
+        // Run animation logic once to set the initial state
+        updateRunnerAnimation(currentScroll); 
     });
     
     // --- SNOW FADE OUT OBSERVER (Kept functional) ---
