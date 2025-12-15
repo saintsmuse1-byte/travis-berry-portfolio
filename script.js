@@ -14,21 +14,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return; 
     }
     
-    // 1. FILE PATH CHECK: Ensure the case matches your actual files (e.g., .PNG vs .png)
+    // File paths should match your files exactly
     const RUNNER_FRAMES = [
-        'images/boy 1.PNG',   // Frame 1
-        'images/boy 2.PNG',   // Frame 2
-        'images/boy 3.PNG',   // Frame 3
-        'images/boy 4.PNG',   // Frame 4
-        'images/boy 1.PNG',   // Frame 5 (Repeat 1)
-        'images/boy 2.PNG',   // Frame 6 (Repeat 2)
-        'images/boy 3.PNG',   // Frame 7 (Repeat 3)
-        'images/boy 4.PNG'    // Frame 8 (Repeat 4)
+        'images/boy 1.PNG',
+        'images/boy 2.PNG',
+        'images/boy 3.PNG',
+        'images/boy 4.PNG',
+        'images/boy 1.PNG',
+        'images/boy 2.PNG',
+        'images/boy 3.PNG',
+        'images/boy 4.PNG'
     ];
     const NUM_FRAMES = RUNNER_FRAMES.length;
-    const BOY_WIDTH = 250; // Must match the CSS size
+    const BOY_WIDTH = 250; 
     
-    // 1. VIDEO HOVER PLAYBACK (Kept for completeness)
+    // 1. VIDEO HOVER PLAYBACK 
     const vidContainer = document.querySelector('.video-link');
     const video = document.querySelector('.hover-video');
 
@@ -44,8 +44,11 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function getAnimationBounds() {
         const endPoint = artSection.offsetTop; 
-        const ANIMATION_HEIGHT = 500; 
-        // 2. EARLIER START: The animation starts 500px before the art section
+        
+        // **CRITICAL FIX: Increased height for slower, longer animation**
+        const ANIMATION_HEIGHT = 1500; 
+        
+        // Start 1500px before the art section begins
         const startPoint = endPoint - ANIMATION_HEIGHT; 
         const animationRange = ANIMATION_HEIGHT;
 
@@ -55,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let { startPoint, endPoint, animationRange } = getAnimationBounds();
 
     let isTicking = false;
-    let currentFrameIndex = -1; // Track the current frame to optimize DOM updates
+    let currentFrameIndex = -1; 
 
     function updateRunnerAnimation() {
         const scrollY = window.scrollY;
@@ -66,8 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 1. Calculate Progress (0 to 1)
             const scrollProgress = (scrollY - startPoint) / animationRange;
 
-            // 2. SAFER HORIZONTAL TRAVEL (FULL-WIDTH FIX)
-            // Use Math.max to ensure the boy never starts at a negative position
+            // 2. Horizontal Travel (Full width)
             const horizontalTravelDistance = Math.max(0, window.innerWidth - BOY_WIDTH);
             const horizontalPosition = scrollProgress * horizontalTravelDistance;
             
@@ -76,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 3. Determine the current frame index
             const newFrameIndex = Math.min(Math.floor(scrollProgress * NUM_FRAMES), NUM_FRAMES - 1);
             
-            // 4. Set the current frame image (Only update if the frame has changed)
+            // 4. Set the current frame image
             if (newFrameIndex !== currentFrameIndex) {
                 runnerBoy.src = RUNNER_FRAMES[newFrameIndex];
                 currentFrameIndex = newFrameIndex;
