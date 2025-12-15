@@ -9,15 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const runnerContainer = document.getElementById('runner-container');
     const runnerBoy = document.getElementById('runner-boy');
     
-    // Define the image frames for the running animation (MUST match your file names)
-    // NOTE: Update these file paths to match your 6 images (e.g., 'images/boy-running-01.png')
+    // Define the image frames for the running animation
+    // Using your 4 unique images, and repeating the first two to create 6 frames total.
     const RUNNER_FRAMES = [
-        'images/boy-1.png', 
-        'images/boy-2.png', 
-        'images/boy-3.png', 
-        'images/boy-4.png', 
-        'images/boy-5.png', 
-        'images/boy-6.png'
+        'images/boy feather image 1.jpg',   // Frame 1
+        'images/The second feather.jpg',    // Frame 2
+        'images/The 3rd feather.jpg',       // Frame 3
+        'images/The 4th feather .jpg',      // Frame 4
+        'images/boy feather image 1.jpg',   // Frame 5 (Repeat of Frame 1)
+        'images/The second feather.jpg'     // Frame 6 (Repeat of Frame 2)
     ];
     const NUM_FRAMES = RUNNER_FRAMES.length;
     
@@ -37,35 +37,43 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Function to calculate the position of the animation start/end points
     function getAnimationBounds() {
-        const startPoint = mainContent.offsetTop + mainContent.offsetHeight - 500; // Start below profile image
-        const endPoint = mainContent.offsetTop + mainContent.offsetHeight - runnerBoy.offsetHeight; // End just before art section
+        // Find where the animation should start and end vertically
+        const mainContentRect = mainContent.getBoundingClientRect();
+        
+        // Start below profile image wrapper (approximate)
+        const startOffset = 500; 
+        const startPoint = mainContent.offsetTop + mainContentRect.height - startOffset; 
+        
+        // End just before art section
+        const endPoint = artSection.offsetTop; 
+        
         const animationRange = endPoint - startPoint;
+
         return { startPoint, endPoint, animationRange };
     }
     
     let { startPoint, endPoint, animationRange } = getAnimationBounds();
 
-    // Use a flag to throttle the scroll handler for performance
     let isTicking = false;
 
     function updateRunnerAnimation() {
         const scrollY = window.scrollY;
 
         // Check if the scroll position is within the animation range
-        if (scrollY >= startPoint && scrollY <= endPoint) {
+        if (scrollY >= startPoint && scrollY <= endPoint && animationRange > 0) {
             
             // 1. Calculate Progress (0 to 1)
             const scrollProgress = (scrollY - startPoint) / animationRange;
 
             // 2. Set Horizontal Position (Runs from left (0) to right (90%))
-            // The 90% ensures the image doesn't go completely off-screen
             const horizontalPosition = scrollProgress * (window.innerWidth * 0.90);
             
+            // Apply the horizontal movement
             runnerBoy.style.transform = `translateX(${horizontalPosition}px)`;
 
             // 3. Determine the current frame index
-            // Map the scroll progress (0-1) to the number of frames (0-5)
-            const frameIndex = Math.floor(scrollProgress * NUM_FRAMES) % NUM_FRAMES;
+            // Math.min(..., NUM_FRAMES - 1) prevents index going out of bounds at the very end
+            const frameIndex = Math.floor(scrollProgress * NUM_FRAMES);
             
             // 4. Set the current frame image
             runnerBoy.style.backgroundImage = `url(${RUNNER_FRAMES[frameIndex]})`;
@@ -90,14 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Throttle scroll events for better performance
     window.addEventListener('scroll', () => {
         if (!isTicking) {
-            window.requestAnimationFrame(() => {
-                updateRunnerAnimation();
-            });
+            window.requestAnimationFrame(updateRunnerAnimation);
             isTicking = true;
         }
     });
     
-    // Recalculate positions on window resize
+    // Recalculate positions on window resize or load
     window.addEventListener('resize', () => {
         ({ startPoint, endPoint, animationRange } = getAnimationBounds());
         updateRunnerAnimation();
@@ -107,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     updateRunnerAnimation();
 
 
-    // 4. SNOW FADE OUT OBSERVER (Kept functional)
+    // 4. SNOW FADE OUT OBSERVER 
     const fadeOutObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const visibility = entry.intersectionRatio;
