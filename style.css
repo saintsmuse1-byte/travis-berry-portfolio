@@ -1,5 +1,7 @@
 /* --- UNIVERSAL & NAVBAR --- */
 body { 
+    /* Hide the native scrollbar */
+    overflow: hidden; 
     margin: 0; 
     font-family: sans-serif; 
     background: linear-gradient(to bottom, #1b1d26 0%, #FFFFFF 100%); 
@@ -8,7 +10,8 @@ body {
 }
 
 html { 
-    scroll-behavior: smooth; 
+    /* Remove native smooth scroll since we are using JS smoothing */
+    scroll-behavior: auto; 
 } 
 
 .navbar { 
@@ -19,12 +22,18 @@ html {
 .nav-brand { font-family: 'Trebuchet MS', sans-serif; font-size: 1.2em; letter-spacing: 2px; }
 .nav-logo-accent { font-family: Georgia, serif; font-weight: 300; font-size: 0.9em; padding-left: 5px; }
 
+/* --- PAGE CONTENT WRAPPER FOR SMOOTH SCROLL --- */
+#smooth-content {
+    /* This element will be translated by JavaScript to create the scroll effect */
+    will-change: transform;
+}
+
 /* --- HERO & IMAGE OVERLAP --- */
 .main-content { 
     display: flex; flex-direction: column; align-items: center; 
     padding-top: 100px; 
-    /* Padding is kept large to support the 1500px scroll distance */
-    padding-bottom: 1500px; 
+    /* 1. REDUCED PADDING: Adjusted to ensure the animation finishes just above the art section */
+    padding-bottom: 950px; 
     min-height: 100vh; position: relative; z-index: 10; 
 }
 h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8px; margin-bottom: 10px; }
@@ -38,34 +47,23 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- RUNNER ANIMATION STYLES --- */
-
+/* --- RUNNER ANIMATION STYLES (Unchanged) --- */
 #runner-container {
     position: fixed; top: 50%; transform: translateY(-50%); 
-    width: 100%; height: 350px; /* Increased height to accommodate bigger image */
-    z-index: 500;
+    width: 100%; height: 350px; z-index: 500;
     pointer-events: none; overflow: hidden;
-    opacity: 0; 
-    transition: opacity 0.3s ease-out;
+    opacity: 0; transition: opacity 0.3s ease-out;
 }
 
 #runner-boy {
-    /* 1. BIGGER SIZE: Increased the dimensions significantly */
-    width: 350px; 
-    height: 350px;
-    position: absolute;
-    left: 0; 
-    object-fit: contain; 
-    transition: transform 0.05s linear; 
+    width: 350px; height: 350px; position: absolute; left: 0; 
+    object-fit: contain; transition: transform 0.05s linear; 
 }
 
 /* FIX: FORCED IMAGE PRELOADING */
 #preload-runner-images {
     position: absolute; width: 1px; height: 1px; overflow: hidden;
-    content: url('images/boy 1.PNG') 
-             url('images/boy 2.PNG') 
-             url('images/boy 3.PNG') 
-             url('images/boy 4.PNG');
+    content: url('images/boy 1.PNG') url('images/boy 2.PNG') url('images/boy 3.PNG') url('images/boy 4.PNG');
 }
 
 /* --- FALLING SNOW SYSTEM --- */
@@ -87,7 +85,7 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 @keyframes fall { to { transform: translateY(110vh); } }
 
 
-/* --- BRICK ART DISPLAY --- */
+/* --- BRICK ART DISPLAY (Unchanged) --- */
 .art-section { 
     background: #FFFFFF; color: #333; padding: 150px 20px; position: relative; z-index: 200; 
 }
@@ -107,4 +105,7 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 }
 
 .art-metadata {
-    position: absolute; bottom:
+    position: absolute; bottom: 15px; left: 15px; z-index: 5;
+    color: rgba(255, 255, 255, 0.4); font-size: 0.8em; font-weight: normal;
+    text-transform: uppercase; pointer-events: none;
+}
