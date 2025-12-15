@@ -7,27 +7,27 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // RUNNER ANIMATION ELEMENTS
     const runnerContainer = document.getElementById('runner-container');
-    // We now select the IMG element
     const runnerBoy = document.getElementById('runner-boy'); 
 
-    // CRITICAL: Check if elements are found. If not, stop the script.
     if (!artSection || !mainContent || !runnerContainer || !runnerBoy) {
         console.error("Missing required HTML elements. Cannot run animation.");
         return; 
     }
     
-    // Define the image frames for the running animation (VERIFIED PATHS)
+    // 5 & 6. NEW 8-FRAME LOGIC and NEW PATHWAYS (Transparent Background)
     const RUNNER_FRAMES = [
-        'images/boy feather image 1.jpg',
-        'images/The second feather.jpg',
-        'images/The 3rd feather.jpg',
-        'images/The 4th feather .jpg',
-        'images/boy feather image 1.jpg',
-        'images/The second feather.jpg'
+        'images/boy 1.PNG',   // Frame 1
+        'images/boy 2.PNG',   // Frame 2
+        'images/boy 3.PNG',   // Frame 3
+        'images/boy 4.PNG',   // Frame 4
+        'images/boy 1.PNG',   // Frame 5 (Repeat 1)
+        'images/boy 2.PNG',   // Frame 6 (Repeat 2)
+        'images/boy 3.PNG',   // Frame 7 (Repeat 3)
+        'images/boy 4.PNG'    // Frame 8 (Repeat 4)
     ];
     const NUM_FRAMES = RUNNER_FRAMES.length;
     
-    // 1. VIDEO HOVER PLAYBACK
+    // 1. VIDEO HOVER PLAYBACK (Kept for completeness)
     const vidContainer = document.querySelector('.video-link');
     const video = document.querySelector('.hover-video');
 
@@ -43,8 +43,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function getAnimationBounds() {
         const endPoint = artSection.offsetTop; 
-        const ANIMATION_HEIGHT = 800; 
-        const startPoint = endPoint - ANIMATION_HEIGHT; 
+        
+        // 1 & 2. REDUCED SCROLL SECTION SIZE & EARLIER START
+        const ANIMATION_HEIGHT = 500; // Total vertical distance for the animation
+        const startPoint = endPoint - ANIMATION_HEIGHT; // The animation starts 500px before the art section
         const animationRange = ANIMATION_HEIGHT;
 
         return { startPoint, endPoint, animationRange };
@@ -63,16 +65,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // 1. Calculate Progress (0 to 1)
             const scrollProgress = (scrollY - startPoint) / animationRange;
 
-            // 2. Set Horizontal Position (Runs from left (0) to right (90%))
-            const horizontalPosition = scrollProgress * (window.innerWidth * 0.90);
+            // 4. RUN ALL THE WAY ACROSS (Full width travel)
+            // Use window.innerWidth minus the boy's width (250px) so he reaches the edge of the screen
+            const boyWidth = 250; 
+            const horizontalTravelDistance = window.innerWidth - boyWidth;
+            const horizontalPosition = scrollProgress * horizontalTravelDistance;
             
             runnerBoy.style.transform = `translateX(${horizontalPosition}px)`;
 
-            // 3. Determine the current frame index
+            // 3. Determine the current frame index (using 8 frames)
             const frameIndex = Math.min(Math.floor(scrollProgress * NUM_FRAMES), NUM_FRAMES - 1);
             
-            // 4. Set the current frame image using the SRC attribute (THE FIX)
-            // Only update if the frame has changed to reduce DOM manipulation
+            // 4. Set the current frame image
             if (runnerBoy.src !== RUNNER_FRAMES[frameIndex]) {
                 runnerBoy.src = RUNNER_FRAMES[frameIndex];
             }
@@ -108,13 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
         updateRunnerAnimation();
     });
     
-    // Initial call to set state correctly on load
     window.addEventListener('load', () => {
         ({ startPoint, endPoint, animationRange } = getAnimationBounds());
         updateRunnerAnimation();
     });
     
-    // --- SNOW FADE OUT OBSERVER ---
+    // --- SNOW FADE OUT OBSERVER (Kept functional) ---
     const fadeOutObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const visibility = entry.intersectionRatio;
