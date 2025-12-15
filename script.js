@@ -8,15 +8,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // RUNNER ANIMATION ELEMENTS
     const runnerContainer = document.getElementById('runner-container');
     const runnerBoy = document.getElementById('runner-boy');
+
+    // CRITICAL: Check if elements are found. If not, stop the script.
+    if (!artSection || !mainContent || !runnerContainer || !runnerBoy) {
+        console.error("Missing required HTML elements. Cannot run animation.");
+        return; 
+    }
     
     // Define the image frames for the running animation (VERIFIED PATHS)
     const RUNNER_FRAMES = [
-        'images/boy feather image 1.jpg',   // Frame 1
-        'images/The second feather.jpg',    // Frame 2
-        'images/The 3rd feather.jpg',       // Frame 3
-        'images/The 4th feather .jpg',      // Frame 4 (CHECK FOR SPACE HERE)
-        'images/boy feather image 1.jpg',   // Frame 5 (Repeat of Frame 1)
-        'images/The second feather.jpg'     // Frame 6 (Repeat of Frame 2)
+        'images/boy feather image 1.jpg',
+        'images/The second feather.jpg',
+        'images/The 3rd feather.jpg',
+        'images/The 4th feather .jpg',
+        'images/boy feather image 1.jpg',
+        'images/The second feather.jpg'
     ];
     const NUM_FRAMES = RUNNER_FRAMES.length;
     
@@ -36,15 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Simplified function to guarantee a fixed 800px scroll animation range
     function getAnimationBounds() {
-        // Find the absolute top position of the white art section
         const endPoint = artSection.offsetTop; 
-        
-        // Define a guaranteed animation range height (e.g., 800px)
-        const ANIMATION_HEIGHT = 800; 
-        
-        // The animation starts 800px before the art section begins
+        const ANIMATION_HEIGHT = 800; // Guaranteed 800px of scrolling space
         const startPoint = endPoint - ANIMATION_HEIGHT; 
-        
         const animationRange = ANIMATION_HEIGHT;
 
         return { startPoint, endPoint, animationRange };
@@ -55,9 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let isTicking = false;
 
     function updateRunnerAnimation() {
-        // Only run if the art section is present
-        if (!artSection) return; 
-
         const scrollY = window.scrollY;
 
         // Check if the scroll position is within the animation range
@@ -72,15 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
             runnerBoy.style.transform = `translateX(${horizontalPosition}px)`;
 
             // 3. Determine the current frame index
-            // Math.min ensures the index doesn't exceed the array size at the very end
             const frameIndex = Math.min(Math.floor(scrollProgress * NUM_FRAMES), NUM_FRAMES - 1);
             
             // 4. Set the current frame image
             runnerBoy.style.backgroundImage = `url(${RUNNER_FRAMES[frameIndex]})`;
 
-            // 5. Make the container visible and set Z-index above profile picture
+            // 5. Make the container visible
             runnerContainer.style.opacity = '1';
-            runnerContainer.style.zIndex = '500';
 
         } else if (scrollY < startPoint) {
             // Before the animation starts
