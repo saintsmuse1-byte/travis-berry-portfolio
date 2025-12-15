@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return; 
     }
     
-    // 5 & 6. NEW 8-FRAME LOGIC and NEW PATHWAYS (Transparent Background)
+    // 1. FILE PATH CHECK: Ensure the case matches your actual files (e.g., .PNG vs .png)
     const RUNNER_FRAMES = [
         'images/boy 1.PNG',   // Frame 1
         'images/boy 2.PNG',   // Frame 2
@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         'images/boy 4.PNG'    // Frame 8 (Repeat 4)
     ];
     const NUM_FRAMES = RUNNER_FRAMES.length;
+    const BOY_WIDTH = 250; // Must match the CSS size
     
     // 1. VIDEO HOVER PLAYBACK (Kept for completeness)
     const vidContainer = document.querySelector('.video-link');
@@ -43,10 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     function getAnimationBounds() {
         const endPoint = artSection.offsetTop; 
-        
-        // 1 & 2. REDUCED SCROLL SECTION SIZE & EARLIER START
-        const ANIMATION_HEIGHT = 500; // Total vertical distance for the animation
-        const startPoint = endPoint - ANIMATION_HEIGHT; // The animation starts 500px before the art section
+        const ANIMATION_HEIGHT = 500; 
+        // 2. EARLIER START: The animation starts 500px before the art section
+        const startPoint = endPoint - ANIMATION_HEIGHT; 
         const animationRange = ANIMATION_HEIGHT;
 
         return { startPoint, endPoint, animationRange };
@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let { startPoint, endPoint, animationRange } = getAnimationBounds();
 
     let isTicking = false;
+    let currentFrameIndex = -1; // Track the current frame to optimize DOM updates
 
     function updateRunnerAnimation() {
         const scrollY = window.scrollY;
@@ -65,20 +66,20 @@ document.addEventListener('DOMContentLoaded', () => {
             // 1. Calculate Progress (0 to 1)
             const scrollProgress = (scrollY - startPoint) / animationRange;
 
-            // 4. RUN ALL THE WAY ACROSS (Full width travel)
-            // Use window.innerWidth minus the boy's width (250px) so he reaches the edge of the screen
-            const boyWidth = 250; 
-            const horizontalTravelDistance = window.innerWidth - boyWidth;
+            // 2. SAFER HORIZONTAL TRAVEL (FULL-WIDTH FIX)
+            // Use Math.max to ensure the boy never starts at a negative position
+            const horizontalTravelDistance = Math.max(0, window.innerWidth - BOY_WIDTH);
             const horizontalPosition = scrollProgress * horizontalTravelDistance;
             
             runnerBoy.style.transform = `translateX(${horizontalPosition}px)`;
 
-            // 3. Determine the current frame index (using 8 frames)
-            const frameIndex = Math.min(Math.floor(scrollProgress * NUM_FRAMES), NUM_FRAMES - 1);
+            // 3. Determine the current frame index
+            const newFrameIndex = Math.min(Math.floor(scrollProgress * NUM_FRAMES), NUM_FRAMES - 1);
             
-            // 4. Set the current frame image
-            if (runnerBoy.src !== RUNNER_FRAMES[frameIndex]) {
-                runnerBoy.src = RUNNER_FRAMES[frameIndex];
+            // 4. Set the current frame image (Only update if the frame has changed)
+            if (newFrameIndex !== currentFrameIndex) {
+                runnerBoy.src = RUNNER_FRAMES[newFrameIndex];
+                currentFrameIndex = newFrameIndex;
             }
 
             // 5. Make the container visible
@@ -88,11 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
             // Before the animation starts
             runnerContainer.style.opacity = '0'; // Hide
             runnerBoy.style.transform = 'translateX(0px)'; // Reset position
+            currentFrameIndex = -1;
 
         } else if (scrollY > endPoint) {
             // After the animation ends
             runnerContainer.style.opacity = '0'; // Hide
-            
+            currentFrameIndex = -1;
         }
 
         isTicking = false;
