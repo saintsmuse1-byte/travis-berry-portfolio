@@ -4,12 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const artSection = document.querySelector('.art-section');
     const snowflakesContainer = document.querySelector('.snowflakes');
     const mainContent = document.querySelector('.main-content');
+    const circleWrapper = document.querySelector('.circle-wrapper'); // New reference for earlier start
     
     // RUNNER ANIMATION ELEMENTS
     const runnerContainer = document.getElementById('runner-container');
     const runnerBoy = document.getElementById('runner-boy'); 
 
-    if (!artSection || !mainContent || !runnerContainer || !runnerBoy) {
+    if (!artSection || !mainContent || !runnerContainer || !runnerBoy || !circleWrapper) {
         console.error("Missing required HTML elements. Cannot run animation.");
         return; 
     }
@@ -26,7 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'images/boy 4.PNG'
     ];
     const NUM_FRAMES = RUNNER_FRAMES.length;
-    const BOY_WIDTH = 250; 
+    // 3. FULL EDGE-TO-EDGE RUN: Must match the new CSS width
+    const BOY_WIDTH = 350; 
     
     // 1. VIDEO HOVER PLAYBACK 
     const vidContainer = document.querySelector('.video-link');
@@ -43,13 +45,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- RUNNER ANIMATION LOGIC ---
     
     function getAnimationBounds() {
-        const endPoint = artSection.offsetTop; 
+        // Calculate the absolute vertical position of the bottom of the profile picture area
+        const heroBottom = circleWrapper.offsetTop + circleWrapper.offsetHeight;
         
-        // **CRITICAL FIX: Increased height for slower, longer animation**
+        // 2. EARLIER START FIX: Start the animation immediately after the profile picture.
+        // We add a small buffer (50px) to keep it visually separate from the image.
+        const startPoint = heroBottom + 50; 
+        
+        // The animation will run over 1500px of scrolling distance
         const ANIMATION_HEIGHT = 1500; 
-        
-        // Start 1500px before the art section begins
-        const startPoint = endPoint - ANIMATION_HEIGHT; 
+        const endPoint = startPoint + ANIMATION_HEIGHT;
         const animationRange = ANIMATION_HEIGHT;
 
         return { startPoint, endPoint, animationRange };
@@ -69,22 +74,22 @@ document.addEventListener('DOMContentLoaded', () => {
             // 1. Calculate Progress (0 to 1)
             const scrollProgress = (scrollY - startPoint) / animationRange;
 
-            // 2. Horizontal Travel (Full width)
+            // 3. FULL EDGE-TO-EDGE RUN: Correctly calculates travel distance
             const horizontalTravelDistance = Math.max(0, window.innerWidth - BOY_WIDTH);
             const horizontalPosition = scrollProgress * horizontalTravelDistance;
             
             runnerBoy.style.transform = `translateX(${horizontalPosition}px)`;
 
-            // 3. Determine the current frame index
+            // 4. Determine the current frame index
             const newFrameIndex = Math.min(Math.floor(scrollProgress * NUM_FRAMES), NUM_FRAMES - 1);
             
-            // 4. Set the current frame image
+            // 5. Set the current frame image
             if (newFrameIndex !== currentFrameIndex) {
                 runnerBoy.src = RUNNER_FRAMES[newFrameIndex];
                 currentFrameIndex = newFrameIndex;
             }
 
-            // 5. Make the container visible
+            // 6. Make the container visible
             runnerContainer.style.opacity = '1';
 
         } else if (scrollY < startPoint) {
@@ -96,6 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (scrollY > endPoint) {
             // After the animation ends
             runnerContainer.style.opacity = '0'; // Hide
+            // Ensure the boy is positioned at the far right when he disappears
+            const finalPosition = Math.max(0, window.innerWidth - BOY_WIDTH);
+            runnerBoy.style.transform = `translateX(${finalPosition}px)`;
             currentFrameIndex = -1;
         }
 
