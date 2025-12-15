@@ -23,7 +23,7 @@ html {
 .main-content { 
     display: flex; flex-direction: column; align-items: center; 
     padding-top: 100px; 
-    /* INCREASED PADDING: New guaranteed scroll space of 1500px for the animation */
+    /* Padding is kept large to support the 1500px scroll distance */
     padding-bottom: 1500px; 
     min-height: 100vh; position: relative; z-index: 10; 
 }
@@ -42,15 +42,17 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 
 #runner-container {
     position: fixed; top: 50%; transform: translateY(-50%); 
-    width: 100%; height: 200px; z-index: 500;
+    width: 100%; height: 350px; /* Increased height to accommodate bigger image */
+    z-index: 500;
     pointer-events: none; overflow: hidden;
     opacity: 0; 
     transition: opacity 0.3s ease-out;
 }
 
 #runner-boy {
-    width: 250px; 
-    height: 250px;
+    /* 1. BIGGER SIZE: Increased the dimensions significantly */
+    width: 350px; 
+    height: 350px;
     position: absolute;
     left: 0; 
     object-fit: contain; 
@@ -105,7 +107,4 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 }
 
 .art-metadata {
-    position: absolute; bottom: 15px; left: 15px; z-index: 5;
-    color: rgba(255, 255, 255, 0.4); font-size: 0.8em; font-weight: normal;
-    text-transform: uppercase; pointer-events: none;
-}
+    position: absolute; bottom:
