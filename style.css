@@ -1,20 +1,59 @@
 /* --- UNIVERSAL & NAVBAR --- */
-body { margin: 0; font-family: sans-serif; background: linear-gradient(to bottom, #1b1d26 0%, #FFFFFF 100%); color: white; overflow-x: hidden; }
-/* PROFESSIONAL UPGRADE: Add smooth scroll */
-html { scroll-behavior: smooth; } 
-.navbar { position: fixed; top: 0; width: 100%; height: 50px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; padding: 0 40px; }
-.nav-brand { font-family: 'Trebuchet MS', sans-serif; font-size: 1.2em; letter-spacing: 2px; }
-.nav-logo-accent { font-family: Georgia, serif; font-weight: 300; font-size: 0.9em; padding-left: 5px; }
+body { 
+    margin: 0; 
+    font-family: sans-serif; 
+    background: linear-gradient(to bottom, #1b1d26 0%, #FFFFFF 100%); 
+    color: white; 
+    overflow-x: hidden; 
+}
+
+html { 
+    scroll-behavior: smooth; 
+} 
+
+.navbar { 
+    position: fixed; 
+    top: 0; 
+    width: 100%; 
+    height: 50px; 
+    background: rgba(255, 255, 255, 0.05); 
+    backdrop-filter: blur(8px); 
+    z-index: 1000; 
+    display: flex; 
+    align-items: center; 
+    padding: 0 40px; 
+}
+.nav-brand { 
+    font-family: 'Trebuchet MS', sans-serif; 
+    font-size: 1.2em; 
+    letter-spacing: 2px; 
+}
+.nav-logo-accent { 
+    font-family: Georgia, serif; 
+    font-weight: 300; 
+    font-size: 0.9em; 
+    padding-left: 5px; 
+}
 
 /* --- HERO & IMAGE OVERLAP --- */
 .main-content { 
-    display: flex; flex-direction: column; align-items: center; 
-    padding-top: 100px; padding-bottom: 10vh; 
-    min-height: 100vh; position: relative; z-index: 10; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    padding-top: 100px; 
+    /* IMPORTANT: Increase padding to give scrollable space for the animation */
+    padding-bottom: 500px; 
+    min-height: 100vh; 
+    position: relative; 
+    z-index: 10; 
 }
-h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8px; margin-bottom: 10px; }
+h1 { 
+    font-family: 'Trebuchet MS', sans-serif; 
+    font-size: 8em; 
+    letter-spacing: 8px; 
+    margin-bottom: 10px; 
+}
 
-/* PROFESSIONAL UPGRADE: New Tagline Style */
 .tagline {
     font-size: 1.2em;
     font-family: Georgia, serif;
@@ -23,20 +62,51 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* Profile Image Size and Overlap */
 .circle-wrapper { 
     width: 450px; 
     height: 450px; 
-    overflow: hidden; border-radius: 50%; 
+    overflow: hidden; 
+    border-radius: 50%; 
     box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
     margin-top: -150px; 
 }
-.circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+.circle-wrapper img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
 
-/* --- FALLING SNOW SYSTEM (REVERTED) --- */
+/* --- RUNNER ANIMATION STYLES --- */
+
+#runner-container {
+    position: fixed; /* Fixed position relative to viewport */
+    top: 50%; /* Center the container vertically */
+    transform: translateY(-50%); /* Adjust to true vertical center */
+    width: 100%;
+    height: 200px; /* Gives the boy space to run */
+    z-index: 500;
+    pointer-events: none; /* Ignore mouse clicks */
+    overflow: hidden;
+    opacity: 0; /* Starts hidden, JS will control visibility */
+}
+
+#runner-boy {
+    width: 150px; /* Boy image size */
+    height: 150px;
+    position: absolute;
+    left: 0; /* Starts on the left edge */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* The boy's image will be set by the JavaScript based on the current frame */
+    transition: transform 0.05s linear; /* Quick transition for horizontal movement */
+}
+
+/* --- FALLING SNOW SYSTEM --- */
 .snowflakes { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     pointer-events: none; z-index: 1001; 
+    transition: opacity 0.5s ease-out; 
 }
 .snowflake { color: #fff; position: absolute; top: -10%; animation: fall 10s linear infinite; }
 .snowflake:nth-child(1) { left: 10%; animation-delay: 0s; }
@@ -48,44 +118,46 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 .snowflake:nth-child(7) { left: 95%; animation-delay: 7s; }
 .snowflake:nth-child(8) { left: 5%; animation-delay: 8s; }
 
-@keyframes fall { to { transform: translateY(110vh); } }
+@keyframes fall { 
+    to { transform: translateY(110vh); } 
+}
 
 
 /* --- BRICK ART DISPLAY --- */
-/* PROFESSIONAL UPGRADE: Increased vertical spacing for better flow */
-.art-section { background: #FFFFFF; color: #333; padding: 150px 20px; position: relative; z-index: 200; }
-.art-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 60px; } /* Increased gap between rows */
-/* FIX: Removed hiding styles so art is always visible */
-.art-item { width: 280px; opacity: 1; transform: translateY(0); transition: 1s ease-out; } 
+.art-section { 
+    background: #FFFFFF; color: #333; padding: 150px 20px; position: relative; z-index: 200; 
+}
+.art-container { 
+    max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 60px; 
+} 
+.brick-row { 
+    display: flex; justify-content: center; gap: 30px; 
+}
+.art-item { 
+    width: 280px; opacity: 1; transform: translateY(0); transition: 1s ease-out; 
+} 
 
-.art-item a { position: relative; display: block; aspect-ratio: 2/3; overflow: hidden; border-radius: 4px; }
-.art-item img, .hover-video { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-/* PROFESSIONAL UPGRADE: Subtler hover on label when hovering over link */
-.art-item a:hover img, .art-item a:hover video { transform: scale(1.1); }
-.art-item a:hover .art-label { color: white; }
-
-.art-label { 
-    position: absolute; 
-    bottom: 35px; /* Moved up to make room for metadata */
-    left: 15px; 
-    z-index: 5; 
-    color: rgba(255, 255, 255, 0.6); 
-    font-size: 1.5em; 
-    font-weight: 800; 
-    text-transform: uppercase; 
-    pointer-events: none; 
-    transition: color 0.3s;
+.art-item a { 
+    position: relative; display: block; aspect-ratio: 2/3; overflow: hidden; border-radius: 4px; 
+}
+.art-item img, .hover-video { 
+    width: 100%; height: 100%; object-fit: cover; transition: 0.5s; 
+}
+.art-item a:hover img, .art-item a:hover video { 
+    transform: scale(1.1); 
+}
+.art-item a:hover .art-label { 
+    color: white; 
 }
 
-/* PROFESSIONAL UPGRADE: New Metadata Style */
+.art-label { 
+    position: absolute; bottom: 35px; left: 15px; z-index: 5; 
+    color: rgba(255, 255, 255, 0.6); font-size: 1.5em; font-weight: 800; 
+    text-transform: uppercase; pointer-events: none; transition: color 0.3s;
+}
+
 .art-metadata {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
-    z-index: 5;
-    color: rgba(255, 255, 255, 0.4); /* Subdued color for less attention */
-    font-size: 0.8em;
-    font-weight: normal;
-    text-transform: uppercase;
-    pointer-events: none;
+    position: absolute; bottom: 15px; left: 15px; z-index: 5;
+    color: rgba(255, 255, 255, 0.4); font-size: 0.8em; font-weight: normal;
+    text-transform: uppercase; pointer-events: none;
 }
