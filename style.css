@@ -7,7 +7,6 @@ body {
     overflow-x: hidden; 
 }
 
-/* Professional Upgrade: Add smooth scroll */
 html { 
     scroll-behavior: smooth; 
 } 
@@ -24,8 +23,8 @@ html {
 .main-content { 
     display: flex; flex-direction: column; align-items: center; 
     padding-top: 100px; 
-    /* INCREASED PADDING: Guaranteed scroll space of 1000px for the animation */
-    padding-bottom: 1000px; 
+    /* 1. REDUCED PADDING: We are shrinking the scroll area to 500px, which matches the new animation range in JS */
+    padding-bottom: 500px; 
     min-height: 100vh; position: relative; z-index: 10; 
 }
 h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8px; margin-bottom: 10px; }
@@ -50,22 +49,23 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 }
 
 #runner-boy {
-    /* STYLES FOR THE <img> TAG */
-    width: 150px; 
-    height: 150px;
+    /* 3. INCREASED SIZE: Making the boy much larger */
+    width: 250px; 
+    height: 250px;
     position: absolute;
     left: 0; 
-    object-fit: contain; /* ensures image fits within the dimensions */
+    object-fit: contain; 
     transition: transform 0.05s linear; 
 }
 
-/* FIX: FORCED IMAGE PRELOADING (Still useful but less critical now) */
+/* FIX: FORCED IMAGE PRELOADING */
 #preload-runner-images {
     position: absolute; width: 1px; height: 1px; overflow: hidden;
-    content: url('images/boy feather image 1.jpg') 
-             url('images/The second feather.jpg') 
-             url('images/The 3rd feather.jpg') 
-             url('images/The 4th feather .jpg');
+    /* Updated preloading to include your new file paths */
+    content: url('images/boy 1.PNG') 
+             url('images/boy 2.PNG') 
+             url('images/boy 3.PNG') 
+             url('images/boy 4.PNG');
 }
 
 /* --- FALLING SNOW SYSTEM --- */
