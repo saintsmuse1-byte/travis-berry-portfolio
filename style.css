@@ -1,5 +1,7 @@
 /* --- UNIVERSAL & NAVBAR --- */
 body { margin: 0; font-family: sans-serif; background: linear-gradient(to bottom, #1b1d26 0%, #FFFFFF 100%); color: white; overflow-x: hidden; }
+/* PROFESSIONAL UPGRADE: Add smooth scroll */
+html { scroll-behavior: smooth; }
 .navbar { position: fixed; top: 0; width: 100%; height: 50px; background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; padding: 0 40px; }
 .nav-brand { font-family: 'Trebuchet MS', sans-serif; font-size: 1.2em; letter-spacing: 2px; }
 .nav-logo-accent { font-family: Georgia, serif; font-weight: 300; font-size: 0.9em; padding-left: 5px; }
@@ -10,7 +12,16 @@ body { margin: 0; font-family: sans-serif; background: linear-gradient(to bottom
     padding-top: 100px; padding-bottom: 10vh; 
     min-height: 100vh; position: relative; z-index: 10; 
 }
-h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8px; margin-bottom: 30px; }
+h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8px; margin-bottom: 10px; }
+
+/* PROFESSIONAL UPGRADE: New Tagline Style */
+.tagline {
+    font-size: 1.2em;
+    font-family: Georgia, serif;
+    font-weight: 300;
+    margin-bottom: 50px;
+    color: rgba(255, 255, 255, 0.7);
+}
 
 /* Profile Image Size and Overlap */
 .circle-wrapper { 
@@ -26,17 +37,8 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 .snowflakes { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     pointer-events: none; z-index: 1001; 
-    /* Remove transition effects for simple falling */
 }
-
-/* Base falling snowflake style */
-.snowflake { 
-    color: #fff; 
-    position: absolute; 
-    top: -10%; 
-    animation: fall 10s linear infinite; /* Re-apply continuous fall */
-}
-
+.snowflake { color: #fff; position: absolute; top: -10%; animation: fall 10s linear infinite; }
 .snowflake:nth-child(1) { left: 10%; animation-delay: 0s; }
 .snowflake:nth-child(2) { left: 25%; animation-delay: 2s; }
 .snowflake:nth-child(3) { left: 40%; animation-delay: 4s; }
@@ -50,15 +52,41 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 
 
 /* --- BRICK ART DISPLAY --- */
-.art-section { background: #FFFFFF; color: #333; padding: 100px 20px; position: relative; z-index: 200; }
-.art-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+/* PROFESSIONAL UPGRADE: Increased vertical spacing for better flow */
+.art-section { background: #FFFFFF; color: #333; padding: 150px 20px; position: relative; z-index: 200; }
+.art-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 60px; } /* Increased gap between rows */
 .brick-row { display: flex; justify-content: center; gap: 30px; }
-/* Keep art reveal functionality */
-.art-item { width: 280px; opacity: 0; transform: translateY(50px); transition: 1s ease-out; }
-.art-item.is-revealed { opacity: 1; transform: translateY(0); }
+/* FIX: Removed hiding styles so art is always visible */
+.art-item { width: 280px; opacity: 1; transform: translateY(0); transition: 1s ease-out; } 
 
 .art-item a { position: relative; display: block; aspect-ratio: 2/3; overflow: hidden; border-radius: 4px; }
 .art-item img, .hover-video { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+/* PROFESSIONAL UPGRADE: Subtler hover on label when hovering over link */
 .art-item a:hover img, .art-item a:hover video { transform: scale(1.1); }
+.art-item a:hover .art-label { color: white; }
 
-.art-label { position: absolute; bottom: 15px; left: 15px; z-index: 5; color: rgba(255, 255, 255, 0.6); font-size: 1.5em; font-weight: 800; text-transform: uppercase; pointer-events: none; }
+.art-label { 
+    position: absolute; 
+    bottom: 35px; /* Moved up to make room for metadata */
+    left: 15px; 
+    z-index: 5; 
+    color: rgba(255, 255, 255, 0.6); 
+    font-size: 1.5em; 
+    font-weight: 800; 
+    text-transform: uppercase; 
+    pointer-events: none; 
+    transition: color 0.3s;
+}
+
+/* PROFESSIONAL UPGRADE: New Metadata Style */
+.art-metadata {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    z-index: 5;
+    color: rgba(255, 255, 255, 0.4); /* Subdued color for less attention */
+    font-size: 0.8em;
+    font-weight: normal;
+    text-transform: uppercase;
+    pointer-events: none;
+}
