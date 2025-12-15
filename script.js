@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const artSection = document.querySelector('.art-section');
     const snowflakesContainer = document.querySelector('.snowflakes');
     const mainContent = document.querySelector('.main-content');
-    const circleWrapper = document.querySelector('.circle-wrapper'); // New reference for earlier start
+    const circleWrapper = document.querySelector('.circle-wrapper'); 
     
     // RUNNER ANIMATION ELEMENTS
     const runnerContainer = document.getElementById('runner-container');
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return; 
     }
     
-    // File paths should match your files exactly
+    // File paths and dimensions
     const RUNNER_FRAMES = [
         'images/boy 1.PNG',
         'images/boy 2.PNG',
@@ -27,10 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
         'images/boy 4.PNG'
     ];
     const NUM_FRAMES = RUNNER_FRAMES.length;
-    // 3. FULL EDGE-TO-EDGE RUN: Must match the new CSS width
-    const BOY_WIDTH = 350; 
-    
-    // 1. VIDEO HOVER PLAYBACK 
+    const BOY_WIDTH = 350; // Must match CSS width
+
+    // 1. VIDEO HOVER PLAYBACK (Kept for completeness)
     const vidContainer = document.querySelector('.video-link');
     const video = document.querySelector('.hover-video');
 
@@ -45,15 +44,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- RUNNER ANIMATION LOGIC ---
     
     function getAnimationBounds() {
-        // Calculate the absolute vertical position of the bottom of the profile picture area
-        const heroBottom = circleWrapper.offsetTop + circleWrapper.offsetHeight;
+        // Find the top of the main content area (where the heading starts)
+        const mainContentTop = mainContent.offsetTop; 
         
-        // 2. EARLIER START FIX: Start the animation immediately after the profile picture.
-        // We add a small buffer (50px) to keep it visually separate from the image.
-        const startPoint = heroBottom + 50; 
+        // 1. CRITICAL START ADJUSTMENT: Start high up, just below the banner/headline.
+        // We set the start point 100px down from the top of the main content section.
+        const startPoint = mainContentTop + 200; 
         
-        // The animation will run over 1500px of scrolling distance
-        const ANIMATION_HEIGHT = 1500; 
+        // 2. CRITICAL END ADJUSTMENT: Use a shorter vertical distance to guarantee
+        // the animation finishes before the white art section starts covering it.
+        const ANIMATION_HEIGHT = 800; 
+        
         const endPoint = startPoint + ANIMATION_HEIGHT;
         const animationRange = ANIMATION_HEIGHT;
 
@@ -74,22 +75,22 @@ document.addEventListener('DOMContentLoaded', () => {
             // 1. Calculate Progress (0 to 1)
             const scrollProgress = (scrollY - startPoint) / animationRange;
 
-            // 3. FULL EDGE-TO-EDGE RUN: Correctly calculates travel distance
+            // 2. Horizontal Travel (Full width)
             const horizontalTravelDistance = Math.max(0, window.innerWidth - BOY_WIDTH);
             const horizontalPosition = scrollProgress * horizontalTravelDistance;
             
             runnerBoy.style.transform = `translateX(${horizontalPosition}px)`;
 
-            // 4. Determine the current frame index
+            // 3. Determine the current frame index
             const newFrameIndex = Math.min(Math.floor(scrollProgress * NUM_FRAMES), NUM_FRAMES - 1);
             
-            // 5. Set the current frame image
+            // 4. Set the current frame image
             if (newFrameIndex !== currentFrameIndex) {
                 runnerBoy.src = RUNNER_FRAMES[newFrameIndex];
                 currentFrameIndex = newFrameIndex;
             }
 
-            // 6. Make the container visible
+            // 5. Make the container visible
             runnerContainer.style.opacity = '1';
 
         } else if (scrollY < startPoint) {
