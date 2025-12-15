@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // 1. VIDEO HOVER PLAYBACK
+    // 1. VIDEO HOVER PLAYBACK (Kept functional)
     const vidContainer = document.querySelector('.video-link');
     const video = document.querySelector('.hover-video');
 
@@ -13,19 +13,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // 2. ART REVEAL
-    // Uses IntersectionObserver to reveal art items as they scroll into view
-    const artObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-revealed');
-                artObserver.unobserve(entry.target);
-            }
-        });
-    }, { rootMargin: '0px 0px -10% 0px' });
-
-    document.querySelectorAll('.art-item').forEach(item => artObserver.observe(item));
-
-    // 3. SNOW LOGIC REMOVED
-    // The continuous falling snow is handled entirely by CSS animation now.
+    // Art reveal and snow observer logic has been removed for stability and simplicity.
 });
