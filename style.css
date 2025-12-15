@@ -7,6 +7,7 @@ body {
     overflow-x: hidden; 
 }
 
+/* Professional Upgrade: Add smooth scroll */
 html { 
     scroll-behavior: smooth; 
 } 
@@ -41,7 +42,7 @@ html {
     flex-direction: column; 
     align-items: center; 
     padding-top: 100px; 
-    /* IMPORTANT: Increase padding to give scrollable space for the animation */
+    /* IMPORTANT: Ensure enough scroll space for the animation */
     padding-bottom: 500px; 
     min-height: 100vh; 
     position: relative; 
@@ -79,28 +80,45 @@ h1 {
 /* --- RUNNER ANIMATION STYLES --- */
 
 #runner-container {
-    position: fixed; /* Fixed position relative to viewport */
-    top: 50%; /* Center the container vertically */
-    transform: translateY(-50%); /* Adjust to true vertical center */
+    position: fixed; 
+    top: 50%; 
+    transform: translateY(-50%); 
     width: 100%;
-    height: 200px; /* Gives the boy space to run */
+    height: 200px; 
     z-index: 500;
-    pointer-events: none; /* Ignore mouse clicks */
+    pointer-events: none; 
     overflow: hidden;
-    opacity: 0; /* Starts hidden, JS will control visibility */
+    opacity: 0; 
+    /* Added transition for smoother fade in/out */
+    transition: opacity 0.3s ease-out;
 }
 
 #runner-boy {
-    width: 150px; /* Boy image size */
+    width: 150px; 
     height: 150px;
     position: absolute;
-    left: 0; /* Starts on the left edge */
+    left: 0; 
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
-    /* The boy's image will be set by the JavaScript based on the current frame */
-    transition: transform 0.05s linear; /* Quick transition for horizontal movement */
+    transition: transform 0.05s linear; 
 }
+
+/* --- FIX: FORCED IMAGE PRELOADING --- */
+/* This block forces the browser to fetch the images immediately, preventing flicker or failure */
+#preload-runner-images {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    /* Use content to load the images without displaying them */
+    content: url('images/boy feather image 1.jpg') 
+             url('images/The second feather.jpg') 
+             url('images/The 3rd feather.jpg') 
+             url('images/The 4th feather .jpg');
+}
+/* Append the preload element to the main content or body in HTML if needed, but the content property is usually enough */
+
 
 /* --- FALLING SNOW SYSTEM --- */
 .snowflakes { 
