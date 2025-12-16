@@ -24,36 +24,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. SHALLOW SLOPE (Limited to Hero)
+    // 2. THE HERO-SECTION-ONLY SLOPE
     function animateRunner(scrollY) {
         if (!runnerBoy || !runnerOverlay) return;
 
-        const startTrigger = 50; 
-        const finishLine = 1100; // Finish path before Art Section
+        // --- TWEAK THESE THREE NUMBERS TO PERFECT THE TIMING ---
+        const startTrigger = 0;      // Starts immediately on scroll
+        const finishLine = 850;      // LOWERED: He reaches the right side sooner (at end of Hero)
+        const verticalDrop = 120;    // LOWERED: Only drops 120px total (Very shallow)
         
-        const startX = -150;
-        const startY = 450; // Starting near bottom of profile circle
-        const endX = window.innerWidth + 100;
-        const endY = 600; // Only dropping 150px = VERY shallow slope
+        const startX = -200;         // Start off-screen left
+        const startY = 460;          // Starting vertical height
+        // -------------------------------------------------------
 
-        if (scrollY > startTrigger && scrollY <= finishLine) {
+        if (scrollY >= startTrigger && scrollY <= (finishLine + 100)) {
+            // Calculate progress (0.0 at top of page, 1.0 at finishLine)
             let progress = (scrollY - startTrigger) / (finishLine - startTrigger);
             progress = Math.min(Math.max(progress, 0), 1);
 
-            const x = startX + ((endX - startX) * progress);
-            const y = startY + ((endY - startY) * progress);
+            // Move from Left to Right
+            const x = startX + ((window.innerWidth + 200 - startX) * progress);
+            
+            // Move from StartY to EndY (Shallow drop)
+            const y = startY + (verticalDrop * progress);
 
             runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
             
+            // Animate legs
             const fIdx = Math.floor(progress * 60) % RUNNER_FRAMES.length;
             runnerBoy.src = RUNNER_FRAMES[fIdx];
-            runnerOverlay.style.opacity = 1;
+            
+            // Fade out as he reaches the end
+            runnerOverlay.style.opacity = (progress > 0.98) ? 0 : 1;
         } else {
             runnerOverlay.style.opacity = 0;
         }
     }
 
-    // 3. ABOUT CANVAS (Interaction Fix)
+    // 3. ABOUT CANVAS PHYSICS
     const ctx = aboutCanvas.getContext('2d');
     let particles = [];
     function initCanvas() {
@@ -78,10 +86,14 @@ document.addEventListener('DOMContentLoaded', () => {
     function engine() {
         targetScroll = window.scrollY;
         currentScroll += (targetScroll - currentScroll) * SMOOTHING;
+        
+        // Smooth scroll content
         smoothContent.style.transform = `translateY(${-currentScroll}px)`;
         
+        // Animate runner based on RAW scroll for precision
         animateRunner(window.scrollY);
 
+        // About section interaction
         ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
         particles.forEach(p => {
             let dx = mouse.x - p.x;
