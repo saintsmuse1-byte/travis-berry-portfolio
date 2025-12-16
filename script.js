@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.baseY = this.y;
             this.density = (Math.random() * 20) + 2;
             this.isSnow = Math.random() > 0.6;
-            this.size = this.isSnow ? 25 : Math.random() * 3 + 1; // Big snowflakes
+            this.size = this.isSnow ? 25 : Math.random() * 3 + 1;
         }
         draw() {
             ctx.fillStyle = 'white';
@@ -75,23 +75,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- RUNNER POSITIONING ---
     function animateRunner(scrollY) {
-        // 1. Calculate the Y position of your Profile Pic
-        const circleRect = circleWrapper.getBoundingClientRect();
-        const startPoint = 100; // When to start the run (scrolled 100px)
-        const animationRange = 800; // How long the run lasts
+        // Find where the profile picture is currently sitting on the screen
+        const circleBottom = circleWrapper.offsetTop + circleWrapper.offsetHeight;
         
-        if (scrollY >= startPoint && scrollY <= (startPoint + animationRange)) {
+        // Start run shortly after scrolling begins
+        const startPoint = 50; 
+        // Finish run before the Art Section (white) hits the middle of the screen
+        const endPoint = artSection.offsetTop - (window.innerHeight / 2);
+        const animationRange = endPoint - startPoint;
+        
+        if (scrollY >= startPoint && scrollY <= endPoint) {
             const progress = (scrollY - startPoint) / animationRange;
             
-            // HORIZONTAL: Side to side
+            // HORIZONTAL: Move left to right
             const xTravel = (window.innerWidth - BOY_WIDTH) * progress;
             
-            // VERTICAL: This places him exactly a "finger width" (approx 40px) below the circle
-            // We use the smoothed scroll to keep him steady
-            const yBase = (circleWrapper.offsetTop + circleWrapper.offsetHeight) - scrollY;
-            const yOffset = 40; // <--- ADJUST THIS to change "finger size" gap
+            // VERTICAL FIX: 
+            // We take the bottom of the circle, subtract the scroll amount to keep it in place,
+            // and add 60px for that "finger-width" gap.
+            const yOffset = 60; 
+            const yPos = (circleBottom - scrollY) + yOffset;
             
-            runnerBoy.style.transform = `translate(${xTravel}px, ${yBase + yOffset}px)`;
+            runnerBoy.style.transform = `translate(${xTravel}px, ${yPos}px)`;
             
             // Frame switching
             const frameIndex = Math.min(Math.floor(progress * RUNNER_FRAMES.length), RUNNER_FRAMES.length - 1);
@@ -99,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             runnerContainer.style.opacity = '1';
         } else {
+            // Hide him if we are before the start or past the art section
             runnerContainer.style.opacity = '0';
         }
     }
@@ -123,7 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.height = smoothContent.getBoundingClientRect().height + "px";
     }
 
-    // Initialize everything
     initAboutSnow();
     updateHeight();
     window.addEventListener('resize', () => { updateHeight(); initAboutSnow(); });
