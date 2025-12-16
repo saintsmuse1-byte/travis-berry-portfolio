@@ -28,37 +28,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. RUNNER SLOPE (FIDDLE HERE)
+    // 2. RUNNER ENGINE (FIXED AXIS)
     function animateRunner(scrollY) {
         if (!runnerBoy || !runnerContainer) return;
 
-        // --- FIDDLE SETTINGS ---
-        const scrollRange = 2800; // How many pixels of scroll he stays for
-        const verticalDrop = 900;  // How far down he goes (Steeper slope)
-        // -----------------------
+        // FIDDLE SETTINGS
+        const scrollRange = 2200; // How long he stays on screen
+        const verticalDrop = 1200; // Increase this to make the slope steeper
 
         if (scrollY > 10 && scrollY <= scrollRange) {
             const progress = scrollY / scrollRange;
             
-            // X: Moves to absolute right
-            const x = (window.innerWidth - 280) * progress;
+            // X-AXIS: Forces him to travel the full width of the browser
+            // Subtracting 300 ensures he doesn't disappear too early or cause scroll
+            const x = (window.innerWidth) * progress;
             
-            // Y: Linear Downward Slope
+            // Y-AXIS: Downward slope
             const y = scrollY + (progress * verticalDrop);
 
             runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
             
-            // Frames
-            const fIdx = Math.floor(progress * 40) % RUNNER_FRAMES.length;
+            const fIdx = Math.floor(progress * 45) % RUNNER_FRAMES.length;
             runnerBoy.src = RUNNER_FRAMES[fIdx];
-            
             runnerContainer.style.opacity = 1;
         } else {
             runnerContainer.style.opacity = 0;
         }
     }
 
-    // 3. ABOUT CANVAS PHYSICS
+    // 3. ABOUT CANVAS (MOUSE PHYSICS)
     let particles = [];
     function initCanvas() {
         aboutCanvas.width = aboutCanvas.offsetWidth;
@@ -70,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
             particles.push({ 
                 x: px, y: py, bx: px, by: py, 
                 vx: 0, vy: 0, 
-                d: (Math.random() * 20) + 5, 
+                d: (Math.random() * 15) + 5, 
                 isFlake: Math.random() > 0.7, 
                 sz: Math.random() * 3 + 1 
             });
@@ -79,7 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('mousemove', e => {
         const rect = aboutCanvas.getBoundingClientRect();
-        // Calculate mouse relative to canvas, accounting for page scroll
         mouse.x = e.clientX - rect.left;
         mouse.y = e.clientY - rect.top;
     });
@@ -99,26 +96,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (dist < mouse.radius) {
                 let force = (mouse.radius - dist) / mouse.radius;
-                p.vx -= (dx / dist) * force * 8;
-                p.vy -= (dy / dist) * force * 8;
+                p.vx -= (dx / dist) * force * 10;
+                p.vy -= (dy / dist) * force * 10;
             }
 
-            // Tension return to original spot
-            p.vx += (p.bx - p.x) * 0.04;
-            p.vy += (p.by - p.y) * 0.04;
-            p.vx *= 0.9; 
-            p.vy *= 0.9;
-            p.x += p.vx; 
-            p.y += p.vy;
+            p.vx += (p.bx - p.x) * 0.05;
+            p.vy += (p.by - p.y) * 0.05;
+            p.vx *= 0.9; p.vy *= 0.9;
+            p.x += p.vx; p.y += p.vy;
 
             ctx.fillStyle = 'white';
             if (p.isFlake) { 
-                ctx.font = "24px serif"; 
-                ctx.fillText('❅', p.x, p.y); 
+                ctx.font = "24px serif"; ctx.fillText('❅', p.x, p.y); 
             } else { 
-                ctx.beginPath(); 
-                ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2); 
-                ctx.fill(); 
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2); ctx.fill(); 
             }
         });
         requestAnimationFrame(engine);
