@@ -8,26 +8,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const artSection = document.querySelector('.art-section');
     const snowflakesContainer = document.querySelector('.snowflakes');
 
-    if (!smoothContent || !runnerBoy || !mainContent) {
-        console.error("Required elements not found. Check your HTML IDs.");
-        return;
-    }
+    if (!smoothContent || !runnerBoy || !mainContent) return;
 
     // --- 2. SMOOTH SCROLL VARIABLES ---
     let currentScroll = 0; 
     let targetScroll = 0;  
-    const SMOOTHING_FACTOR = 0.07; // Lower = slower/smoother (Jack Elder style)
+    const SMOOTHING_FACTOR = 0.07; 
 
     // --- 3. RUNNER ANIMATION SETTINGS ---
     const RUNNER_FRAMES = [
         'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG',
         'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'
     ];
-    const BOY_WIDTH = 350; // Matches your CSS
+    const BOY_WIDTH = 350; 
     let currentFrameIndex = -1;
 
     // --- 4. PAGE HEIGHT MANAGEMENT ---
-    // Tells the browser how long the page is so the smooth scroll works
     function updatePageHeight() {
         const totalHeight = smoothContent.getBoundingClientRect().height;
         document.body.style.height = Math.floor(totalHeight) + "px";
@@ -35,34 +31,72 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 5. THE RUNNER ANIMATION LOGIC ---
     function animateRunner(scrollY) {
-        // Start almost immediately after the profile pic (+20px offset)
+        // Starts 20px below main header area
         const startPoint = mainContent.offsetTop + 20; 
-        
-        // Shortened range to keep the section tight
-        const animationRange = 650; 
+        // Finishes run within 500px of scrolling
+        const animationRange = 500; 
         const endPoint = startPoint + animationRange;
 
         if (scrollY >= startPoint && scrollY <= endPoint) {
             const progress = (scrollY - startPoint) / animationRange;
             
-            // Calculate horizontal movement
+            // Move across screen
             const travel = (window.innerWidth - BOY_WIDTH) * progress;
             runnerBoy.style.transform = `translateX(${travel}px)`;
             
-            // Cycle through the 8 frames based on scroll progress
+            // Change animation frames
             const frameIndex = Math.min(Math.floor(progress * RUNNER_FRAMES.length), RUNNER_FRAMES.length - 1);
             if (frameIndex !== currentFrameIndex) {
                 runnerBoy.src = RUNNER_FRAMES[frameIndex];
                 currentFrameIndex = frameIndex;
             }
-            
-            // Fade in the boy while in range
             runnerContainer.style.opacity = '1';
 
         } else if (scrollY > endPoint) {
-            // Once finished, hold position at the far right and fade out
-            const finalTravel = window.innerWidth - BOY_WIDTH;
-            runnerBoy.style.transform = `translateX(${finalTravel}px)`;
+            // Fade out once finished
             runnerContainer.style.opacity = '0';
         } else {
-            // Before the start point, keep him at the left and hidden
+            // Reset if scrolled back to top
+            runnerBoy.style.transform = `translateX(0px)`;
+            runnerContainer.style.opacity = '0';
+        }
+    }
+
+    // --- 6. THE MAIN SMOOTH SCROLL LOOP ---
+    function render() {
+        targetScroll = window.scrollY;
+        currentScroll += (targetScroll - currentScroll) * SMOOTHING_FACTOR;
+        smoothContent.style.transform = `translateY(${-currentScroll}px)`;
+        animateRunner(currentScroll);
+        requestAnimationFrame(render);
+    }
+
+    // --- 7. VIDEO HOVER ---
+    const vidContainer = document.querySelector('.video-link');
+    const video = document.querySelector('.hover-video');
+    if (vidContainer && video) {
+        vidContainer.addEventListener('mouseenter', () => video.play());
+        vidContainer.addEventListener('mouseleave', () => {
+            video.pause();
+            video.currentTime = 0;
+        });
+    }
+
+    // --- 8. SNOW FADE ---
+    const fadeOutObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (snowflakesContainer) {
+                snowflakesContainer.style.opacity = 1 - entry.intersectionRatio;
+            }
+        });
+    }, { threshold: [0, 0.2, 0.5, 0.8, 1] });
+
+    if (artSection) fadeOutObserver.observe(artSection);
+
+    // --- 9. INITIALIZATION ---
+    updatePageHeight();
+    window.addEventListener('load', updatePageHeight);
+    window.addEventListener('resize', updatePageHeight);
+    setTimeout(updatePageHeight, 1000); // Back-up height check
+    render();
+});
