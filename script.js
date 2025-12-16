@@ -1,14 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Select elements
     const smoothContent = document.getElementById('smooth-content');
     const runnerBoy = document.getElementById('runner-boy'); 
     const runnerContainer = document.getElementById('runner-container');
     const aboutCanvas = document.getElementById('about-canvas');
 
-    if (!smoothContent || !aboutCanvas) {
-        console.error("Core elements missing");
-        return;
-    }
+    if (!smoothContent || !aboutCanvas) return;
 
     const ctx = aboutCanvas.getContext('2d');
     const RUNNER_FRAMES = ['images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'];
@@ -17,38 +13,43 @@ document.addEventListener('DOMContentLoaded', () => {
     let targetScroll = 0;
     const SMOOTHING = 0.08;
 
-    // --- PARABOLA ANIMATION ---
+    // BEZIER CALCULATION
+    function getBezierY(t) {
+        // Points: P0 (Start), P1 (Control), P2 (Control), P3 (End)
+        // These values control the 'Sweep' and 'Depth'
+        const p0 = 0;    // Starting height
+        const p1 = 400;  // Initial dip speed
+        const p2 = 600;  // Flat bottom depth
+        const p3 = 550;  // Final height glide
+        
+        return Math.pow(1 - t, 3) * p0 + 
+               3 * Math.pow(1 - t, 2) * t * p1 + 
+               3 * (1 - t) * Math.pow(t, 2) * p2 + 
+               Math.pow(t, 3) * p3;
+    }
+
     function animateRunner(scrollY) {
         if (!runnerBoy || !runnerContainer) return;
-
         const range = 2400; 
         const start = 0;
         
         if (scrollY >= start && scrollY <= (start + range)) {
             const progress = (scrollY - start) / range;
-            
-            // Move Right
             const x = (window.innerWidth - 320) * progress;
-            
-            // Blue Line Curve: Quadratic Drop
-            // Adjust 700 to make the curve deeper or shallower
-            const curveDrop = Math.pow(progress, 2) * 700; 
-            
-            const y = scrollY + curveDrop;
+            const yBezier = getBezierY(progress);
+            const y = scrollY + yBezier;
 
             runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
             
-            // Update Frames
-            const frameIdx = Math.floor(progress * 30) % RUNNER_FRAMES.length;
-            runnerBoy.src = RUNNER_FRAMES[frameIdx];
-            
+            const fIdx = Math.floor(progress * 30) % RUNNER_FRAMES.length;
+            runnerBoy.src = RUNNER_FRAMES[fIdx];
             runnerContainer.style.opacity = 1;
         } else {
             runnerContainer.style.opacity = 0;
         }
     }
 
-    // --- ABOUT SECTION SNOW ---
+    // --- INTERACTIVE ABOUT CANVAS ---
     let particles = [];
     const mouse = { x: -1000, y: -1000, radius: 150 };
 
@@ -56,13 +57,13 @@ document.addEventListener('DOMContentLoaded', () => {
         aboutCanvas.width = aboutCanvas.offsetWidth;
         aboutCanvas.height = aboutCanvas.offsetHeight;
         particles = [];
-        for (let i = 0; i < 80; i++) {
+        for (let i = 0; i < 90; i++) {
             let px = Math.random() * aboutCanvas.width;
             let py = Math.random() * aboutCanvas.height;
             particles.push({
                 x: px, y: py, bx: px, by: py,
                 d: (Math.random() * 15) + 2,
-                isFlake: Math.random() > 0.7,
+                isFlake: Math.random() > 0.65,
                 sz: Math.random() * 3 + 1
             });
         }
@@ -71,14 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function engine() {
         targetScroll = window.scrollY;
         currentScroll += (targetScroll - currentScroll) * SMOOTHING;
-        
-        // Handle Smooth Scroll
         smoothContent.style.transform = `translateY(${-currentScroll}px)`;
-        
-        // Handle Animation
         animateRunner(currentScroll);
 
-        // Draw Canvas
         ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
         particles.forEach(p => {
             let dx = mouse.x - p.x, dy = mouse.y - p.y;
@@ -92,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 p.y -= (p.y - p.by) * 0.1;
             }
             ctx.fillStyle = 'white';
-            if (p.isFlake) { ctx.font = "20px serif"; ctx.fillText('❅', p.x, p.y); }
+            if (p.isFlake) { ctx.font = "22px serif"; ctx.fillText('❅', p.x, p.y); }
             else { ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI*2); ctx.fill(); }
         });
         requestAnimationFrame(engine);
@@ -109,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.height = smoothContent.offsetHeight + 'px';
     });
 
-    // Boot
     initCanvas();
     setTimeout(() => { document.body.style.height = smoothContent.offsetHeight + 'px'; }, 800);
     engine();
