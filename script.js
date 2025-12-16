@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // VERTICAL: Start at 20% down, end at 60% down (stays in vision)
             const startY = window.innerHeight * 0.35;
-            const endY = window.innerHeight * 0.60;
+            const endY = window.innerHeight * 0.80;
             const yTravel = startY + (endY - startY) * progress;
 
             runnerBoy.style.transform = `translate(${xTravel}px, ${yTravel}px)`;
