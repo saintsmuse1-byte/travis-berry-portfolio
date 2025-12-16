@@ -1,18 +1,24 @@
 /* --- UNIVERSAL & NAVBAR --- */
+html {
+    scroll-behavior: auto; /* Required for JS smoothing */
+}
+
 body { 
-    /* Hide the native scrollbar */
-    overflow: hidden; 
     margin: 0; 
     font-family: sans-serif; 
     background: linear-gradient(to bottom, #1b1d26 0%, #FFFFFF 100%); 
     color: white; 
-    overflow-x: hidden; 
+    /* CHANGED: This ensures the scrollbar exists even if JS is slow */
+    overflow-y: scroll; 
+    overflow-x: hidden;
 }
 
-html { 
-    /* Remove native smooth scroll since we are using JS smoothing */
-    scroll-behavior: auto; 
-} 
+/* This makes sure the smooth-content wrapper doesn't collapse */
+#smooth-content {
+    width: 100%;
+    position: relative;
+    will-change: transform;
+}
 
 .navbar { 
     position: fixed; top: 0; width: 100%; height: 50px; 
