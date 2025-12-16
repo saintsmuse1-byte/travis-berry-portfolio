@@ -1,80 +1,68 @@
 document.addEventListener('DOMContentLoaded', () => {
     
+    // --- 1. ELEMENT SELECTIONS ---
     const smoothContent = document.getElementById('smooth-content');
     const runnerBoy = document.getElementById('runner-boy'); 
     const runnerContainer = document.getElementById('runner-container');
     const mainContent = document.querySelector('.main-content');
     const artSection = document.querySelector('.art-section');
+    const snowflakesContainer = document.querySelector('.snowflakes');
 
-    if (!smoothContent || !runnerBoy || !mainContent) return;
+    if (!smoothContent || !runnerBoy || !mainContent) {
+        console.error("Required elements not found. Check your HTML IDs.");
+        return;
+    }
 
+    // --- 2. SMOOTH SCROLL VARIABLES ---
     let currentScroll = 0; 
     let targetScroll = 0;  
-    const SMOOTHING_FACTOR = 0.07; // Slightly slower for that luxury feel
+    const SMOOTHING_FACTOR = 0.07; // Lower = slower/smoother (Jack Elder style)
 
-    // --- 1. HEIGHT CALCULATION FUNCTION ---
+    // --- 3. RUNNER ANIMATION SETTINGS ---
+    const RUNNER_FRAMES = [
+        'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG',
+        'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'
+    ];
+    const BOY_WIDTH = 350; // Matches your CSS
+    let currentFrameIndex = -1;
+
+    // --- 4. PAGE HEIGHT MANAGEMENT ---
+    // Tells the browser how long the page is so the smooth scroll works
     function updatePageHeight() {
         const totalHeight = smoothContent.getBoundingClientRect().height;
         document.body.style.height = Math.floor(totalHeight) + "px";
     }
 
-    // --- 2. RUNNER ANIMATION LOGIC ---
-    const RUNNER_FRAMES = [
-        'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG',
-        'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'
-    ];
-    const BOY_WIDTH = 350; 
-    let currentFrameIndex = -1;
-
+    // --- 5. THE RUNNER ANIMATION LOGIC ---
     function animateRunner(scrollY) {
-        const startPoint = mainContent.offsetTop + 100; 
-        const animationRange = 800;
+        // Start almost immediately after the profile pic (+20px offset)
+        const startPoint = mainContent.offsetTop + 20; 
+        
+        // Shortened range to keep the section tight
+        const animationRange = 650; 
         const endPoint = startPoint + animationRange;
 
         if (scrollY >= startPoint && scrollY <= endPoint) {
             const progress = (scrollY - startPoint) / animationRange;
-            const travel = (window.innerWidth - BOY_WIDTH) * progress;
             
+            // Calculate horizontal movement
+            const travel = (window.innerWidth - BOY_WIDTH) * progress;
             runnerBoy.style.transform = `translateX(${travel}px)`;
             
+            // Cycle through the 8 frames based on scroll progress
             const frameIndex = Math.min(Math.floor(progress * RUNNER_FRAMES.length), RUNNER_FRAMES.length - 1);
             if (frameIndex !== currentFrameIndex) {
                 runnerBoy.src = RUNNER_FRAMES[frameIndex];
                 currentFrameIndex = frameIndex;
             }
+            
+            // Fade in the boy while in range
             runnerContainer.style.opacity = '1';
-        } else {
+
+        } else if (scrollY > endPoint) {
+            // Once finished, hold position at the far right and fade out
+            const finalTravel = window.innerWidth - BOY_WIDTH;
+            runnerBoy.style.transform = `translateX(${finalTravel}px)`;
             runnerContainer.style.opacity = '0';
-        }
-    }
-
-    // --- 3. THE SMOOTH LOOP ---
-    function render() {
-        targetScroll = window.scrollY;
-        currentScroll += (targetScroll - currentScroll) * SMOOTHING_FACTOR;
-        
-        // Move the content
-        smoothContent.style.transform = `translateY(${-currentScroll}px)`;
-        
-        // Animate the runner based on smooth position
-        animateRunner(currentScroll);
-
-        requestAnimationFrame(render);
-    }
-
-    // --- 4. INITIALIZE & SAFETY CHECKS ---
-    
-    // Run height check immediately
-    updatePageHeight();
-
-    // Run height check again after a short delay (for images loading)
-    setTimeout(updatePageHeight, 500);
-    setTimeout(updatePageHeight, 2000);
-
-    // Run height check when everything is fully loaded
-    window.addEventListener('load', updatePageHeight);
-    window.addEventListener('resize', updatePageHeight);
-
-    // Start the loop
-    render();
-});
+        } else {
+            // Before the start point, keep him at the left and hidden
