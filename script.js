@@ -9,9 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentScroll = 0;
     let targetScroll = 0;
     const SMOOTHING = 0.08;
+    const mouse = { x: -1000, y: -1000, radius: 150 };
 
-    // 1. GENERATE SNOWFLAKES (Reliable JS method)
+    // 1. GENERATE HEADER SNOWFLAKES
     function createSnow() {
+        if(!snowContainer) return;
+        snowContainer.innerHTML = ''; // Clear existing
         for (let i = 0; i < 15; i++) {
             const flake = document.createElement('div');
             flake.className = 'snow-flake-js';
@@ -25,69 +28,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     createSnow();
 
-    // 2. SOFT DOWNWARD SLOPE LOGIC
+    // 2. THE ANIMATION ENGINE
     function animateRunner(scrollY) {
         if (!runnerBoy || !runnerContainer) return;
-        const range = 2500; 
-        
-        if (scrollY > 10 && scrollY <= range) {
-            const progress = scrollY / range;
+
+        // --- MANUALLY CHANGE THESE TWO NUMBERS ---
+        const scrollDistance = 2500; // How many pixels of scroll the boy stays on screen
+        const verticalDrop = 800;    // Increase this to make him go lower/steeper
+        // -----------------------------------------
+
+        if (scrollY > 10 && scrollY <= scrollDistance) {
+            const progress = scrollY / scrollDistance;
             
-            // X: Left to Right
-            const x = (window.innerWidth - 300) * progress;
-            
-            // Y: Gentle Linear Slope (No curve, just a soft diagonal down)
-            const slopeDepth = 200; // Total vertical drop
-            const y = scrollY + (progress * slopeDepth);
-
-            runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
-            
-            // Cycle all 4 frames
-            const frameIdx = Math.floor(progress * 40) % RUNNER_FRAMES.length;
-            runnerBoy.src = RUNNER_FRAMES[frameIdx];
-            
-            runnerContainer.style.opacity = 1;
-        } else {
-            runnerContainer.style.opacity = 0;
-        }
-    }
-
-    // 3. ABOUT CANVAS LOGIC
-    const ctx = aboutCanvas.getContext('2d');
-    let particles = [];
-    function initCanvas() {
-        aboutCanvas.width = aboutCanvas.offsetWidth;
-        aboutCanvas.height = aboutCanvas.offsetHeight;
-        particles = [];
-        for (let i = 0; i < 80; i++) {
-            let px = Math.random() * aboutCanvas.width;
-            let py = Math.random() * aboutCanvas.height;
-            particles.push({ x: px, y: py, bx: px, by: py, d: (Math.random() * 10) + 2, isFlake: Math.random() > 0.7, sz: Math.random() * 3 + 1 });
-        }
-    }
-
-    function engine() {
-        targetScroll = window.scrollY;
-        currentScroll += (targetScroll - currentScroll) * SMOOTHING;
-        smoothContent.style.transform = `translateY(${-currentScroll}px)`;
-        animateRunner(currentScroll);
-
-        ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
-        particles.forEach(p => {
-            p.x -= (p.x - p.bx) * 0.1; p.y -= (p.y - p.by) * 0.1;
-            ctx.fillStyle = 'white';
-            if (p.isFlake) { ctx.font = "20px serif"; ctx.fillText('❅', p.x, p.y); }
-            else { ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI*2); ctx.fill(); }
-        });
-        requestAnimationFrame(engine);
-    }
-
-    window.addEventListener('resize', () => {
-        initCanvas();
-        document.body.style.height = smoothContent.offsetHeight + 'px';
-    });
-
-    initCanvas();
-    setTimeout(() => { document.body.style.height = smoothContent.offsetHeight + 'px'; }, 800);
-    engine();
-});
+            // X: This forces him to go from 0 to the absolute right edge
+            // We subtract the boy's width (280) so he doesn't create a horizontal scrollbar
+            const x = (window.innerWidth - 280
