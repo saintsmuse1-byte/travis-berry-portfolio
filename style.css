@@ -1,6 +1,6 @@
 /* --- UNIVERSAL & NAVBAR --- */
 html {
-    scroll-behavior: auto; /* Required for JS smoothing */
+    scroll-behavior: auto; 
 }
 
 body { 
@@ -8,12 +8,10 @@ body {
     font-family: sans-serif; 
     background: linear-gradient(to bottom, #1b1d26 0%, #FFFFFF 100%); 
     color: white; 
-    /* CHANGED: This ensures the scrollbar exists even if JS is slow */
     overflow-y: scroll; 
     overflow-x: hidden;
 }
 
-/* This makes sure the smooth-content wrapper doesn't collapse */
 #smooth-content {
     width: 100%;
     position: relative;
@@ -28,20 +26,13 @@ body {
 .nav-brand { font-family: 'Trebuchet MS', sans-serif; font-size: 1.2em; letter-spacing: 2px; }
 .nav-logo-accent { font-family: Georgia, serif; font-weight: 300; font-size: 0.9em; padding-left: 5px; }
 
-/* --- PAGE CONTENT WRAPPER FOR SMOOTH SCROLL --- */
-#smooth-content {
-    /* This element will be translated by JavaScript to create the scroll effect */
-    will-change: transform;
-}
-
-/* --- HERO & IMAGE OVERLAP --- */
+/* --- HERO SECTION --- */
 .main-content { 
     display: flex; 
     flex-direction: column; 
     align-items: center; 
     padding-top: 100px; 
-    /* REDUCED: Was 950px, now 600px to pull the Art Section up */
-    padding-bottom: 600px; 
+    padding-bottom: 550px; /* Reduced gap between boy and art section */
     min-height: 100vh; 
     position: relative; 
     z-index: 10; 
@@ -57,30 +48,32 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- RUNNER ANIMATION STYLES (Unchanged) --- */
+/* --- RUNNER ANIMATION STYLES --- */
 #runner-container {
-    position: fixed; top: 50%; transform: translateY(-50%); 
-    width: 100%; height: 350px; z-index: 500;
-    pointer-events: none; overflow: hidden;
-    opacity: 0; transition: opacity 0.3s ease-out;
+    position: fixed; 
+    top: 35%; /* Moved higher to avoid the art section boundary */
+    transform: translateY(-50%); 
+    width: 100%; 
+    height: 350px; 
+    z-index: 999; /* Higher than art section */
+    pointer-events: none; 
+    overflow: hidden;
+    opacity: 0; 
+    transition: opacity 0.3s ease-out;
 }
 
 #runner-boy {
-    width: 350px; height: 350px; position: absolute; left: 0; 
-    object-fit: contain; transition: transform 0.05s linear; 
+    width: 350px; 
+    height: 350px;
+    position: absolute;
+    left: 0; 
+    object-fit: contain; 
 }
 
-/* FIX: FORCED IMAGE PRELOADING */
-#preload-runner-images {
-    position: absolute; width: 1px; height: 1px; overflow: hidden;
-    content: url('images/boy 1.PNG') url('images/boy 2.PNG') url('images/boy 3.PNG') url('images/boy 4.PNG');
-}
-
-/* --- FALLING SNOW SYSTEM --- */
+/* --- FALLING SNOW --- */
 .snowflakes { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     pointer-events: none; z-index: 1001; 
-    transition: opacity 0.5s ease-out; 
 }
 .snowflake { color: #fff; position: absolute; top: -10%; animation: fall 10s linear infinite; }
 .snowflake:nth-child(1) { left: 10%; animation-delay: 0s; }
@@ -91,31 +84,28 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 .snowflake:nth-child(6) { left: 85%; animation-delay: 3s; }
 .snowflake:nth-child(7) { left: 95%; animation-delay: 7s; }
 .snowflake:nth-child(8) { left: 5%; animation-delay: 8s; }
-
 @keyframes fall { to { transform: translateY(110vh); } }
 
-
-/* --- BRICK ART DISPLAY (Unchanged) --- */
+/* --- ART SECTION --- */
 .art-section { 
-    background: #FFFFFF; color: #333; padding: 150px 20px; position: relative; z-index: 200; 
+    background: #FFFFFF; 
+    color: #333; 
+    padding: 150px 20px; 
+    position: relative; 
+    z-index: 100; /* Stays below the runner */
 }
 .art-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 60px; } 
 .brick-row { display: flex; justify-content: center; gap: 30px; }
-.art-item { width: 280px; opacity: 1; transform: translateY(0); transition: 1s ease-out; } 
-
+.art-item { width: 280px; } 
 .art-item a { position: relative; display: block; aspect-ratio: 2/3; overflow: hidden; border-radius: 4px; }
 .art-item img, .hover-video { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
 .art-item a:hover img, .art-item a:hover video { transform: scale(1.1); }
-.art-item a:hover .art-label { color: white; }
-
 .art-label { 
     position: absolute; bottom: 35px; left: 15px; z-index: 5; 
     color: rgba(255, 255, 255, 0.6); font-size: 1.5em; font-weight: 800; 
-    text-transform: uppercase; pointer-events: none; transition: color 0.3s;
+    text-transform: uppercase; transition: color 0.3s;
 }
-
 .art-metadata {
     position: absolute; bottom: 15px; left: 15px; z-index: 5;
-    color: rgba(255, 255, 255, 0.4); font-size: 0.8em; font-weight: normal;
-    text-transform: uppercase; pointer-events: none;
+    color: rgba(255, 255, 255, 0.4); font-size: 0.8em; text-transform: uppercase;
 }
