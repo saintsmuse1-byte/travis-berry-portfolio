@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const xTravel = (window.innerWidth - BOY_WIDTH) * progress;
             
             // VERTICAL: Start at 20% down, end at 60% down (stays in vision)
-            const startY = window.innerHeight * 0.20;
+            const startY = window.innerHeight * 0.35;
             const endY = window.innerHeight * 0.60;
             const yTravel = startY + (endY - startY) * progress;
 
