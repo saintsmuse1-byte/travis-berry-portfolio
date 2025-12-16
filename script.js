@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const x = (window.innerWidth - 300) * progress;
             
             // Y: Gentle Linear Slope (No curve, just a soft diagonal down)
-            const slopeDepth = 600; // Total vertical drop
+            const slopeDepth = 200; // Total vertical drop
             const y = scrollY + (progress * slopeDepth);
 
             runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
