@@ -8,13 +8,40 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentScroll = 0;
     let targetScroll = 0;
     const SMOOTHING = 0.07;
-    const BOY_WIDTH = 300;
+    const BOY_WIDTH = 320;
 
     const RUNNER_FRAMES = [
         'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'
     ];
 
-    // --- SNOW LOGIC ---
+    // --- DIAGONAL RUNNER LOGIC ---
+    function animate(scrollY) {
+        const start = 50;
+        const range = 1200; // Total scroll distance for the run
+        
+        if (scrollY > start && scrollY < start + range) {
+            const p = (scrollY - start) / range;
+            
+            // X moves from 0 to screen width
+            const xTravel = (window.innerWidth - BOY_WIDTH) * p;
+            
+            // Y moves downward to follow the scroll speed
+            // This keeps him centered in the viewport as you scroll
+            const yTravel = scrollY * 0.8; 
+
+            runnerBoy.style.transform = `translate(${xTravel}px, ${yTravel}px)`;
+            
+            // Frame animation
+            const frameIndex = Math.floor(p * 20) % RUNNER_FRAMES.length;
+            runnerBoy.src = RUNNER_FRAMES[frameIndex];
+            
+            runnerContainer.style.opacity = 1;
+        } else {
+            runnerContainer.style.opacity = 0;
+        }
+    }
+
+    // --- ABOUT CANVAS SNOW ---
     let particles = [];
     const mouse = { x: -1000, y: -1000, radius: 150 };
     window.addEventListener('mousemove', e => {
@@ -23,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mouse.y = e.clientY - r.top;
     });
 
-    class P {
+    class Particle {
         constructor() {
             this.x = Math.random() * aboutCanvas.width;
             this.y = Math.random() * aboutCanvas.height;
@@ -55,26 +82,16 @@ document.addEventListener('DOMContentLoaded', () => {
         aboutCanvas.width = aboutCanvas.offsetWidth;
         aboutCanvas.height = aboutCanvas.offsetHeight;
         particles = [];
-        for(let i=0; i<120; i++) particles.push(new P());
-    }
-
-    function animate(scrollY) {
-        const start = 50, range = 1500;
-        if (scrollY > start && scrollY < start + range) {
-            const p = (scrollY - start) / range;
-            runnerBoy.style.transform = `translateX(${(window.innerWidth - BOY_WIDTH) * p}px)`;
-            runnerBoy.src = RUNNER_FRAMES[Math.floor(p * RUNNER_FRAMES.length) % RUNNER_FRAMES.length];
-            runnerContainer.style.opacity = 1;
-        } else {
-            runnerContainer.style.opacity = 0;
-        }
+        for(let i=0; i<120; i++) particles.push(new Particle());
     }
 
     function loop() {
         targetScroll = window.scrollY;
         currentScroll += (targetScroll - currentScroll) * SMOOTHING;
         smoothContent.style.transform = `translateY(${-currentScroll}px)`;
+        
         animate(currentScroll);
+
         ctx.clearRect(0,0,aboutCanvas.width, aboutCanvas.height);
         particles.forEach(p => { p.update(); p.draw(); });
         requestAnimationFrame(loop);
