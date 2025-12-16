@@ -7,18 +7,24 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!smoothContent || !aboutCanvas) return;
 
     const ctx = aboutCanvas.getContext('2d');
-    const RUNNER_FRAMES = ['images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'];
+    // Ensure these file names match your folder EXACTLY
+    const RUNNER_FRAMES = [
+        'images/boy 1.PNG',
+        'images/boy 2.PNG',
+        'images/boy 3.PNG',
+        'images/boy 4.PNG'
+    ];
     
     let currentScroll = 0;
     let targetScroll = 0;
     const SMOOTHING = 0.08;
 
-    // FLATTENED BEZIER CURVE
+    // FLATTENED BEZIER (The "Blue Line" path)
     function getBezierY(t) {
-        const p0 = 0;    // Start
-        const p1 = 450;  // Sharp drop
-        const p2 = 450;  // Flat bottom (keep p1 and p2 similar for a U-shape)
-        const p3 = 300;  // Gentle exit
+        const p0 = 0;    // Start (Left)
+        const p1 = 480;  // First control point (controls the "dip" speed)
+        const p2 = 480;  // Second control point (keeps the bottom flat)
+        const p3 = 250;  // End point (how much it rises back up)
         
         return Math.pow(1 - t, 3) * p0 + 
                3 * Math.pow(1 - t, 2) * t * p1 + 
@@ -28,41 +34,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function animateRunner(scrollY) {
         if (!runnerBoy || !runnerContainer) return;
-        const range = 2400; 
+        const range = 2400; // Total scroll length of the animation
         
         if (scrollY >= 0 && scrollY <= range) {
             const progress = scrollY / range;
+            
+            // Calculate Position
             const x = (window.innerWidth - 300) * progress;
-            const y = scrollY + getBezierY(progress);
+            const yOffset = getBezierY(progress);
+            const y = scrollY + yOffset;
 
             runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
             
-            // Frame switch with error handling
-            const frame = Math.floor(progress * 24) % RUNNER_FRAMES.length;
-            const newSrc = RUNNER_FRAMES[frame];
-            if (runnerBoy.getAttribute('src') !== newSrc) {
-                runnerBoy.src = newSrc;
+            // FRAME SWITCHING LOGIC
+            // We use a faster multiplier (40) to ensure the 4 frames cycle 
+            // multiple times during the run
+            const frameIndex = Math.floor(progress * 40) % RUNNER_FRAMES.length;
+            if (runnerBoy.src.indexOf(RUNNER_FRAMES[frameIndex]) === -1) {
+                runnerBoy.src = RUNNER_FRAMES[frameIndex];
             }
+            
             runnerContainer.style.opacity = 1;
         } else {
             runnerContainer.style.opacity = 0;
         }
     }
 
-    // ABOUT SECTION SNOW
+    // --- ABOUT CANVAS SNOW ---
     let particles = [];
+    const mouse = { x: -1000, y: -1000, radius: 150 };
+
     function initCanvas() {
         aboutCanvas.width = aboutCanvas.offsetWidth;
         aboutCanvas.height = aboutCanvas.offsetHeight;
         particles = [];
         for (let i = 0; i < 80; i++) {
-            let x = Math.random() * aboutCanvas.width;
-            let y = Math.random() * aboutCanvas.height;
-            particles.push({ x, y, bx: x, by: y, d: (Math.random() * 10) + 2, isFlake: Math.random() > 0.7, sz: Math.random() * 3 + 1 });
+            let px = Math.random() * aboutCanvas.width;
+            let py = Math.random() * aboutCanvas.height;
+            particles.push({ x: px, y: py, bx: px, by: py, d: (Math.random() * 10) + 2, isFlake: Math.random() > 0.7, sz: Math.random() * 3 + 1 });
         }
     }
 
-    const mouse = { x: -1000, y: -1000, radius: 150 };
     window.addEventListener('mousemove', e => {
         const r = aboutCanvas.getBoundingClientRect();
         mouse.x = e.clientX - r.left;
@@ -85,7 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 p.x -= (dx/dist) * f * p.d;
                 p.y -= (dy/dist) * f * p.d;
             } else {
-                p.x -= (p.x - p.bx) * 0.1; p.y -= (p.y - p.by) * 0.1;
+                p.x -= (p.x - p.bx) * 0.1;
+                p.y -= (p.y - p.by) * 0.1;
             }
             ctx.fillStyle = 'white';
             if (p.isFlake) { ctx.font = "20px serif"; ctx.fillText('❅', p.x, p.y); }
