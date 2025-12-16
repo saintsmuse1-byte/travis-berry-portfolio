@@ -30,8 +30,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- TWEAK THESE THREE NUMBERS TO PERFECT THE TIMING ---
         const startTrigger = 0;      // Starts immediately on scroll
-        const finishLine = 850;      // LOWERED: He reaches the right side sooner (at end of Hero)
-        const verticalDrop = 120;    // LOWERED: Only drops 120px total (Very shallow)
+        const finishLine = 500;      // LOWERED: He reaches the right side sooner (at end of Hero)
+        const verticalDrop = 70;    // LOWERED: Only drops 120px total (Very shallow)
         
         const startX = -200;         // Start off-screen left
         const startY = 460;          // Starting vertical height
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
             runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
             
             // Animate legs
-            const fIdx = Math.floor(progress * 60) % RUNNER_FRAMES.length;
+            const fIdx = Math.floor(progress * 40) % RUNNER_FRAMES.length;
             runnerBoy.src = RUNNER_FRAMES[fIdx];
             
             // Fade out as he reaches the end
