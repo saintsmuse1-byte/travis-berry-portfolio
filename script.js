@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentScroll = 0;
     let targetScroll = 0;
     const SMOOTHING = 0.08;
-    const mouse = { x: -1000, y: -1000, radius: 150 };
+    const mouse = { x: -1000, y: -1000, radius: 180 };
 
     // 1. SNOW
     if (snowContainer) {
@@ -24,45 +24,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. HERO-ONLY SLOPE
+    // 2. SHALLOW SLOPE (Limited to Hero)
     function animateRunner(scrollY) {
         if (!runnerBoy || !runnerOverlay) return;
 
-        // --- SETTINGS FOR THE HERO PAGE ONLY ---
-        const startTrigger = 20;     // Starts as soon as you scroll
-        const finishLine = 1200;    // He reaches the right side at 1200px scroll (Hero end)
+        const startTrigger = 50; 
+        const finishLine = 1100; // Finish path before Art Section
         
-        // Start Position (relative to screen)
-        const startX = -100;         
-        const startY = 480;         
-        
-        // End Position (relative to screen)
-        const endX = window.innerWidth + 100; 
-        const endY = 650;           // Only 170px drop over full width = Very shallow
-        // ---------------------------------------
+        const startX = -150;
+        const startY = 450; // Starting near bottom of profile circle
+        const endX = window.innerWidth + 100;
+        const endY = 600; // Only dropping 150px = VERY shallow slope
 
         if (scrollY > startTrigger && scrollY <= finishLine) {
-            // progress goes 0 to 1 strictly within the Hero section
             let progress = (scrollY - startTrigger) / (finishLine - startTrigger);
             progress = Math.min(Math.max(progress, 0), 1);
 
-            const currentX = startX + ((endX - startX) * progress);
-            const currentY = startY + ((endY - startY) * progress);
+            const x = startX + ((endX - startX) * progress);
+            const y = startY + ((endY - startY) * progress);
 
-            runnerBoy.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
             
-            // Speed up the legs slightly for a more frantic run
             const fIdx = Math.floor(progress * 60) % RUNNER_FRAMES.length;
             runnerBoy.src = RUNNER_FRAMES[fIdx];
-            
             runnerOverlay.style.opacity = 1;
         } else {
-            // Hide him if we are at the top OR past the finish line
             runnerOverlay.style.opacity = 0;
         }
     }
 
-    // 3. ABOUT CANVAS PHYSICS
+    // 3. ABOUT CANVAS (Interaction Fix)
     const ctx = aboutCanvas.getContext('2d');
     let particles = [];
     function initCanvas() {
@@ -72,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < 90; i++) {
             let px = Math.random() * aboutCanvas.width;
             let py = Math.random() * aboutCanvas.height;
-            particles.push({ x: px, y: py, bx: px, by: py, vx: 0, vy: 0, d: (Math.random() * 15) + 5, isFlake: Math.random() > 0.7, sz: Math.random() * 3 + 1 });
+            particles.push({ x: px, y: py, bx: px, by: py, vx: 0, vy: 0, isFlake: Math.random() > 0.7, sz: Math.random() * 3 + 1 });
         }
     }
 
@@ -107,8 +98,21 @@ document.addEventListener('DOMContentLoaded', () => {
             p.x += p.vx; p.y += p.vy;
 
             ctx.fillStyle = 'white';
-            if (p.isFlake) { ctx.font = "24px serif"; ctx.fillText('❅', p.x, p.y); }
-            else { ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2); ctx.fill(); }
+            if (p.isFlake) { 
+                ctx.font = "24px serif"; ctx.fillText('❅', p.x, p.y); 
+            } else { 
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2); ctx.fill(); 
+            }
         });
         requestAnimationFrame(engine);
     }
+
+    window.addEventListener('resize', () => {
+        initCanvas();
+        document.body.style.height = smoothContent.offsetHeight + 'px';
+    });
+
+    initCanvas();
+    setTimeout(() => { document.body.style.height = smoothContent.offsetHeight + 'px'; }, 800);
+    engine();
+});
