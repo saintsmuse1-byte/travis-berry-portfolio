@@ -3,8 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const runnerBoy = document.getElementById('runner-boy'); 
     const runnerContainer = document.getElementById('runner-container');
     const mainContent = document.querySelector('.main-content');
-    const circleWrapper = document.querySelector('.circle-wrapper');
-    const artSection = document.querySelector('.art-section');
     const aboutCanvas = document.getElementById('about-canvas');
 
     if (!smoothContent || !runnerBoy || !aboutCanvas) return;
@@ -20,10 +18,33 @@ document.addEventListener('DOMContentLoaded', () => {
         'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'
     ];
 
-    // --- ABOUT SECTION SNOW LOGIC ---
+    // --- RUNNER ANIMATION (Slower & Downward) ---
+    function animateRunner(scrollY) {
+        // Start run shortly after scrolling begins
+        const startPoint = 50; 
+        // INCREASED this number (from 800 to 1200) to make the run slower
+        const animationRange = 1200; 
+        
+        if (scrollY >= startPoint && scrollY <= (startPoint + animationRange)) {
+            const progress = (scrollY - startPoint) / animationRange;
+            
+            // Move LEFT to RIGHT
+            const xTravel = (window.innerWidth - BOY_WIDTH) * progress;
+            runnerBoy.style.transform = `translateX(${xTravel}px)`;
+            
+            // Change frames based on scroll
+            const frameIndex = Math.min(Math.floor(progress * RUNNER_FRAMES.length), RUNNER_FRAMES.length - 1);
+            runnerBoy.src = RUNNER_FRAMES[frameIndex];
+            
+            runnerContainer.style.opacity = '1';
+        } else {
+            runnerContainer.style.opacity = '0';
+        }
+    }
+
+    // --- ABOUT SECTION SNOW (Dots & Flakes) ---
     let particlesArray = [];
     const mouse = { x: -1000, y: -1000, radius: 150 };
-
     window.addEventListener('mousemove', (e) => {
         const rect = aboutCanvas.getBoundingClientRect();
         mouse.x = e.clientX - rect.left;
@@ -34,22 +55,15 @@ document.addEventListener('DOMContentLoaded', () => {
         constructor() {
             this.x = Math.random() * aboutCanvas.width;
             this.y = Math.random() * aboutCanvas.height;
-            this.baseX = this.x;
-            this.baseY = this.y;
+            this.baseX = this.x; this.baseY = this.y;
             this.density = (Math.random() * 20) + 2;
             this.isSnow = Math.random() > 0.6;
             this.size = this.isSnow ? 25 : Math.random() * 3 + 1;
         }
         draw() {
             ctx.fillStyle = 'white';
-            if (this.isSnow) {
-                ctx.font = `${this.size}px serif`;
-                ctx.fillText('❅', this.x, this.y);
-            } else {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
+            if (this.isSnow) { ctx.font = `${this.size}px serif`; ctx.fillText('❅', this.x, this.y); }
+            else { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
         }
         update() {
             let dx = mouse.x - this.x;
@@ -73,50 +87,18 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < 120; i++) particlesArray.push(new Particle());
     }
 
-    // --- RUNNER POSITIONING ---
-    function animateRunner(scrollY) {
-        // Find where the profile picture is currently sitting on the screen
-        const circleBottom = circleWrapper.offsetTop + circleWrapper.offsetHeight;
-        
-        // Start run shortly after scrolling begins
-        const startPoint = 50; 
-        // Finish run before the Art Section (white) hits the middle of the screen
-        const endPoint = artSection.offsetTop - (window.innerHeight / 2);
-        const animationRange = endPoint - startPoint;
-        
-        if (scrollY >= startPoint && scrollY <= endPoint) {
-            const progress = (scrollY - startPoint) / animationRange;
-            
-            // HORIZONTAL: Move left to right
-            const xTravel = (window.innerWidth - BOY_WIDTH) * progress;
-            
-            // VERTICAL FIX: 
-            // We take the bottom of the circle, subtract the scroll amount to keep it in place,
-            // and add 60px for that "finger-width" gap.
-            const yOffset = 60; 
-            const yPos = (circleBottom - scrollY) + yOffset;
-            
-            runnerBoy.style.transform = `translate(${xTravel}px, ${yPos}px)`;
-            
-            // Frame switching
-            const frameIndex = Math.min(Math.floor(progress * RUNNER_FRAMES.length), RUNNER_FRAMES.length - 1);
-            runnerBoy.src = RUNNER_FRAMES[frameIndex];
-            
-            runnerContainer.style.opacity = '1';
-        } else {
-            // Hide him if we are before the start or past the art section
-            runnerContainer.style.opacity = '0';
-        }
-    }
-
-    // --- MAIN ENGINE ---
+    // --- MAIN RENDER LOOP ---
     function render() {
         targetScroll = window.scrollY;
         currentScroll += (targetScroll - currentScroll) * SMOOTHING_FACTOR;
+        
+        // Move entire content wrapper
         smoothContent.style.transform = `translateY(${-currentScroll}px)`;
         
+        // Move the boy horizontally
         animateRunner(currentScroll);
 
+        // Update About Section Snow
         ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
         for (let i = 0; i < particlesArray.length; i++) {
             particlesArray[i].update();
