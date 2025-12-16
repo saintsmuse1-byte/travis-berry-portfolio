@@ -36,11 +36,15 @@ body {
 
 /* --- HERO & IMAGE OVERLAP --- */
 .main-content { 
-    display: flex; flex-direction: column; align-items: center; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
     padding-top: 100px; 
-    /* 1. REDUCED PADDING: Adjusted to ensure the animation finishes just above the art section */
-    padding-bottom: 950px; 
-    min-height: 100vh; position: relative; z-index: 10; 
+    /* REDUCED: Was 950px, now 600px to pull the Art Section up */
+    padding-bottom: 600px; 
+    min-height: 100vh; 
+    position: relative; 
+    z-index: 10; 
 }
 h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8px; margin-bottom: 10px; }
 .tagline {
