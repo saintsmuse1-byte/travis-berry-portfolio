@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const SMOOTHING = 0.08;
     const mouse = { x: -1000, y: -1000, radius: 150 };
 
-    // 1. SNOW
+    // 1. SNOW GENERATION
     if (snowContainer) {
         for (let i = 0; i < 15; i++) {
             const flake = document.createElement('div');
@@ -25,48 +25,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. THE "GOD MODE" ANIMATION ENGINE
+    // 2. THE SHALLOW SLOPE ANIMATION ENGINE
     function animateRunner(scrollY) {
         if (!runnerBoy || !runnerOverlay) return;
 
-        // --- SETTINGS (Easy to understand now) ---
-        const startScroll = 50;  // User must scroll 50px before boy appears
-        const endScroll = 2000;  // At 2000px scroll, boy hits the right side
+        // --- SETTINGS ---
+        const startScroll = 50;   // Start running almost immediately
+        const endScroll = 1800;   // Finish running after 1800px of scrolling
         
-        // SCREEN COORDINATES (Where on the glass does he start/end?)
-        // Start: 500px from top (Near circle bottom), 10% from left
-        const startY = 550; 
-        const startX = window.innerWidth * 0.05; 
+        // --- SCREEN COORDINATES (The "Glass" Layer) ---
+        // Start: 480px from top of screen (Aligns with circle bottom)
+        const startY = 480; 
+        const startX = -150; // Start slightly off-screen left
         
-        // End: 1200px from top (Lower down), 100% from left (Off screen)
-        const endY = 1200; 
-        const endX = window.innerWidth; 
+        // End: 680px from top of screen (Only 200px drop = Shallow Slope)
+        const endY = 680; 
+        const endX = window.innerWidth; // Go all the way to the right edge
         // -----------------------------------------
 
         if (scrollY > startScroll && scrollY <= (endScroll + 200)) {
-            // Normalize scroll to 0.0 -> 1.0
+            // Calculate Progress (0.0 to 1.0)
             let progress = (scrollY - startScroll) / (endScroll - startScroll);
             
-            // Linear Interpolation (Lerp)
-            // Current = Start + (Difference * Progress)
+            // Linear Interpolation (Lerp) for position
             const currentX = startX + ((endX - startX) * progress);
             const currentY = startY + ((endY - startY) * progress);
 
             runnerBoy.style.transform = `translate(${currentX}px, ${currentY}px)`;
             
-            // Frame Cycle
-            const fIdx = Math.floor(progress * 40) % RUNNER_FRAMES.length;
-            const safeIdx = Math.max(0, fIdx); // Prevent -1 index error
+            // Frame Cycle (Speed of legs)
+            const fIdx = Math.floor(progress * 50) % RUNNER_FRAMES.length;
+            const safeIdx = Math.max(0, fIdx);
             runnerBoy.src = RUNNER_FRAMES[safeIdx];
             
             // Fade In/Out logic
+            // Fade out quickly at the end (progress > 0.9)
             runnerOverlay.style.opacity = (progress > 0.9) ? 0 : 1;
         } else {
             runnerOverlay.style.opacity = 0;
         }
     }
 
-    // 3. ABOUT CANVAS (Fixed Mouse Physics)
+    // 3. ABOUT CANVAS PHYSICS
     const ctx = aboutCanvas.getContext('2d');
     let particles = [];
 
@@ -87,11 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // IMPORTANT: Listen on WINDOW to catch mouse everywhere
     window.addEventListener('mousemove', e => {
-        // We only care about mouse relative to the canvas WHEN the canvas is visible
         const rect = aboutCanvas.getBoundingClientRect();
-        // If canvas is on screen
         if(rect.top < window.innerHeight && rect.bottom > 0) {
             mouse.x = e.clientX - rect.left;
             mouse.y = e.clientY - rect.top;
@@ -102,10 +99,10 @@ document.addEventListener('DOMContentLoaded', () => {
         targetScroll = window.scrollY;
         currentScroll += (targetScroll - currentScroll) * SMOOTHING;
         
-        // Apply smooth scroll to content
+        // Smooth Scroll the content
         smoothContent.style.transform = `translateY(${-currentScroll}px)`;
         
-        // Animate overlay (Uses raw scrollY for direct control)
+        // Animate Overlay (Use raw scrollY for direct control)
         animateRunner(window.scrollY);
 
         // Canvas Physics
@@ -117,7 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (dist < mouse.radius) {
                 let force = (mouse.radius - dist) / mouse.radius;
-                p.vx -= (dx / dist) * force * 15; // Higher force = more bounce
+                p.vx -= (dx / dist) * force * 15;
                 p.vy -= (dy / dist) * force * 15;
             }
 
