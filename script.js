@@ -5,13 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const aboutCanvas = document.getElementById('about-canvas');
     const snowContainer = document.getElementById('falling-snow-container');
 
-    const RUNNER_FRAMES = ['images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'];
-    let currentScroll = 0;
-    let targetScroll = 0;
-    const SMOOTHING = 0.08;
-    const mouse = { x: -1000, y: -1000, radius: 150 };
-
-    // 1. SNOW GENERATION
+    // 1. SNOWFLAKES (Header)
     if (snowContainer) {
         for (let i = 0; i < 15; i++) {
             const flake = document.createElement('div');
@@ -20,53 +14,64 @@ document.addEventListener('DOMContentLoaded', () => {
             flake.style.left = Math.random() * 100 + 'vw';
             flake.style.animationDuration = (Math.random() * 5 + 7) + 's';
             flake.style.opacity = Math.random();
-            flake.style.fontSize = (Math.random() * 15 + 10) + 'px';
+            flake.style.fontSize = (Math.random() * 10 + 10) + 'px';
             snowContainer.appendChild(flake);
         }
     }
 
-    // 2. THE SHALLOW SLOPE ANIMATION ENGINE
+    const RUNNER_FRAMES = ['images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'];
+    let currentScroll = 0;
+    let targetScroll = 0;
+    const SMOOTHING = 0.08;
+    const mouse = { x: -1000, y: -1000, radius: 150 };
+
+    // 2. THE SHALLOW SLOPE ENGINE
     function animateRunner(scrollY) {
         if (!runnerBoy || !runnerOverlay) return;
 
-        // --- SETTINGS ---
-        const startScroll = 50;   // Start running almost immediately
-        const endScroll = 1800;   // Finish running after 1800px of scrolling
+        // --- TIMING SETTINGS ---
+        const startScroll = 10;   // Start running immediately
+        const endScroll = 1800;   // Finish running BEFORE the art section arrives
         
-        // --- SCREEN COORDINATES (The "Glass" Layer) ---
-        // Start: 480px from top of screen (Aligns with circle bottom)
-        const startY = 480; 
-        const startX = -150; // Start slightly off-screen left
+        // --- SLOPE SETTINGS (The Fix) ---
+        const startY = 550; // Starts at bottom of profile circle
+        const endY = 750;   // Ends only 200px lower. (Low difference = Gentle Slope)
         
-        // End: 680px from top of screen (Only 200px drop = Shallow Slope)
-        const endY = 680; 
-        const endX = window.innerWidth; // Go all the way to the right edge
-        // -----------------------------------------
+        const startX = 0; // Starts at left edge
+        const endX = window.innerWidth; // Ends at right edge
 
         if (scrollY > startScroll && scrollY <= (endScroll + 200)) {
-            // Calculate Progress (0.0 to 1.0)
+            // Calculate progress (0.0 to 1.0)
             let progress = (scrollY - startScroll) / (endScroll - startScroll);
             
-            // Linear Interpolation (Lerp) for position
+            // MATH: Interpolate between Start and End based on scroll progress
             const currentX = startX + ((endX - startX) * progress);
             const currentY = startY + ((endY - startY) * progress);
 
             runnerBoy.style.transform = `translate(${currentX}px, ${currentY}px)`;
             
-            // Frame Cycle (Speed of legs)
+            // Frame Cycle (Speed matches scroll)
             const fIdx = Math.floor(progress * 50) % RUNNER_FRAMES.length;
             const safeIdx = Math.max(0, fIdx);
             runnerBoy.src = RUNNER_FRAMES[safeIdx];
             
-            // Fade In/Out logic
-            // Fade out quickly at the end (progress > 0.9)
-            runnerOverlay.style.opacity = (progress > 0.9) ? 0 : 1;
+            // VISIBILITY LOGIC
+            // Fade in quickly at start (0 to 0.1)
+            // Fade out quickly at end (0.8 to 1.0) so he is GONE before Art Section
+            if (progress < 0.1) {
+                runnerOverlay.style.opacity = progress * 10;
+            } else if (progress > 0.8) {
+                runnerOverlay.style.opacity = (1 - progress) * 5; 
+            } else {
+                runnerOverlay.style.opacity = 1;
+            }
+
         } else {
             runnerOverlay.style.opacity = 0;
         }
     }
 
-    // 3. ABOUT CANVAS PHYSICS
+    // 3. ABOUT CANVAS LOGIC
     const ctx = aboutCanvas.getContext('2d');
     let particles = [];
 
@@ -99,13 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
         targetScroll = window.scrollY;
         currentScroll += (targetScroll - currentScroll) * SMOOTHING;
         
-        // Smooth Scroll the content
         smoothContent.style.transform = `translateY(${-currentScroll}px)`;
         
-        // Animate Overlay (Use raw scrollY for direct control)
+        // Pass RAW scrollY to animation so it stays locked to screen position
         animateRunner(window.scrollY);
 
-        // Canvas Physics
         ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
         particles.forEach(p => {
             let dx = mouse.x - p.x;
@@ -124,11 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
             p.x += p.vx; p.y += p.vy;
 
             ctx.fillStyle = 'white';
-            if (p.isFlake) { 
-                ctx.font = "24px serif"; ctx.fillText('❅', p.x, p.y); 
-            } else { 
-                ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2); ctx.fill(); 
-            }
+            if (p.isFlake) { ctx.font = "24px serif"; ctx.fillText('❅', p.x, p.y); }
+            else { ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2); ctx.fill(); }
         });
         requestAnimationFrame(engine);
     }
