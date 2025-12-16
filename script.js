@@ -98,8 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (scrollY >= startPoint && scrollY <= endPoint) {
             const progress = (scrollY - startPoint) / animationRange;
             const xTravel = (window.innerWidth - BOY_WIDTH) * progress;
-            const startY = window.innerHeight * 0.30; 
-            const endY = window.innerHeight * 0.50;   
+            const startY = window.innerHeight * 0.40; 
+            const endY = window.innerHeight * 0.60;   
             const yTravel = startY + (endY - startY) * progress;
             runnerBoy.style.transform = `translate(${xTravel}px, ${yTravel}px)`;
             
