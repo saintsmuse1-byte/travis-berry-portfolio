@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!smoothContent || !runnerBoy || !aboutCanvas) return;
     const ctx = aboutCanvas.getContext('2d');
 
-    // --- SETTINGS ---
     let currentScroll = 0; 
     let targetScroll = 0;  
     const SMOOTHING_FACTOR = 0.07; 
@@ -18,21 +17,19 @@ document.addEventListener('DOMContentLoaded', () => {
         'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'
     ];
 
-    // --- RUNNER ANIMATION (Slower & Downward) ---
     function animateRunner(scrollY) {
-        // Start run shortly after scrolling begins
-        const startPoint = 50; 
-        // INCREASED this number (from 800 to 1200) to make the run slower
-        const animationRange = 1200; 
+        // Run starts near top and ends before Art Section
+        const startPoint = 100; 
+        const animationRange = 1400; // Increased range for a slower, smoother run
         
         if (scrollY >= startPoint && scrollY <= (startPoint + animationRange)) {
             const progress = (scrollY - startPoint) / animationRange;
             
-            // Move LEFT to RIGHT
+            // horizontal move
             const xTravel = (window.innerWidth - BOY_WIDTH) * progress;
             runnerBoy.style.transform = `translateX(${xTravel}px)`;
             
-            // Change frames based on scroll
+            // frame swap
             const frameIndex = Math.min(Math.floor(progress * RUNNER_FRAMES.length), RUNNER_FRAMES.length - 1);
             runnerBoy.src = RUNNER_FRAMES[frameIndex];
             
@@ -42,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- ABOUT SECTION SNOW (Dots & Flakes) ---
     let particlesArray = [];
     const mouse = { x: -1000, y: -1000, radius: 150 };
     window.addEventListener('mousemove', (e) => {
@@ -87,18 +83,12 @@ document.addEventListener('DOMContentLoaded', () => {
         for (let i = 0; i < 120; i++) particlesArray.push(new Particle());
     }
 
-    // --- MAIN RENDER LOOP ---
     function render() {
         targetScroll = window.scrollY;
         currentScroll += (targetScroll - currentScroll) * SMOOTHING_FACTOR;
-        
-        // Move entire content wrapper
         smoothContent.style.transform = `translateY(${-currentScroll}px)`;
-        
-        // Move the boy horizontally
         animateRunner(currentScroll);
 
-        // Update About Section Snow
         ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
         for (let i = 0; i < particlesArray.length; i++) {
             particlesArray[i].update();
