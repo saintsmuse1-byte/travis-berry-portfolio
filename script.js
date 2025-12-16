@@ -14,25 +14,30 @@ document.addEventListener('DOMContentLoaded', () => {
         'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'
     ];
 
-    // --- DIAGONAL RUNNER LOGIC ---
+    // --- GENTLE ARC RUNNER LOGIC ---
     function animate(scrollY) {
-        const start = 50;
-        const range = 1200; // Total scroll distance for the run
+        const start = 0;
+        const range = 1600; // Longer range for a slower, more visible run
         
-        if (scrollY > start && scrollY < start + range) {
-            const p = (scrollY - start) / range;
+        if (scrollY >= start && scrollY <= (start + range)) {
+            const progress = (scrollY - start) / range;
             
-            // X moves from 0 to screen width
-            const xTravel = (window.innerWidth - BOY_WIDTH) * p;
+            // X: Left to Right across the screen
+            const xTravel = (window.innerWidth - BOY_WIDTH) * progress;
             
-            // Y moves downward to follow the scroll speed
-            // This keeps him centered in the viewport as you scroll
-            const yTravel = scrollY * 0.8; 
+            // Y: The Arc
+            // 1. We start with the scroll position to keep him in the viewport
+            const followScroll = scrollY;
+            // 2. We add a Sin wave to create the "dip" under the profile picture
+            // A higher number (like 300) makes the dip deeper
+            const arcDip = Math.sin(progress * Math.PI) * 350; 
+            
+            const yTravel = followScroll + arcDip;
 
             runnerBoy.style.transform = `translate(${xTravel}px, ${yTravel}px)`;
             
-            // Frame animation
-            const frameIndex = Math.floor(p * 20) % RUNNER_FRAMES.length;
+            // Frame animation based on progress
+            const frameIndex = Math.floor(progress * 25) % RUNNER_FRAMES.length;
             runnerBoy.src = RUNNER_FRAMES[frameIndex];
             
             runnerContainer.style.opacity = 1;
@@ -41,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- ABOUT CANVAS SNOW ---
+    // --- ABOUT SECTION INTERACTIVE SNOW ---
     let particles = [];
     const mouse = { x: -1000, y: -1000, radius: 150 };
     window.addEventListener('mousemove', e => {
@@ -56,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
             this.y = Math.random() * aboutCanvas.height;
             this.bx = this.x; this.by = this.y;
             this.d = (Math.random() * 20) + 2;
-            this.s = Math.random() > 0.6;
+            this.s = Math.random() > 0.6; // 60% dots, 40% flakes
             this.sz = this.s ? 25 : Math.random() * 3 + 1;
         }
         draw() {
@@ -103,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     init();
+    // Safety delay to calculate height correctly
     setTimeout(() => { document.body.style.height = smoothContent.offsetHeight + 'px'; }, 1000);
     loop();
 });
