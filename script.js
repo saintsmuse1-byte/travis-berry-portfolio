@@ -9,10 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const snowflakesContainer = document.querySelector('.snowflakes');
     const aboutCanvas = document.getElementById('about-canvas');
 
-    if (!smoothContent || !runnerBoy || !mainContent || !aboutCanvas) {
-        console.error("Critical elements missing. Check IDs.");
-        return;
-    }
+    if (!smoothContent || !runnerBoy || !mainContent || !aboutCanvas) return;
 
     const ctx = aboutCanvas.getContext('2d');
 
@@ -31,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 4. INTERACTIVE ABOUT SNOW LOGIC ---
     let particlesArray = [];
-    const mouse = { x: -1000, y: -1000, radius: 150 }; // Start mouse off-screen
+    const mouse = { x: -1000, y: -1000, radius: 170 }; 
 
     window.addEventListener('mousemove', (event) => {
         const rect = aboutCanvas.getBoundingClientRect();
@@ -47,18 +44,23 @@ document.addEventListener('DOMContentLoaded', () => {
             this.baseY = this.y;
             this.density = (Math.random() * 20) + 5;
             
-            // 60% dots, 40% snowflakes
             this.isSnowflake = Math.random() > 0.6;
-            this.size = this.isSnowflake ? 16 : Math.random() * 3 + 1;
+            // BIGGER SNOWFLAKES: Increased size range for '❅'
+            this.size = this.isSnowflake ? Math.random() * 15 + 20 : Math.random() * 3 + 1;
+            this.rotation = Math.random() * Math.PI * 2;
         }
 
         draw() {
             ctx.fillStyle = 'white';
             if (this.isSnowflake) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
                 ctx.font = `${this.size}px serif`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
-                ctx.fillText('❅', this.x, this.y);
+                ctx.fillText('❅', 0, 0);
+                ctx.restore();
             } else {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -80,101 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.x -= directionX;
                 this.y -= directionY;
             } else {
-                if (this.x !== this.baseX) {
+                if (Math.abs(this.x - this.baseX) > 0.1) {
                     this.x -= (this.x - this.baseX) / 15;
                 }
-                if (this.y !== this.baseY) {
-                    this.y -= (this.y - this.baseY) / 15;
-                }
-            }
-        }
-    }
-
-    function initAboutSnow() {
-        aboutCanvas.width = aboutCanvas.offsetWidth;
-        aboutCanvas.height = aboutCanvas.offsetHeight;
-        particlesArray = [];
-        for (let i = 0; i < 150; i++) {
-            particlesArray.push(new SnowflakeParticle());
-        }
-    }
-
-    // --- 5. ANIMATION HELPERS ---
-    function updatePageHeight() {
-        const totalHeight = smoothContent.getBoundingClientRect().height;
-        document.body.style.height = Math.floor(totalHeight) + "px";
-    }
-
-    function animateRunner(scrollY) {
-        const startPoint = mainContent.offsetTop + 100; 
-        const animationRange = 900; 
-        const endPoint = startPoint + animationRange;
-
-        if (scrollY >= startPoint && scrollY <= endPoint) {
-            const progress = (scrollY - startPoint) / animationRange;
-            const xTravel = (window.innerWidth - BOY_WIDTH) * progress;
-            const startY = window.innerHeight * 0.30; 
-            const endY = window.innerHeight * 0.50;   
-            const yTravel = startY + (endY - startY) * progress;
-            
-            runnerBoy.style.transform = `translate(${xTravel}px, ${yTravel}px)`;
-            
-            const frameIndex = Math.min(Math.floor(progress * RUNNER_FRAMES.length), RUNNER_FRAMES.length - 1);
-            if (frameIndex !== currentFrameIndex) {
-                runnerBoy.src = RUNNER_FRAMES[frameIndex];
-                currentFrameIndex = frameIndex;
-            }
-            runnerContainer.style.opacity = '1';
-        } else {
-            runnerContainer.style.opacity = '0';
-        }
-    }
-
-    // --- 6. THE MAIN LOOP (Smooth Scroll + Runner + About Canvas) ---
-    function render() {
-        targetScroll = window.scrollY;
-        currentScroll += (targetScroll - currentScroll) * SMOOTHING_FACTOR;
-        
-        // 1. Move Page
-        smoothContent.style.transform = `translateY(${-currentScroll}px)`;
-        
-        // 2. Animate Runner
-        animateRunner(currentScroll);
-
-        // 3. Update About Canvas
-        ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
-        for (let i = 0; i < particlesArray.length; i++) {
-            particlesArray[i].update();
-            particlesArray[i].draw();
-        }
-
-        requestAnimationFrame(render);
-    }
-
-    // --- 7. VIDEO HOVER ---
-    const vidContainer = document.querySelector('.video-link');
-    const video = document.querySelector('.hover-video');
-    if (vidContainer && video) {
-        vidContainer.addEventListener('mouseenter', () => video.play());
-        vidContainer.addEventListener('mouseleave', () => {
-            video.pause();
-            video.currentTime = 0;
-        });
-    }
-
-    // --- 8. INITIALIZE ---
-    initAboutSnow();
-    updatePageHeight();
-
-    window.addEventListener('load', updatePageHeight);
-    window.addEventListener('resize', () => {
-        updatePageHeight();
-        initAboutSnow();
-    });
-
-    // Final safety height check
-    setTimeout(updatePageHeight, 1000); 
-
-    // Start everything
-    render();
-});
+                if (Math.abs(this.y - this.baseY) > 0.1) {
+                    this.y -= (this.y - this.baseY) / 15
