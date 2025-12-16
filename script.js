@@ -8,9 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const artSection = document.querySelector('.art-section');
     const snowflakesContainer = document.querySelector('.snowflakes');
     const aboutCanvas = document.getElementById('about-canvas');
-    const ctx = aboutCanvas.getContext('2d');
 
-    if (!smoothContent || !runnerBoy || !mainContent) return;
+    if (!smoothContent || !runnerBoy || !mainContent || !aboutCanvas) {
+        console.error("Critical elements missing. Check IDs.");
+        return;
+    }
+
+    const ctx = aboutCanvas.getContext('2d');
 
     // --- 2. SMOOTH SCROLL VARIABLES ---
     let currentScroll = 0; 
@@ -25,9 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const BOY_WIDTH = 350; 
     let currentFrameIndex = -1;
 
-    // --- 4. INTERACTIVE SNOW SETTINGS (ABOUT SECTION) ---
+    // --- 4. INTERACTIVE ABOUT SNOW LOGIC ---
     let particlesArray = [];
-    const mouse = { x: null, y: null, radius: 150 };
+    const mouse = { x: -1000, y: -1000, radius: 150 }; // Start mouse off-screen
 
     window.addEventListener('mousemove', (event) => {
         const rect = aboutCanvas.getBoundingClientRect();
@@ -41,26 +45,23 @@ document.addEventListener('DOMContentLoaded', () => {
             this.y = Math.random() * aboutCanvas.height;
             this.baseX = this.x;
             this.baseY = this.y;
-            this.density = (Math.random() * 30) + 1;
+            this.density = (Math.random() * 20) + 5;
             
-            // Randomly decide if this is a dot (60%) or a snowflake (40%)
+            // 60% dots, 40% snowflakes
             this.isSnowflake = Math.random() > 0.6;
-            
-            // Size adjustment: Text snowflakes need to be a bit bigger to be seen
-            this.size = this.isSnowflake ? Math.random() * 10 + 10 : Math.random() * 3 + 1;
+            this.size = this.isSnowflake ? 16 : Math.random() * 3 + 1;
         }
 
         draw() {
             ctx.fillStyle = 'white';
             if (this.isSnowflake) {
-                // Draw the snowflake character
                 ctx.font = `${this.size}px serif`;
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
                 ctx.fillText('❅', this.x, this.y);
             } else {
-                // Draw the clean dot
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.closePath();
                 ctx.fill();
             }
         }
@@ -69,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let dx = mouse.x - this.x;
             let dy = mouse.y - this.y;
             let distance = Math.sqrt(dx * dx + dy * dy);
+
             if (distance < mouse.radius) {
                 let forceDirectionX = dx / distance;
                 let forceDirectionY = dy / distance;
@@ -79,10 +81,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 this.y -= directionY;
             } else {
                 if (this.x !== this.baseX) {
-                    this.x -= (this.x - this.baseX) / 10;
+                    this.x -= (this.x - this.baseX) / 15;
                 }
                 if (this.y !== this.baseY) {
-                    this.y -= (this.y - this.baseY) / 10;
+                    this.y -= (this.y - this.baseY) / 15;
                 }
             }
         }
@@ -92,13 +94,12 @@ document.addEventListener('DOMContentLoaded', () => {
         aboutCanvas.width = aboutCanvas.offsetWidth;
         aboutCanvas.height = aboutCanvas.offsetHeight;
         particlesArray = [];
-        // Increased count slightly to make the mix feel fuller
-        for (let i = 0; i < 180; i++) {
+        for (let i = 0; i < 150; i++) {
             particlesArray.push(new SnowflakeParticle());
         }
     }
 
-    // --- 5. LOGIC FUNCTIONS ---
+    // --- 5. ANIMATION HELPERS ---
     function updatePageHeight() {
         const totalHeight = smoothContent.getBoundingClientRect().height;
         document.body.style.height = Math.floor(totalHeight) + "px";
@@ -115,9 +116,65 @@ document.addEventListener('DOMContentLoaded', () => {
             const startY = window.innerHeight * 0.30; 
             const endY = window.innerHeight * 0.50;   
             const yTravel = startY + (endY - startY) * progress;
+            
             runnerBoy.style.transform = `translate(${xTravel}px, ${yTravel}px)`;
             
             const frameIndex = Math.min(Math.floor(progress * RUNNER_FRAMES.length), RUNNER_FRAMES.length - 1);
             if (frameIndex !== currentFrameIndex) {
                 runnerBoy.src = RUNNER_FRAMES[frameIndex];
-                currentFrameIndex = frameIndex
+                currentFrameIndex = frameIndex;
+            }
+            runnerContainer.style.opacity = '1';
+        } else {
+            runnerContainer.style.opacity = '0';
+        }
+    }
+
+    // --- 6. THE MAIN LOOP (Smooth Scroll + Runner + About Canvas) ---
+    function render() {
+        targetScroll = window.scrollY;
+        currentScroll += (targetScroll - currentScroll) * SMOOTHING_FACTOR;
+        
+        // 1. Move Page
+        smoothContent.style.transform = `translateY(${-currentScroll}px)`;
+        
+        // 2. Animate Runner
+        animateRunner(currentScroll);
+
+        // 3. Update About Canvas
+        ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
+        for (let i = 0; i < particlesArray.length; i++) {
+            particlesArray[i].update();
+            particlesArray[i].draw();
+        }
+
+        requestAnimationFrame(render);
+    }
+
+    // --- 7. VIDEO HOVER ---
+    const vidContainer = document.querySelector('.video-link');
+    const video = document.querySelector('.hover-video');
+    if (vidContainer && video) {
+        vidContainer.addEventListener('mouseenter', () => video.play());
+        vidContainer.addEventListener('mouseleave', () => {
+            video.pause();
+            video.currentTime = 0;
+        });
+    }
+
+    // --- 8. INITIALIZE ---
+    initAboutSnow();
+    updatePageHeight();
+
+    window.addEventListener('load', updatePageHeight);
+    window.addEventListener('resize', () => {
+        updatePageHeight();
+        initAboutSnow();
+    });
+
+    // Final safety height check
+    setTimeout(updatePageHeight, 1000); 
+
+    // Start everything
+    render();
+});
