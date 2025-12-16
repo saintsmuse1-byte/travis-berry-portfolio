@@ -32,7 +32,9 @@ h1 {
 
 /* --- THE ARC RUNNER --- */
 #runner-container {
-    position: absolute; top: 350px; left: 0; width: 100%; height: 350px;
+    position: absolute; 
+    top: 450px; /* Aligned with the bottom-half of the circle */
+    left: 0; width: 100%; height: 350px;
     z-index: 15; pointer-events: none; opacity: 0; visibility: hidden;
 }
 #runner-boy { width: 320px; height: 320px; position: absolute; object-fit: contain; }
@@ -51,12 +53,18 @@ h1 {
 #about-canvas { position: absolute; top:0; left:0; width: 100%; height: 100%; }
 .about-container { position: relative; z-index: 10; max-width: 800px; padding: 40px; text-align: center; }
 
-/* --- CSS SNOW --- */
+/* --- SWAYING SNOW --- */
 .snow-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1500; }
-.flake { color: white; position: absolute; top: -10%; animation: fall 8s linear infinite; font-size: 1.5rem; }
+.flake { color: white; position: absolute; top: -10%; animation: fall 10s linear infinite, sway 3s ease-in-out infinite alternate; font-size: 1.5rem; }
+
 @keyframes fall { to { transform: translateY(110vh); } }
-.flake:nth-child(1) { left: 10%; animation-delay: 0s; }
-.flake:nth-child(2) { left: 30%; animation-delay: 2s; }
-.flake:nth-child(3) { left: 50%; animation-delay: 4s; }
-.flake:nth-child(4) { left: 70%; animation-delay: 1s; }
-.flake:nth-child(5) { left: 90%; animation-delay: 5s; }
+@keyframes sway { 
+    from { margin-left: -20px; } 
+    to { margin-left: 20px; } 
+}
+
+.flake:nth-child(1) { left: 10%; animation-delay: 0s, 0s; }
+.flake:nth-child(2) { left: 30%; animation-delay: 2s, 1s; }
+.flake:nth-child(3) { left: 50%; animation-delay: 4s, 0.5s; }
+.flake:nth-child(4) { left: 70%; animation-delay: 1s, 2s; }
+.flake:nth-child(5) { left: 90%; animation-delay: 5s, 1.5s; }
