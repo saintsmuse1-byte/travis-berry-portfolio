@@ -37,9 +37,15 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 
 /* --- RUNNER ANIMATION --- */
 #runner-container {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
-    z-index: 999; pointer-events: none; overflow: hidden; opacity: 0; 
-    transition: opacity 0.3s ease-out;
+    position: fixed; 
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100vh; 
+    z-index: 999; 
+    pointer-events: none; 
+    opacity: 0; 
+    /* Remove any transition for more responsive positioning */
 }
 #runner-boy { width: 350px; height: 350px; position: absolute; object-fit: contain; }
 
