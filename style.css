@@ -1,72 +1,62 @@
-/* --- RESET & BASICS --- */
+/* --- CORE --- */
 html { scroll-behavior: auto; margin: 0; padding: 0; }
 body { 
-    margin: 0; padding: 0;
-    font-family: sans-serif; 
-    background: #1b1d26; 
-    color: white; 
-    overflow-x: hidden;
+    margin: 0; padding: 0; font-family: sans-serif; 
+    background: #1b1d26; color: white; overflow-x: hidden;
 }
-
 #smooth-content { width: 100%; position: relative; }
 
 /* --- NAVBAR --- */
 .navbar { 
     position: fixed; top: 0; width: 100%; height: 60px; 
-    background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); 
+    background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); 
     z-index: 2000; display: flex; align-items: center; padding: 0 40px; 
 }
 .nav-brand { font-family: 'Trebuchet MS', sans-serif; font-size: 1.2em; letter-spacing: 2px; }
-.nav-logo-accent { font-family: Georgia, serif; font-size: 0.9em; padding-left: 5px; }
 
-/* --- HERO SECTION --- */
+/* --- HERO --- */
 .main-content { 
     display: flex; flex-direction: column; align-items: center; 
-    padding: 150px 20px 500px 20px; position: relative; min-height: 100vh;
+    padding: 150px 20px 600px 20px; position: relative; min-height: 100vh;
 }
 h1 { 
-    font-family: 'Trebuchet MS', sans-serif; 
-    font-size: clamp(3rem, 10vw, 10rem); 
-    letter-spacing: 8px; margin: 0; text-align: center; 
-    position: relative; z-index: 5;
+    font-family: 'Trebuchet MS', sans-serif; font-size: clamp(3rem, 10vw, 10rem); 
+    letter-spacing: 8px; margin: 0; position: relative; z-index: 5;
 }
-
 .circle-wrapper { 
     width: 450px; height: 450px; border-radius: 50%; overflow: hidden; 
-    margin-top: -100px; /* Overlap with Name */
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+    margin-top: -100px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
     z-index: 10; position: relative;
 }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- RUNNER --- */
+/* --- THE ARC RUNNER --- */
 #runner-container {
-    position: absolute; 
-    top: 300px; /* Starting at the midline of the circle area */
-    left: 0; width: 100%; height: 350px;
-    z-index: 15; pointer-events: none; opacity: 0;
+    position: absolute; top: 350px; left: 0; width: 100%; height: 350px;
+    z-index: 15; pointer-events: none; opacity: 0; visibility: hidden;
 }
 #runner-boy { width: 320px; height: 320px; position: absolute; object-fit: contain; }
 
-/* --- ART SECTION --- */
+/* --- ART GRID --- */
 .art-section { background: white; color: #111; padding: 100px 20px; position: relative; z-index: 100; width: 100%; box-sizing: border-box; }
 .art-container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
-.brick-row { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; width: 100%; }
-.art-item { width: 300px; flex-shrink: 0; }
-.art-item a { position: relative; display: block; aspect-ratio: 3/4; overflow: hidden; border-radius: 8px; text-decoration: none; background: #eee; }
+.brick-row { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; }
+.art-item { width: 300px; }
+.art-item a { position: relative; display: block; aspect-ratio: 3/4; overflow: hidden; border-radius: 8px; text-decoration: none; }
 .art-item img, .hover-video { width: 100%; height: 100%; object-fit: cover; display: block; transition: 0.5s; }
-.art-item:hover img { transform: scale(1.05); }
-.art-label { position: absolute; bottom: 30px; left: 15px; color: white; font-weight: bold; font-size: 1.2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-.art-metadata { position: absolute; bottom: 12px; left: 15px; color: rgba(255,255,255,0.8); font-size: 0.75rem; }
+.art-label { position: absolute; bottom: 30px; left: 15px; color: white; font-weight: bold; font-size: 1.2rem; }
 
-/* --- ABOUT SECTION --- */
+/* --- ABOUT --- */
 .about-section { background: black; min-height: 100vh; position: relative; width: 100%; display: flex; align-items: center; justify-content: center; z-index: 101; }
 #about-canvas { position: absolute; top:0; left:0; width: 100%; height: 100%; }
 .about-container { position: relative; z-index: 10; max-width: 800px; padding: 40px; text-align: center; }
-.about-text h2 { font-size: 4rem; letter-spacing: 5px; margin-bottom: 20px; color: white; }
-.about-text p { font-size: 1.5rem; line-height: 1.6; color: #ccc; }
 
-/* --- FALLING SNOW --- */
-.snowflakes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1500; }
-.snowflake { color: white; position: absolute; top: -10%; animation: fall 10s linear infinite; font-size: 1.5rem; }
+/* --- CSS SNOW --- */
+.snow-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1500; }
+.flake { color: white; position: absolute; top: -10%; animation: fall 8s linear infinite; font-size: 1.5rem; }
 @keyframes fall { to { transform: translateY(110vh); } }
+.flake:nth-child(1) { left: 10%; animation-delay: 0s; }
+.flake:nth-child(2) { left: 30%; animation-delay: 2s; }
+.flake:nth-child(3) { left: 50%; animation-delay: 4s; }
+.flake:nth-child(4) { left: 70%; animation-delay: 1s; }
+.flake:nth-child(5) { left: 90%; animation-delay: 5s; }
