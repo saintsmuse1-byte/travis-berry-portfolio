@@ -1,7 +1,5 @@
 /* --- UNIVERSAL & NAVBAR --- */
-html {
-    scroll-behavior: auto; 
-}
+html { scroll-behavior: auto; }
 
 body { 
     margin: 0; 
@@ -28,55 +26,49 @@ body {
 
 /* --- HERO SECTION --- */
 .main-content { 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    padding-top: 100px; 
-    padding-bottom: 700px; /* Slightly more room for the diagonal run */
-    min-height: 100vh; 
-    position: relative; 
-    z-index: 10; 
+    display: flex; flex-direction: column; align-items: center; 
+    padding-top: 100px; padding-bottom: 700px; 
+    min-height: 100vh; position: relative; z-index: 10; 
 }
 h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8px; margin-bottom: 10px; }
-.tagline {
-    font-size: 1.2em; font-family: Georgia, serif; font-weight: 300; margin-bottom: 50px;
-    color: rgba(255, 255, 255, 0.7);
-}
-.circle-wrapper { 
-    width: 450px; height: 450px; overflow: hidden; border-radius: 50%; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: -150px; 
-}
+.tagline { font-size: 1.2em; font-family: Georgia, serif; font-weight: 300; margin-bottom: 50px; color: rgba(255, 255, 255, 0.7); }
+.circle-wrapper { width: 450px; height: 450px; overflow: hidden; border-radius: 50%; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: -150px; }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- RUNNER ANIMATION STYLES --- */
+/* --- RUNNER ANIMATION --- */
 #runner-container {
-    position: fixed; 
-    /* We now control TOP via JavaScript for the diagonal effect */
-    top: 0; 
-    left: 0;
-    width: 100%; 
-    height: 100vh; 
-    z-index: 999; 
-    pointer-events: none; 
-    overflow: hidden;
-    opacity: 0; 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100vh; 
+    z-index: 999; pointer-events: none; overflow: hidden; opacity: 0; 
     transition: opacity 0.3s ease-out;
 }
+#runner-boy { width: 350px; height: 350px; position: absolute; object-fit: contain; }
 
-#runner-boy {
-    width: 350px; 
-    height: 350px;
-    position: absolute;
-    /* Transformation handled by JS */
-    object-fit: contain; 
-}
+/* --- ART SECTION --- */
+.art-section { background: #FFFFFF; color: #333; padding: 150px 20px; position: relative; z-index: 100; }
+.art-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 60px; } 
+.brick-row { display: flex; justify-content: center; gap: 30px; }
+.art-item { width: 280px; } 
+.art-item a { position: relative; display: block; aspect-ratio: 2/3; overflow: hidden; border-radius: 4px; }
+.art-item img, .hover-video { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+.art-item a:hover img, .art-item a:hover video { transform: scale(1.1); }
+.art-label { position: absolute; bottom: 35px; left: 15px; z-index: 5; color: rgba(255, 255, 255, 0.6); font-size: 1.5em; font-weight: 800; text-transform: uppercase; transition: color 0.3s; }
+.art-metadata { position: absolute; bottom: 15px; left: 15px; z-index: 5; color: rgba(255, 255, 255, 0.4); font-size: 0.8em; text-transform: uppercase; }
 
-/* --- FALLING SNOW --- */
-.snowflakes { 
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-    pointer-events: none; z-index: 1001; 
+/* --- ABOUT SECTION & INTERACTIVE CANVAS --- */
+.about-section {
+    position: relative; width: 100%; min-height: 100vh;
+    background-color: #000; display: flex; align-items: center;
+    justify-content: center; overflow: hidden; z-index: 101; 
 }
+#about-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; }
+.about-container { position: relative; z-index: 2; max-width: 800px; padding: 40px; text-align: center; }
+.about-text h2 { font-family: 'Trebuchet MS', sans-serif; font-size: 4rem; letter-spacing: 5px; margin-bottom: 20px; color: white; }
+.about-text p { font-family: Georgia, serif; font-size: 1.5rem; line-height: 1.6; color: rgba(255, 255, 255, 0.8); }
+
+/* --- SNOW (HEADER) --- */
+.snowflakes { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1001; }
 .snowflake { color: #fff; position: absolute; top: -10%; animation: fall 10s linear infinite; }
+@keyframes fall { to { transform: translateY(110vh); } }
 .snowflake:nth-child(1) { left: 10%; animation-delay: 0s; }
 .snowflake:nth-child(2) { left: 25%; animation-delay: 2s; }
 .snowflake:nth-child(3) { left: 40%; animation-delay: 4s; }
@@ -85,28 +77,3 @@ h1 { font-family: 'Trebuchet MS', sans-serif; font-size: 8em; letter-spacing: 8p
 .snowflake:nth-child(6) { left: 85%; animation-delay: 3s; }
 .snowflake:nth-child(7) { left: 95%; animation-delay: 7s; }
 .snowflake:nth-child(8) { left: 5%; animation-delay: 8s; }
-@keyframes fall { to { transform: translateY(110vh); } }
-
-/* --- ART SECTION --- */
-.art-section { 
-    background: #FFFFFF; 
-    color: #333; 
-    padding: 150px 20px; 
-    position: relative; 
-    z-index: 100; 
-}
-.art-container { max-width: 1000px; margin: 0 auto; display: flex; flex-direction: column; gap: 60px; } 
-.brick-row { display: flex; justify-content: center; gap: 30px; }
-.art-item { width: 280px; } 
-.art-item a { position: relative; display: block; aspect-ratio: 2/3; overflow: hidden; border-radius: 4px; }
-.art-item img, .hover-video { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-.art-item a:hover img, .art-item a:hover video { transform: scale(1.1); }
-.art-label { 
-    position: absolute; bottom: 35px; left: 15px; z-index: 5; 
-    color: rgba(255, 255, 255, 0.6); font-size: 1.5em; font-weight: 800; 
-    text-transform: uppercase; transition: color 0.3s;
-}
-.art-metadata {
-    position: absolute; bottom: 15px; left: 15px; z-index: 5;
-    color: rgba(255, 255, 255, 0.4); font-size: 0.8em; text-transform: uppercase;
-}
