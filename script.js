@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('mousemove', (event) => {
         const rect = aboutCanvas.getBoundingClientRect();
-        // Adjust mouse Y for the smooth scroll translation
         mouse.x = event.clientX - rect.left;
         mouse.y = event.clientY - rect.top;
     });
@@ -40,18 +39,32 @@ document.addEventListener('DOMContentLoaded', () => {
         constructor() {
             this.x = Math.random() * aboutCanvas.width;
             this.y = Math.random() * aboutCanvas.height;
-            this.size = Math.random() * 3 + 1;
             this.baseX = this.x;
             this.baseY = this.y;
             this.density = (Math.random() * 30) + 1;
+            
+            // Randomly decide if this is a dot (60%) or a snowflake (40%)
+            this.isSnowflake = Math.random() > 0.6;
+            
+            // Size adjustment: Text snowflakes need to be a bit bigger to be seen
+            this.size = this.isSnowflake ? Math.random() * 10 + 10 : Math.random() * 3 + 1;
         }
+
         draw() {
             ctx.fillStyle = 'white';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.fill();
+            if (this.isSnowflake) {
+                // Draw the snowflake character
+                ctx.font = `${this.size}px serif`;
+                ctx.fillText('❅', this.x, this.y);
+            } else {
+                // Draw the clean dot
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.fill();
+            }
         }
+
         update() {
             let dx = mouse.x - this.x;
             let dy = mouse.y - this.y;
@@ -79,7 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
         aboutCanvas.width = aboutCanvas.offsetWidth;
         aboutCanvas.height = aboutCanvas.offsetHeight;
         particlesArray = [];
-        for (let i = 0; i < 150; i++) {
+        // Increased count slightly to make the mix feel fuller
+        for (let i = 0; i < 180; i++) {
             particlesArray.push(new SnowflakeParticle());
         }
     }
@@ -98,59 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (scrollY >= startPoint && scrollY <= endPoint) {
             const progress = (scrollY - startPoint) / animationRange;
             const xTravel = (window.innerWidth - BOY_WIDTH) * progress;
-            const startY = window.innerHeight * 0.40; 
-            const endY = window.innerHeight * 0.60;   
+            const startY = window.innerHeight * 0.30; 
+            const endY = window.innerHeight * 0.50;   
             const yTravel = startY + (endY - startY) * progress;
             runnerBoy.style.transform = `translate(${xTravel}px, ${yTravel}px)`;
             
             const frameIndex = Math.min(Math.floor(progress * RUNNER_FRAMES.length), RUNNER_FRAMES.length - 1);
             if (frameIndex !== currentFrameIndex) {
                 runnerBoy.src = RUNNER_FRAMES[frameIndex];
-                currentFrameIndex = frameIndex;
-            }
-            runnerContainer.style.opacity = '1';
-        } else {
-            runnerContainer.style.opacity = '0';
-        }
-    }
-
-    // --- 6. RENDER LOOP ---
-    function render() {
-        targetScroll = window.scrollY;
-        currentScroll += (targetScroll - currentScroll) * SMOOTHING_FACTOR;
-        smoothContent.style.transform = `translateY(${-currentScroll}px)`;
-        
-        animateRunner(currentScroll);
-
-        // Update Interactive Snow
-        ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
-        for (let i = 0; i < particlesArray.length; i++) {
-            particlesArray[i].update();
-            particlesArray[i].draw();
-        }
-
-        requestAnimationFrame(render);
-    }
-
-    // --- 7. VIDEO HOVER ---
-    const vidContainer = document.querySelector('.video-link');
-    const video = document.querySelector('.hover-video');
-    if (vidContainer && video) {
-        vidContainer.addEventListener('mouseenter', () => video.play());
-        vidContainer.addEventListener('mouseleave', () => {
-            video.pause();
-            video.currentTime = 0;
-        });
-    }
-
-    // --- 8. INITIALIZE ---
-    initAboutSnow();
-    updatePageHeight();
-    window.addEventListener('load', updatePageHeight);
-    window.addEventListener('resize', () => {
-        updatePageHeight();
-        initAboutSnow();
-    });
-    setTimeout(updatePageHeight, 1000); 
-    render();
-});
+                currentFrameIndex = frameIndex
