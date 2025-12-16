@@ -2,109 +2,90 @@ document.addEventListener('DOMContentLoaded', () => {
     const smoothContent = document.getElementById('smooth-content');
     const runnerBoy = document.getElementById('runner-boy'); 
     const runnerContainer = document.getElementById('runner-container');
-    const mainContent = document.querySelector('.main-content');
     const aboutCanvas = document.getElementById('about-canvas');
-
-    if (!smoothContent || !runnerBoy || !aboutCanvas) return;
     const ctx = aboutCanvas.getContext('2d');
 
-    let currentScroll = 0; 
-    let targetScroll = 0;  
-    const SMOOTHING_FACTOR = 0.07; 
-    const BOY_WIDTH = 350; 
+    let currentScroll = 0;
+    let targetScroll = 0;
+    const SMOOTHING = 0.07;
+    const BOY_WIDTH = 300;
+
     const RUNNER_FRAMES = [
-        'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG',
         'images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'
     ];
 
-    function animateRunner(scrollY) {
-        // Run starts near top and ends before Art Section
-        const startPoint = 100; 
-        const animationRange = 1400; // Increased range for a slower, smoother run
-        
-        if (scrollY >= startPoint && scrollY <= (startPoint + animationRange)) {
-            const progress = (scrollY - startPoint) / animationRange;
-            
-            // horizontal move
-            const xTravel = (window.innerWidth - BOY_WIDTH) * progress;
-            runnerBoy.style.transform = `translateX(${xTravel}px)`;
-            
-            // frame swap
-            const frameIndex = Math.min(Math.floor(progress * RUNNER_FRAMES.length), RUNNER_FRAMES.length - 1);
-            runnerBoy.src = RUNNER_FRAMES[frameIndex];
-            
-            runnerContainer.style.opacity = '1';
-        } else {
-            runnerContainer.style.opacity = '0';
-        }
-    }
-
-    let particlesArray = [];
+    // --- SNOW LOGIC ---
+    let particles = [];
     const mouse = { x: -1000, y: -1000, radius: 150 };
-    window.addEventListener('mousemove', (e) => {
-        const rect = aboutCanvas.getBoundingClientRect();
-        mouse.x = e.clientX - rect.left;
-        mouse.y = e.clientY - rect.top;
+    window.addEventListener('mousemove', e => {
+        const r = aboutCanvas.getBoundingClientRect();
+        mouse.x = e.clientX - r.left;
+        mouse.y = e.clientY - r.top;
     });
 
-    class Particle {
+    class P {
         constructor() {
             this.x = Math.random() * aboutCanvas.width;
             this.y = Math.random() * aboutCanvas.height;
-            this.baseX = this.x; this.baseY = this.y;
-            this.density = (Math.random() * 20) + 2;
-            this.isSnow = Math.random() > 0.6;
-            this.size = this.isSnow ? 25 : Math.random() * 3 + 1;
+            this.bx = this.x; this.by = this.y;
+            this.d = (Math.random() * 20) + 2;
+            this.s = Math.random() > 0.6;
+            this.sz = this.s ? 25 : Math.random() * 3 + 1;
         }
         draw() {
             ctx.fillStyle = 'white';
-            if (this.isSnow) { ctx.font = `${this.size}px serif`; ctx.fillText('❅', this.x, this.y); }
-            else { ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+            if (this.s) { ctx.font = `${this.sz}px serif`; ctx.fillText('❅', this.x, this.y); }
+            else { ctx.beginPath(); ctx.arc(this.x, this.y, this.sz, 0, Math.PI*2); ctx.fill(); }
         }
         update() {
-            let dx = mouse.x - this.x;
-            let dy = mouse.y - this.y;
-            let distance = Math.sqrt(dx * dx + dy * dy);
-            if (distance < mouse.radius) {
-                let force = (mouse.radius - distance) / mouse.radius;
-                this.x -= (dx / distance) * force * this.density;
-                this.y -= (dy / distance) * force * this.density;
+            let dx = mouse.x - this.x, dy = mouse.y - this.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < mouse.radius) {
+                let f = (mouse.radius - dist) / mouse.radius;
+                this.x -= (dx/dist) * f * this.d;
+                this.y -= (dy/dist) * f * this.d;
             } else {
-                this.x -= (this.x - this.baseX) * 0.1;
-                this.y -= (this.y - this.baseY) * 0.1;
+                this.x -= (this.x - this.bx) * 0.1;
+                this.y -= (this.y - this.by) * 0.1;
             }
         }
     }
 
-    function initAboutSnow() {
+    function init() {
         aboutCanvas.width = aboutCanvas.offsetWidth;
         aboutCanvas.height = aboutCanvas.offsetHeight;
-        particlesArray = [];
-        for (let i = 0; i < 120; i++) particlesArray.push(new Particle());
+        particles = [];
+        for(let i=0; i<120; i++) particles.push(new P());
     }
 
-    function render() {
-        targetScroll = window.scrollY;
-        currentScroll += (targetScroll - currentScroll) * SMOOTHING_FACTOR;
-        smoothContent.style.transform = `translateY(${-currentScroll}px)`;
-        animateRunner(currentScroll);
-
-        ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
-        for (let i = 0; i < particlesArray.length; i++) {
-            particlesArray[i].update();
-            particlesArray[i].draw();
+    function animate(scrollY) {
+        const start = 50, range = 1500;
+        if (scrollY > start && scrollY < start + range) {
+            const p = (scrollY - start) / range;
+            runnerBoy.style.transform = `translateX(${(window.innerWidth - BOY_WIDTH) * p}px)`;
+            runnerBoy.src = RUNNER_FRAMES[Math.floor(p * RUNNER_FRAMES.length) % RUNNER_FRAMES.length];
+            runnerContainer.style.opacity = 1;
+        } else {
+            runnerContainer.style.opacity = 0;
         }
-        requestAnimationFrame(render);
     }
 
-    function updateHeight() {
-        document.body.style.height = smoothContent.getBoundingClientRect().height + "px";
+    function loop() {
+        targetScroll = window.scrollY;
+        currentScroll += (targetScroll - currentScroll) * SMOOTHING;
+        smoothContent.style.transform = `translateY(${-currentScroll}px)`;
+        animate(currentScroll);
+        ctx.clearRect(0,0,aboutCanvas.width, aboutCanvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        requestAnimationFrame(loop);
     }
 
-    initAboutSnow();
-    updateHeight();
-    window.addEventListener('resize', () => { updateHeight(); initAboutSnow(); });
-    window.addEventListener('load', updateHeight);
-    setTimeout(updateHeight, 1500);
-    render();
+    window.addEventListener('resize', () => {
+        document.body.style.height = smoothContent.offsetHeight + 'px';
+        init();
+    });
+
+    init();
+    setTimeout(() => { document.body.style.height = smoothContent.offsetHeight + 'px'; }, 1000);
+    loop();
 });
