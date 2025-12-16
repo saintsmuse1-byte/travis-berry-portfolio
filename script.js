@@ -12,11 +12,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let targetScroll = 0;
     const SMOOTHING = 0.08;
 
-    // --- ARC ANIMATION ---
+    // --- GENTLE ARC ANIMATION ---
     function animateRunner(scrollY) {
         if (!runnerBoy || !runnerContainer) return;
         const start = 0;
-        const range = 1800; // Distance he runs
+        const range = 2200; // Increased range makes the move feel slower and wider
         
         if (scrollY > start && scrollY < start + range) {
             const progress = (scrollY - start) / range;
@@ -24,14 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // X: Left to Right
             const x = (window.innerWidth - 320) * progress;
             
-            // Y: Follow Scroll + Sin Wave Arc (Dips 350px)
-            const yArc = Math.sin(progress * Math.PI) * 350;
-            const y = scrollY + yArc;
+            // Y: Follow Scroll + Shallow Sin Wave Arc
+            // Reduced from 350 to 180 for a "gentle" curve
+            const arcDip = Math.sin(progress * Math.PI) * 180;
+            const y = scrollY + arcDip;
 
             runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
             
-            // Frame Switch
-            const frame = Math.floor(progress * 20) % RUNNER_FRAMES.length;
+            // Frame Switch - keeping it tied to progress
+            const frame = Math.floor(progress * 24) % RUNNER_FRAMES.length;
             runnerBoy.src = RUNNER_FRAMES[frame];
             
             runnerContainer.style.opacity = 1;
@@ -42,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- CANVAS SNOW ---
+    // --- CANVAS SNOW (ABOUT SECTION) ---
     let particles = [];
     const mouse = { x: -1000, y: -1000, radius: 150 };
     window.addEventListener('mousemove', e => {
@@ -52,9 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     class Particle {
-        constructor() {
-            this.init();
-        }
+        constructor() { this.init(); }
         init() {
             this.x = Math.random() * aboutCanvas.width;
             this.y = Math.random() * aboutCanvas.height;
@@ -113,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.height = smoothContent.offsetHeight + 'px';
     });
 
-    // Start
     initCanvas();
     setTimeout(() => { document.body.style.height = smoothContent.offsetHeight + 'px'; }, 500);
     engine();
