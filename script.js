@@ -1,64 +1,100 @@
 document.addEventListener('DOMContentLoaded', () => {
     const smoothContent = document.getElementById('smooth-content');
     const runnerOverlay = document.getElementById('runner-overlay');
-    const runnerBoy = document.getElementById('runner-boy'); 
+    const runnerBoy = document.getElementById('runner-boy');
+    const snowOverlay = document.getElementById('snow-overlay');
+    const aboutCanvas = document.getElementById('about-canvas');
 
     const RUNNER_FRAMES = ['images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'];
-    
-    let currentY = 0;
-    let targetY = 0;
-    const easing = 0.06; // JACK ELDER SMOOTHNESS: Lower is smoother/heavier.
+    let currentY = 0, targetY = 0;
+    const easing = 0.07;
+    const mouse = { x: -1000, y: -1000, radius: 150 };
 
-    function animate() {
-        // 1. SMOOTH SCROLL ENGINE
+    // 1. GENERATE SNOW
+    for (let i = 0; i < 20; i++) {
+        const flake = document.createElement('div');
+        flake.className = 'snow-flake-js';
+        flake.innerHTML = '❅';
+        flake.style.left = Math.random() * 100 + 'vw';
+        flake.style.animationDuration = (Math.random() * 5 + 5) + 's';
+        flake.style.opacity = Math.random() * 0.7 + 0.3;
+        snowOverlay.appendChild(flake);
+    }
+
+    // 2. CANVAS PARTICLES (About Section)
+    const ctx = aboutCanvas.getContext('2d');
+    let particles = [];
+    function initCanvas() {
+        aboutCanvas.width = aboutCanvas.offsetWidth;
+        aboutCanvas.height = aboutCanvas.offsetHeight;
+        particles = [];
+        for (let i = 0; i < 80; i++) {
+            let x = Math.random() * aboutCanvas.width;
+            let y = Math.random() * aboutCanvas.height;
+            particles.push({ x, y, bx: x, by: y, vx: 0, vy: 0, sz: Math.random() * 3 + 1 });
+        }
+    }
+
+    window.addEventListener('mousemove', (e) => {
+        const rect = aboutCanvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    });
+
+    function engine() {
         targetY = window.scrollY;
         currentY += (targetY - currentY) * easing;
-        
-        // Move content with sub-pixel precision
         smoothContent.style.transform = `translate3d(0, ${-currentY.toFixed(2)}px, 0)`;
 
-        // 2. RUNNER LOGIC
+        // RUNNER ANIMATION
         if (runnerBoy && runnerOverlay) {
-            const startTrigger = 50; 
-            const finishLine = 1200; // Finish by end of Hero
+            const startLine = 20;
+            const finishLine = 950; // Ends well before the white art section
 
-            if (targetY > startTrigger && targetY < finishLine) {
-                let progress = (targetY - startTrigger) / (finishLine - startTrigger);
-                progress = Math.min(Math.max(progress, 0), 1);
+            if (targetY > startLine && targetY < finishLine + 200) {
+                let progress = Math.min(Math.max((targetY - startLine) / (finishLine - startLine), 0), 1);
+                runnerOverlay.style.opacity = (progress > 0.01 && progress < 0.98) ? 1 : 0;
 
-                runnerOverlay.style.opacity = "1";
+                const bx = -250 + (window.innerWidth + 500) * progress;
+                // Vertical Slope Fix: Reduced from 120 to 80 to keep him higher up
+                const by = 420 + (80 * progress); 
+                runnerBoy.style.transform = `translate(${bx}px, ${by}px)`;
 
-                // Shallow Slope Path
-                const x = -300 + (window.innerWidth + 600) * progress;
-                const y = 450 + (120 * progress);
-                runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
-
-                // SLOW RUNNING SPEED
-                // Increased divisor to 120 to slow down leg movement significantly
-                const fIdx = Math.floor(targetY / 120) % RUNNER_FRAMES.length; 
+                const fIdx = Math.floor(targetY / 100) % RUNNER_FRAMES.length;
                 runnerBoy.src = RUNNER_FRAMES[fIdx];
             } else {
-                runnerOverlay.style.opacity = "0";
+                runnerOverlay.style.opacity = 0;
             }
         }
 
-        requestAnimationFrame(animate);
+        // ABOUT CANVAS DRAWING
+        ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
+        particles.forEach(p => {
+            let dx = mouse.x - p.x, dy = mouse.y - p.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist < mouse.radius) {
+                let force = (mouse.radius - dist) / mouse.radius;
+                p.vx -= (dx / dist) * force * 10;
+                p.vy -= (dy / dist) * force * 10;
+            }
+            p.vx += (p.bx - p.x) * 0.05;
+            p.vy += (p.by - p.y) * 0.05;
+            p.vx *= 0.9; p.vy *= 0.9;
+            p.x += p.vx; p.y += p.vy;
+            ctx.fillStyle = 'white';
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2); ctx.fill();
+        });
+
+        requestAnimationFrame(engine);
     }
 
-    // UPDATES THE "GHOST HEIGHT" OF THE BODY
     function updateHeight() {
-        if (smoothContent) {
-            const h = smoothContent.getBoundingClientRect().height;
-            document.body.style.height = Math.floor(h) + "px";
-        }
+        document.body.style.height = Math.floor(smoothContent.offsetHeight) + "px";
     }
 
-    // Listen for resize and initial load
-    window.addEventListener('resize', updateHeight);
-    
-    // Start loop
-    animate();
-    
-    // Delay height check slightly to ensure images/fonts are rendered
+    window.addEventListener('resize', () => { initCanvas(); updateHeight(); });
+    initCanvas();
+    updateHeight();
     setTimeout(updateHeight, 1000);
+    engine();
 });
