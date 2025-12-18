@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mouse = { x: -1000, y: -1000, radius: 150 };
 
     // 1. GENERATE SNOW
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 25; i++) {
         const flake = document.createElement('div');
         flake.className = 'snow-flake-js';
         flake.innerHTML = '❅';
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         snowOverlay.appendChild(flake);
     }
 
-    // 2. CANVAS PARTICLES (About Section)
+    // 2. CANVAS PARTICLES
     const ctx = aboutCanvas.getContext('2d');
     let particles = [];
     function initCanvas() {
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('mousemove', (e) => {
         const rect = aboutCanvas.getBoundingClientRect();
         mouse.x = e.clientX - rect.left;
-        mouse.y = e.clientY - rect.top;
+        mouse.y = e.clientY - (rect.top + window.scrollY); // Account for smooth scroll
     });
 
     function engine() {
@@ -46,21 +46,25 @@ document.addEventListener('DOMContentLoaded', () => {
         currentY += (targetY - currentY) * easing;
         smoothContent.style.transform = `translate3d(0, ${-currentY.toFixed(2)}px, 0)`;
 
-        // RUNNER ANIMATION
+        // CURVED RUNNER ANIMATION
         if (runnerBoy && runnerOverlay) {
-            const startLine = 20;
-            const finishLine = 950; // Ends well before the white art section
+            const startLine = 10;
+            const finishLine = 1000;
 
             if (targetY > startLine && targetY < finishLine + 200) {
                 let progress = Math.min(Math.max((targetY - startLine) / (finishLine - startLine), 0), 1);
                 runnerOverlay.style.opacity = (progress > 0.01 && progress < 0.98) ? 1 : 0;
 
-                const bx = -250 + (window.innerWidth + 500) * progress;
-                // Vertical Slope Fix: Reduced from 120 to 80 to keep him higher up
-                const by = 420 + (80 * progress); 
+                const bx = -300 + (window.innerWidth + 600) * progress;
+                
+                // THE SCOOP: Dip down and pull back up
+                // (550 * progress^2) - (450 * progress) creates the curve
+                const curveDip = (550 * (progress * progress)) - (450 * progress);
+                const by = 420 + curveDip; 
+                
                 runnerBoy.style.transform = `translate(${bx}px, ${by}px)`;
 
-                const fIdx = Math.floor(targetY / 100) % RUNNER_FRAMES.length;
+                const fIdx = Math.floor(targetY / 120) % RUNNER_FRAMES.length;
                 runnerBoy.src = RUNNER_FRAMES[fIdx];
             } else {
                 runnerOverlay.style.opacity = 0;
