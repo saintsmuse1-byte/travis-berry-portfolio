@@ -5,21 +5,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const RUNNER_FRAMES = ['images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'];
     let currentY = 0, targetY = 0;
-    const easing = 0.07;
+    const easing = 0.07; // Smoothness
 
     function engine() {
         targetY = window.scrollY;
         currentY += (targetY - currentY) * easing;
         
-        // This moves the page content
         if(smoothContent) {
             smoothContent.style.transform = `translate3d(0, ${-currentY.toFixed(2)}px, 0)`;
         }
 
-        // --- UPDATED CURVE WITH TURN-UP ---
         if (runnerBoy && runnerOverlay) {
             const startLine = 50;
-            const finishLine = 1100;
+            const finishLine = 1200;
 
             if (targetY > startLine && targetY < finishLine) {
                 let progress = (targetY - startLine) / (finishLine - startLine);
@@ -28,9 +26,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const bx = -300 + (window.innerWidth + 600) * progress;
                 
-                // Curve Math: dips then turns back up
-                // (600 * progress^2) - (500 * progress) 
-                const curve = (600 * Math.pow(progress, 2)) - (500 * progress);
+                // --- THE TURN-UP MATH ---
+                // This creates a "U" shape that lifts at the end
+                const curve = (650 * Math.pow(progress, 2)) - (550 * progress);
                 const by = 420 + curve; 
                 
                 runnerBoy.style.transform = `translate(${bx}px, ${by}px)`;
@@ -44,16 +42,16 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(engine);
     }
 
-    // THIS FIXES THE SCROLLING: It creates the space to scroll into
-    function resize() {
+    // FUNCTION TO ENABLE SCROLLBAR
+    function refreshHeight() {
         if (smoothContent) {
             document.body.style.height = smoothContent.getBoundingClientRect().height + "px";
         }
     }
 
-    window.addEventListener('resize', resize);
-    window.addEventListener('load', resize);
+    window.addEventListener('resize', refreshHeight);
+    window.addEventListener('load', refreshHeight);
     
     engine();
-    setTimeout(resize, 500); // Back-up check
+    setTimeout(refreshHeight, 1000); // Ensures height is set after images load
 });
