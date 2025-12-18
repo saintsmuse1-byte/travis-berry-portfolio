@@ -1,14 +1,15 @@
-/* --- UNIVERSAL --- */
+/* --- UNIVERSAL RESET --- */
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     background: #1b1d26;
     color: white;
-    /* Do NOT set height: 100% here; let the script handle it */
+    font-family: sans-serif;
+    overflow-x: hidden;
 }
 
-/* THE CONTAINER THAT MOVES */
+/* THE SMOOTH SCROLL ENGINE */
 #smooth-content {
     position: fixed;
     top: 0;
@@ -16,27 +17,36 @@ html, body {
     width: 100%;
     will-change: transform;
     z-index: 10;
-    display: block; /* Ensure sections stack vertically */
 }
 
-/* YOUR FROSTED NAVBAR */
+/* --- YOUR FROSTED NAVBAR --- */
 .navbar {
-    position: fixed; /* Keep it pinned to the glass */
+    position: fixed;
     top: 0;
     width: 100%;
-    height: 80px;
-    background: rgba(27, 29, 38, 0.7); /* Matching your dark theme */
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    height: 70px;
+    background: rgba(27, 29, 38, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     z-index: 2000;
     display: flex;
     align-items: center;
-    padding: 0 50px;
+    padding: 0 40px;
     box-sizing: border-box;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* RUNNER OVERLAY */
+.nav-brand {
+    font-size: 1.2rem;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.nav-logo-accent {
+    color: #888;
+}
+
+/* --- RUNNER OVERLAY --- */
 #runner-overlay {
     position: fixed;
     top: 0;
@@ -46,12 +56,4 @@ html, body {
     z-index: 1500;
     pointer-events: none;
     opacity: 0;
-}
-#runner-boy { position: absolute; width: 280px; }
-
-/* SECTIONS - Ensure they take up full height so they don't overlap */
-section {
-    width: 100%;
-    min-height: 100vh;
-    position: relative;
 }
