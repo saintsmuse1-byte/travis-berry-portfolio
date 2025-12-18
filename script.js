@@ -5,56 +5,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const RUNNER_FRAMES = ['images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'];
     
-    // SMOOTH SCROLL VARIABLES
-    let currentY = 0;   // The position currently being displayed
-    let targetY = 0;    // The actual position of the scroll bar
-    const easing = 0.07; // JACK ELDER EFFECT: Lower = smoother/heavier (try 0.05 to 0.1)
+    let currentY = 0;
+    let targetY = 0;
+    const easing = 0.06; // JACK ELDER SMOOTHNESS: Lower is smoother/heavier.
 
     function animate() {
-        // 1. SMOOTH SCROLL LOGIC
+        // 1. SMOOTH SCROLL ENGINE
         targetY = window.scrollY;
         currentY += (targetY - currentY) * easing;
         
-        // Move the whole page content smoothly
-        smoothContent.style.transform = `translateY(-${currentY}px)`;
+        // Move content with sub-pixel precision
+        smoothContent.style.transform = `translate3d(0, ${-currentY.toFixed(2)}px, 0)`;
 
-        // 2. RUNNER ANIMATION
+        // 2. RUNNER LOGIC
         if (runnerBoy && runnerOverlay) {
-            const startTrigger = 10;    // Starts after 10px of scroll
-            const finishLine = 900;     // Ends at the bottom of Hero
-            
-            if (targetY > startTrigger && targetY < finishLine + 200) {
+            const startTrigger = 50; 
+            const finishLine = 1200; // Finish by end of Hero
+
+            if (targetY > startTrigger && targetY < finishLine) {
                 let progress = (targetY - startTrigger) / (finishLine - startTrigger);
                 progress = Math.min(Math.max(progress, 0), 1);
 
-                // APPEARANCE: Fade in quickly at start, fade out at end
-                runnerOverlay.style.opacity = progress > 0.01 && progress < 0.95 ? 1 : 0;
+                runnerOverlay.style.opacity = "1";
 
-                // POSITION: Horizontal and Shallow Vertical Slope
-                const x = -200 + (window.innerWidth + 400) * progress;
-                const y = 450 + (130 * progress);
+                // Shallow Slope Path
+                const x = -300 + (window.innerWidth + 600) * progress;
+                const y = 450 + (120 * progress);
                 runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
 
-                // LEG SPEED: Lower number = Slower legs. 
-                // Changed from 35 to 15 for a much slower run.
-                const fIdx = Math.floor(targetY / 80) % RUNNER_FRAMES.length; 
+                // SLOW RUNNING SPEED
+                // Increased divisor to 120 to slow down leg movement significantly
+                const fIdx = Math.floor(targetY / 120) % RUNNER_FRAMES.length; 
                 runnerBoy.src = RUNNER_FRAMES[fIdx];
             } else {
-                runnerOverlay.style.opacity = 0;
+                runnerOverlay.style.opacity = "0";
             }
         }
 
         requestAnimationFrame(animate);
     }
 
-    // Set the body height so the scrollbar exists
+    // UPDATES THE "GHOST HEIGHT" OF THE BODY
     function updateHeight() {
-        document.body.style.height = smoothContent.getBoundingClientRect().height + 'px';
+        if (smoothContent) {
+            const h = smoothContent.getBoundingClientRect().height;
+            document.body.style.height = Math.floor(h) + "px";
+        }
     }
 
+    // Listen for resize and initial load
     window.addEventListener('resize', updateHeight);
-    updateHeight(); // Initial check
     
-    // Start the animation loop
+    // Start loop
     animate();
+    
+    // Delay height check slightly to ensure images/fonts are rendered
+    setTimeout(updateHeight, 1000);
 });
