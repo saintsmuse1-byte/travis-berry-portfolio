@@ -1,14 +1,15 @@
+/* --- RESTORING YOUR BRANDING --- */
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     background: #1b1d26;
     color: white;
-    font-family: sans-serif;
+    font-family: sans-serif; /* Replace with your specific font if different */
     overflow-x: hidden;
+    /* We allow the body to have height so the scrollbar works */
 }
 
-/* THE SMOOTH SCROLL CONTAINER */
 #smooth-content {
     position: fixed;
     top: 0;
@@ -18,31 +19,23 @@ html, body {
     z-index: 10;
 }
 
-/* SNOW OVERLAY */
-#snow-overlay {
+/* YOUR FROSTED NAVBAR */
+.navbar {
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 2000; /* Highest layer */
+    height: 70px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    box-sizing: border-box;
 }
 
-.snow-flake-js {
-    position: absolute;
-    color: white;
-    font-size: 1.2rem;
-    pointer-events: none;
-    animation: fall-js linear infinite;
-}
-
-@keyframes fall-js {
-    from { transform: translateY(-50px); }
-    to { transform: translateY(110vh); }
-}
-
-/* RUNNER OVERLAY */
+/* --- THE RUNNER (The Glass Layer) --- */
 #runner-overlay {
     position: fixed;
     top: 0;
@@ -53,22 +46,18 @@ html, body {
     pointer-events: none;
     opacity: 0;
 }
+#runner-boy { position: absolute; width: 280px; }
 
-#runner-boy { position: absolute; width: 280px; height: auto; }
+/* --- SECTIONS --- */
+.main-content { 
+    min-height: 100vh; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    padding-bottom: 300px; 
+}
 
-/* SECTIONS */
-.main-content { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 150px 0 300px 0; }
-h1 { font-size: clamp(4rem, 15vw, 11rem); font-weight: 900; letter-spacing: -5px; margin: 0; }
-.circle-wrapper { width: 450px; height: 450px; border-radius: 50%; overflow: hidden; margin-top: -50px; }
-.circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+h1 { font-size: 8rem; font-weight: 900; margin: 0; }
 
-.art-section { background: white; color: black; padding: 120px 0; z-index: 100; position: relative; }
-.art-container { max-width: 1200px; margin: 0 auto; }
-.brick-row { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
-.art-item { width: 320px; position: relative; }
-.art-item img, .hover-video { width: 100%; height: 400px; object-fit: cover; }
-.art-label { position: absolute; bottom: 15px; left: 15px; color: white; font-weight: bold; }
-
-.about-section { background: black; min-height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; z-index: 101; }
-#about-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-.about-container { position: relative; z-index: 10; max-width: 650px; text-align: center; }
+.art-section { background: white; color: black; padding: 100px 0; position: relative; z-index: 100; }
