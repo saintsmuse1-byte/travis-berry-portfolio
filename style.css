@@ -1,40 +1,51 @@
-/* --- UNIVERSAL --- */
-html, body { margin: 0; padding: 0; font-family: sans-serif; background: #1b1d26; color: white; overflow-x: hidden; }
-#smooth-content { width: 100%; position: relative; z-index: 10; }
-
-/* --- NAVBAR (Restored to your style) --- */
-.navbar { position: fixed; top: 0; width: 100%; height: 60px; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; padding: 0 40px; }
-.nav-brand { font-size: 1.2em; letter-spacing: 2px; font-weight: bold; }
-.nav-logo-accent { color: #888; }
-
-/* --- HERO (Restored original sizes) --- */
-.main-content { display: flex; flex-direction: column; align-items: center; padding: 150px 20px 600px 20px; position: relative; min-height: 100vh; }
-h1 { font-size: clamp(4rem, 12vw, 10rem); margin: 0; z-index: 5; font-weight: 900; letter-spacing: -2px; }
-
-.circle-wrapper { width: 450px; height: 450px; border-radius: 50%; overflow: hidden; margin-top: -60px; z-index: 10; position: relative; }
-.circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-
-/* --- THE RUNNER OVERLAY (Fixed layer) --- */
-#runner-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 50; overflow: hidden; opacity: 0;
+/* --- UNIVERSAL RESET --- */
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: #1b1d26;
+    color: white;
+    overflow-x: hidden;
+    /* We don't set overflow: hidden on body because we need the scrollbar 
+       to exist for the JS to calculate the scroll position. */
 }
-#runner-boy { position: absolute; width: 280px; height: 280px; object-fit: contain; }
 
-/* --- ART SECTION --- */
-.art-section { background: white; color: #111; padding: 100px 20px; position: relative; z-index: 100; }
-.art-container { max-width: 1200px; margin: 0 auto; }
-.brick-row { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; }
-.art-item { width: 320px; position: relative; aspect-ratio: 3/4; overflow: hidden; }
-.art-item img, .hover-video { width: 100%; height: 100%; object-fit: cover; }
-.art-label { position: absolute; bottom: 15px; left: 15px; color: white; font-weight: bold; font-size: 1.2rem; }
+/* --- SMOOTH SCROLL CONTAINER --- */
+#smooth-content {
+    position: fixed; /* This stays fixed while JS moves it up/down */
+    top: 0;
+    left: 0;
+    width: 100%;
+    will-change: transform; /* Helps the browser animate smoothly */
+    z-index: 10;
+}
 
-/* --- ABOUT --- */
-.about-section { background: black; min-height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; z-index: 101; }
-#about-canvas { position: absolute; top:0; left:0; width: 100%; height: 100%; }
-.about-container { position: relative; z-index: 10; max-width: 650px; text-align: center; }
-.about-text h2 { font-size: 4rem; margin-bottom: 20px; }
-.about-text p { font-size: 1.4rem; line-height: 1.6; color: #ccc; }
+/* --- NAVBAR --- */
+.navbar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 60px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(10px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    padding: 0 40px;
+    box-sizing: border-box;
+}
 
-.snow-flake-js { position: fixed; color: white; pointer-events: none; z-index: 1500; top: -50px; animation: fall-js 10s linear infinite; }
-@keyframes fall-js { to { transform: translateY(110vh); } }
+.nav-brand {
+    font-size: 1.2em;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+
+.nav-logo-accent {
+    color: #888;
+}
+
+/* --- HERO SECTION --- */
+.main-content {
+    display: flex;
+    flex-direction: column;
