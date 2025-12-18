@@ -1,4 +1,4 @@
-/* --- UNIVERSAL RESET --- */
+/* --- UNIVERSAL --- */
 html, body {
     margin: 0;
     padding: 0;
@@ -9,7 +9,6 @@ html, body {
     overflow-x: hidden;
 }
 
-/* THE SMOOTH SCROLL ENGINE */
 #smooth-content {
     position: fixed;
     top: 0;
@@ -19,34 +18,36 @@ html, body {
     z-index: 10;
 }
 
+/* --- THE GHOST SPACER (Fixed Scrolling) --- */
+#ghost-spacer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    z-index: -1;
+    pointer-events: none;
+}
+
 /* --- YOUR FROSTED NAVBAR --- */
 .navbar {
     position: fixed;
     top: 0;
     width: 100%;
-    height: 70px;
+    height: 80px;
     background: rgba(27, 29, 38, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     z-index: 2000;
     display: flex;
     align-items: center;
-    padding: 0 40px;
+    padding: 0 50px;
     box-sizing: border-box;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.nav-brand {
-    font-size: 1.2rem;
-    font-weight: bold;
-    letter-spacing: 2px;
-}
+.nav-brand { font-size: 1.5rem; font-weight: 900; letter-spacing: 2px; }
+.nav-logo-accent { color: #666; }
 
-.nav-logo-accent {
-    color: #888;
-}
-
-/* --- RUNNER OVERLAY --- */
+/* --- RUNNER --- */
 #runner-overlay {
     position: fixed;
     top: 0;
@@ -57,3 +58,39 @@ html, body {
     pointer-events: none;
     opacity: 0;
 }
+#runner-boy { position: absolute; width: 280px; }
+
+/* --- SECTIONS --- */
+.main-content {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0;
+}
+
+h1 {
+    font-size: clamp(4rem, 15vw, 11rem);
+    font-weight: 900;
+    letter-spacing: -5px;
+    margin: 0;
+}
+
+.circle-wrapper {
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-top: -50px;
+}
+.circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+.art-section { background: white; color: black; padding: 150px 0; z-index: 100; position: relative; }
+.art-container { max-width: 1200px; margin: 0 auto; }
+.brick-row { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
+.art-item { width: 320px; position: relative; }
+.art-item img, .hover-video { width: 100%; height: 400px; object-fit: cover; }
+.art-label { position: absolute; bottom: 15px; left: 15px; color: white; font-weight: bold; }
+
+.about-section { background: black; padding: 200px 0; text-align: center; }
