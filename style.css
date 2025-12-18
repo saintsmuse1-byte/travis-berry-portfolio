@@ -1,13 +1,12 @@
-/* --- RESTORING YOUR BRANDING --- */
+/* --- KEEP YOUR ORIGINAL FONTS HERE --- */
+
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     background: #1b1d26;
     color: white;
-    font-family: sans-serif; /* Replace with your specific font if different */
-    overflow-x: hidden;
-    /* We allow the body to have height so the scrollbar works */
+    /* The body height will be set by JavaScript to allow scrolling */
 }
 
 #smooth-content {
@@ -19,7 +18,7 @@ html, body {
     z-index: 10;
 }
 
-/* YOUR FROSTED NAVBAR */
+/* YOUR ORIGINAL FROSTED NAVBAR */
 .navbar {
     position: fixed;
     top: 0;
@@ -35,7 +34,7 @@ html, body {
     box-sizing: border-box;
 }
 
-/* --- THE RUNNER (The Glass Layer) --- */
+/* RUNNER LAYER */
 #runner-overlay {
     position: fixed;
     top: 0;
@@ -46,18 +45,7 @@ html, body {
     pointer-events: none;
     opacity: 0;
 }
+
 #runner-boy { position: absolute; width: 280px; }
 
-/* --- SECTIONS --- */
-.main-content { 
-    min-height: 100vh; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    padding-bottom: 300px; 
-}
-
-h1 { font-size: 8rem; font-weight: 900; margin: 0; }
-
-.art-section { background: white; color: black; padding: 100px 0; position: relative; z-index: 100; }
+/* Keep your main-content, art-section, and about-section exactly as they were */
