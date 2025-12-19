@@ -1,96 +1,40 @@
 /* --- UNIVERSAL --- */
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    background: #1b1d26;
-    color: white;
-    font-family: sans-serif;
-    overflow-x: hidden;
-}
+html, body { margin: 0; padding: 0; font-family: sans-serif; background: #1b1d26; color: white; overflow-x: hidden; }
+#smooth-content { width: 100%; position: relative; z-index: 10; }
 
-#smooth-content {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    will-change: transform;
-    z-index: 10;
-}
+/* --- NAVBAR (Restored to your style) --- */
+.navbar { position: fixed; top: 0; width: 100%; height: 60px; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; padding: 0 40px; }
+.nav-brand { font-size: 1.2em; letter-spacing: 2px; font-weight: bold; }
+.nav-logo-accent { color: #888; }
 
-/* --- THE GHOST SPACER (Fixed Scrolling) --- */
-#ghost-spacer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 1px;
-    z-index: -1;
-    pointer-events: none;
-}
+/* --- HERO (Restored original sizes) --- */
+.main-content { display: flex; flex-direction: column; align-items: center; padding: 150px 20px 600px 20px; position: relative; min-height: 100vh; }
+h1 { font-size: clamp(4rem, 12vw, 10rem); margin: 0; z-index: 5; font-weight: 900; letter-spacing: -2px; }
 
-/* --- YOUR FROSTED NAVBAR --- */
-.navbar {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    height: 80px;
-    background: rgba(27, 29, 38, 0.6);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    z-index: 2000;
-    display: flex;
-    align-items: center;
-    padding: 0 50px;
-    box-sizing: border-box;
-}
-
-.nav-brand { font-size: 1.5rem; font-weight: 900; letter-spacing: 2px; }
-.nav-logo-accent { color: #666; }
-
-/* --- RUNNER --- */
-#runner-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1500;
-    pointer-events: none;
-    opacity: 0;
-}
-#runner-boy { position: absolute; width: 280px; }
-
-/* --- SECTIONS --- */
-.main-content {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 100px 0;
-}
-
-h1 {
-    font-size: clamp(4rem, 15vw, 11rem);
-    font-weight: 900;
-    letter-spacing: -5px;
-    margin: 0;
-}
-
-.circle-wrapper {
-    width: 450px;
-    height: 450px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-top: -50px;
-}
+.circle-wrapper { width: 450px; height: 450px; border-radius: 50%; overflow: hidden; margin-top: -60px; z-index: 10; position: relative; }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-.art-section { background: white; color: black; padding: 150px 0; z-index: 100; position: relative; }
-.art-container { max-width: 1200px; margin: 0 auto; }
-.brick-row { display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; }
-.art-item { width: 320px; position: relative; }
-.art-item img, .hover-video { width: 100%; height: 400px; object-fit: cover; }
-.art-label { position: absolute; bottom: 15px; left: 15px; color: white; font-weight: bold; }
+/* --- THE RUNNER OVERLAY (Fixed layer) --- */
+#runner-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 50; overflow: hidden; opacity: 0;
+}
+#runner-boy { position: absolute; width: 280px; height: 280px; object-fit: contain; }
 
-.about-section { background: black; padding: 200px 0; text-align: center; }
+/* --- ART SECTION --- */
+.art-section { background: white; color: #111; padding: 100px 20px; position: relative; z-index: 100; }
+.art-container { max-width: 1200px; margin: 0 auto; }
+.brick-row { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; }
+.art-item { width: 320px; position: relative; aspect-ratio: 3/4; overflow: hidden; }
+.art-item img, .hover-video { width: 100%; height: 100%; object-fit: cover; }
+.art-label { position: absolute; bottom: 15px; left: 15px; color: white; font-weight: bold; font-size: 1.2rem; }
+
+/* --- ABOUT --- */
+.about-section { background: black; min-height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; z-index: 101; }
+#about-canvas { position: absolute; top:0; left:0; width: 100%; height: 100%; }
+.about-container { position: relative; z-index: 10; max-width: 650px; text-align: center; }
+.about-text h2 { font-size: 4rem; margin-bottom: 20px; }
+.about-text p { font-size: 1.4rem; line-height: 1.6; color: #ccc; }
+
+.snow-flake-js { position: fixed; color: white; pointer-events: none; z-index: 1500; top: -50px; animation: fall-js 10s linear infinite; }
+@keyframes fall-js { to { transform: translateY(110vh); } }
