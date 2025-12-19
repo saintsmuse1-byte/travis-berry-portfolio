@@ -1,108 +1,75 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const runnerBoy = document.getElementById('runner-boy');
+    const overlay = document.getElementById('runner-overlay');
+    const boyContainer = document.getElementById('boy-frames-container');
     const feather = document.getElementById('feather');
-    const runnerOverlay = document.getElementById('runner-overlay');
+    const frames = document.querySelectorAll('.boy-frame');
     const track = document.getElementById('carousel-track');
-    const slides = document.querySelectorAll('.carousel-slide');
-    const aboutCanvas = document.getElementById('about-canvas');
+    const canvas = document.getElementById('about-canvas');
+    const ctx = canvas.getContext('2d');
 
-    // 1. PRELOAD RUNNER IMAGES (Kills the Flicker)
-    const framePaths = [
-        'images/runner-boy-1.PNG',
-        'images/number one.PNG',
-        'images/runner-boy-3.PNG',
-        'images/number three.PNG'
-    ];
+    let currentFrame = 0;
 
-    const preloadedImages = [];
-    framePaths.forEach(path => {
-        const img = new Image();
-        img.src = path;
-        preloadedImages.push(img);
-    });
-
-    let lastIdx = -1;
-
-    // 2. RUNNER & FEATHER ANIMATION
-    function updateRunner() {
+    // 1. RUNNER ANIMATION
+    function animate() {
         const y = window.scrollY;
-        const range = 1800; 
-        let progress = Math.min(Math.max(y / range, 0), 1);
+        const progress = Math.min(Math.max(y / 2000, 0), 1);
+        
+        overlay.style.opacity = (progress > 0.05 && progress < 0.95) ? 1 : 0;
 
-        // Appear/Disappear logic
-        runnerOverlay.style.opacity = (progress > 0.02 && progress < 0.98) ? 1 : 0;
+        // Scoop Path
+        const bx = -300 + (window.innerWidth + 600) * progress;
+        const by = 400 + (700 * Math.pow(progress, 2)) - (600 * progress);
+        boyContainer.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
 
-        // SCOOP PATH FOR BOY
-        const bx = -400 + ((window.innerWidth + 800) * progress);
-        const bCurve = (650 * Math.pow(progress, 2)) - (550 * progress);
-        const by = 450 + bCurve;
-        runnerBoy.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
+        // Feather Path (Faster)
+        const fx = bx + 250 + (progress * 700);
+        const fy = by - 100 + Math.sin(progress * 20) * 80;
+        feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${y * 2}deg)`;
 
-        // FEATHER (Even Faster + Leading)
-        const fx = bx + 300 + (progress * 850); // Increased multiplier for more speed
-        const squiggle = Math.sin(progress * 15) * 100;
-        const fy = by - 140 + squiggle;
-        feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${progress * 2800}deg)`;
-
-        // FRAME SWAP
-        const fIdx = Math.floor(progress * 40) % framePaths.length;
-        if (fIdx !== lastIdx) {
-            runnerBoy.src = framePaths[fIdx];
-            lastIdx = fIdx;
+        // Frame Toggling (No Flicker)
+        const fIdx = Math.floor(progress * 40) % frames.length;
+        if (fIdx !== currentFrame) {
+            frames[currentFrame].classList.remove('active');
+            frames[fIdx].classList.add('active');
+            currentFrame = fIdx;
         }
+        requestAnimationFrame(animate);
     }
 
-    // 3. AUTOMATIC ART CAROUSEL
-    let currentSlide = 0;
-    function autoScrollArt() {
-        currentSlide = (currentSlide + 1) % slides.length;
-        const offset = -(currentSlide * 100);
-        if(track) track.style.transform = `translateX(${offset}%)`;
-    }
-    setInterval(autoScrollArt, 4000); // Scrolls every 4 seconds
+    // 2. ART CAROUSEL
+    let slideIdx = 0;
+    setInterval(() => {
+        slideIdx = (slideIdx + 1) % 3;
+        track.style.transform = `translateX(-${slideIdx * 33.33}%)`;
+    }, 4000);
 
-    // 4. ABOUT CANVAS (Bigger Snowflakes)
-    const ctx = aboutCanvas.getContext('2d');
+    // 3. BIG SNOWFLAKES CANVAS
     let particles = [];
     function initCanvas() {
-        aboutCanvas.width = aboutCanvas.offsetWidth;
-        aboutCanvas.height = aboutCanvas.offsetHeight;
-        particles = [];
-        for (let i = 0; i < 60; i++) {
-            particles.push({
-                x: Math.random() * aboutCanvas.width,
-                y: Math.random() * aboutCanvas.height,
-                bx: Math.random() * aboutCanvas.width,
-                by: Math.random() * aboutCanvas.height,
-                isFlake: Math.random() > 0.8,
-                vx: 0, vy: 0
-            });
-        }
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        particles = Array.from({ length: 50 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 40 + 20, // BIG snowflakes
+            speed: Math.random() * 2 + 1
+        }));
     }
 
-    function renderCanvas() {
-        ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
+    function drawSnow() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "white";
+        ctx.font = "40px serif";
         particles.forEach(p => {
-            p.vx *= 0.9; p.vy *= 0.9;
-            p.x += p.vx; p.y += p.vy;
-            ctx.fillStyle = 'white';
-            if (p.isFlake) {
-                ctx.font = "50px serif"; // BIGGER SNOWFLAKES
-                ctx.fillText('❅', p.x, p.y);
-            } else {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-                ctx.fill();
-            }
+            ctx.fillText("❅", p.x, p.y);
+            p.y += p.speed;
+            if (p.y > canvas.height) p.y = -50;
         });
-        requestAnimationFrame(renderCanvas);
+        requestAnimationFrame(drawSnow);
     }
 
-    // EVENT LISTENERS
-    window.addEventListener('scroll', updateRunner);
     window.addEventListener('resize', initCanvas);
-
     initCanvas();
-    renderCanvas();
-    updateRunner();
+    drawSnow();
+    animate();
 });
