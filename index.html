@@ -10,16 +10,20 @@
 
     <div id="runner-overlay">
         <img id="feather" src="images/single feather.PNG" alt="">
-        <img id="runner-boy" src="images/runner-boy-1.PNG" alt="">
+        <div id="boy-frames-container">
+            <img class="boy-frame active" src="images/runner-boy-1.PNG" alt="">
+            <img class="boy-frame" src="images/number one.PNG" alt="">
+            <img class="boy-frame" src="images/runner-boy-3.PNG" alt="">
+            <img class="boy-frame" src="images/number three.PNG" alt="">
+        </div>
     </div>
 
     <nav class="navbar">
         <div class="nav-brand">TRAVIS <span class="nav-logo-accent">BERRY</span></div>
     </nav>
 
-    <div id="main-content-wrapper">
-        
-        <section class="main-content">
+    <main>
+        <section class="hero">
             <h1>TRAVIS BERRY</h1>
             <div class="circle-wrapper">
                 <img src="images/travis transparent .PNG" alt="Travis Berry">
@@ -29,34 +33,21 @@
         <section class="art-section">
             <div class="carousel-viewport">
                 <div class="carousel-track" id="carousel-track">
-                    <a href="artwork-1.html" class="carousel-slide">
-                        <video autoplay loop muted playsinline>
-                            <source src="images/chaos and calm video.mp4" type="video/mp4">
-                        </video>
-                        <span class="art-label">CHAOS & CALM</span>
-                    </a>
-                    <a href="artwork-2.html" class="carousel-slide">
-                        <img src="images/repeating face art.PNG" alt="Streets">
-                        <span class="art-label">STREETS</span>
-                    </a>
-                    <a href="artwork-3.html" class="carousel-slide">
-                        <img src="images/house second image.jpg" alt="Home">
-                        <span class="art-label">HOME</span>
-                    </a>
+                    <a href="artwork-1.html" class="slide"><video autoplay loop muted playsinline><source src="images/chaos and calm video.mp4" type="video/mp4"></video></a>
+                    <a href="artwork-2.html" class="slide"><img src="images/repeating face art.PNG"></a>
+                    <a href="artwork-3.html" class="slide"><img src="images/house second image.jpg"></a>
                 </div>
             </div>
         </section>
 
         <section class="about-section">
             <canvas id="about-canvas"></canvas>
-            <div class="about-container">
-                <div class="about-text">
-                    <h2>ABOUT</h2>
-                    <p>I am a designer focusing on digital experiences. Every project has its own unique geometry.</p>
-                </div>
+            <div class="about-content">
+                <h2>ABOUT</h2>
+                <p>Designer focusing on digital experiences. Geometry meets emotion.</p>
             </div>
         </section>
-    </div>
+    </main>
 
     <script src="script.js"></script> 
 </body>
