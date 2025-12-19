@@ -4,13 +4,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const feather = document.getElementById('feather');
     const frames = document.querySelectorAll('.boy-frame');
     const track = document.getElementById('carousel-track');
+    const snowContainer = document.getElementById('falling-snow-container');
     const canvas = document.getElementById('about-canvas');
     const ctx = canvas.getContext('2d');
 
     const mouse = { x: -1000, y: -1000, radius: 180 };
     let lastFrameIdx = 0;
 
-    // 1. RUNNER & FEATHER LOGIC
+    // 1. HERO SNOW GENERATOR
+    if (snowContainer) {
+        for (let i = 0; i < 25; i++) {
+            const flake = document.createElement('div');
+            flake.className = 'snow-flake-js';
+            flake.innerHTML = '❅';
+            flake.style.left = Math.random() * 100 + 'vw';
+            flake.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            flake.style.opacity = Math.random();
+            snowContainer.appendChild(flake);
+        }
+    }
+
+    // 2. RUNNER & FEATHER
     function updateRunner() {
         const y = window.scrollY;
         const range = 2000;
@@ -26,22 +40,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const fy = by - 140 + (Math.sin(progress * 15) * 100);
         feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${y * 1.5}deg)`;
 
+        // Frame Toggling Fix
         const fIdx = Math.floor(progress * 45) % frames.length;
         if (fIdx !== lastFrameIdx) {
-            frames[lastIdx].classList.remove('active');
+            frames[lastFrameIdx].classList.remove('active');
             frames[fIdx].classList.add('active');
-            lastIdx = fIdx;
+            lastFrameIdx = fIdx;
         }
     }
 
-    // 2. AUTOMATIC ART SCROLLING
+    // 3. ART CAROUSEL
     let slideIdx = 0;
     setInterval(() => {
         slideIdx = (slideIdx + 1) % 3;
         if (track) track.style.transform = `translateX(-${(slideIdx * 100) / 3}%)`;
     }, 4500);
 
-    // 3. ABOUT PHYSICS (BIG SNOWFLAKES)
+    // 4. ABOUT PHYSICS
     let particles = [];
     function initCanvas() {
         canvas.width = window.innerWidth;
@@ -51,10 +66,9 @@ document.addEventListener('DOMContentLoaded', () => {
             let x = Math.random() * canvas.width;
             let y = Math.random() * canvas.height;
             particles.push({
-                x: x, y: y, bx: x, by: y,
-                vx: 0, vy: 0,
-                isFlake: Math.random() > 0.7,
-                size: Math.random() * 3 + 2
+                x: x, y: y, bx: x, by: y, vx: 0, vy: 0,
+                isFlake: Math.random() > 0.75,
+                size: Math.random() * 2 + 2
             });
         }
     }
@@ -71,21 +85,19 @@ document.addEventListener('DOMContentLoaded', () => {
             let dx = mouse.x - p.x;
             let dy = mouse.y - p.y;
             let dist = Math.sqrt(dx * dx + dy * dy);
-            
             if (dist < mouse.radius) {
                 let force = (mouse.radius - dist) / mouse.radius;
-                p.vx -= (dx / dist) * force * 12;
-                p.vy -= (dy / dist) * force * 12;
+                p.vx -= (dx / dist) * force * 10;
+                p.vy -= (dy / dist) * force * 10;
             }
-
             p.vx += (p.bx - p.x) * 0.04;
             p.vy += (p.by - p.y) * 0.04;
-            p.vx *= 0.92; p.vy *= 0.92;
+            p.vx *= 0.9; p.vy *= 0.9;
             p.x += p.vx; p.y += p.vy;
 
             ctx.fillStyle = "white";
             if (p.isFlake) {
-                ctx.font = "55px serif"; // REINSTATED BIG SNOWFLAKES
+                ctx.font = "30px serif"; // SHRUNK SNOWFLAKES AS REQUESTED
                 ctx.fillText("❅", p.x, p.y);
             } else {
                 ctx.beginPath();
@@ -100,4 +112,5 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', initCanvas);
     initCanvas();
     drawPhysics();
+    updateRunner();
 });
