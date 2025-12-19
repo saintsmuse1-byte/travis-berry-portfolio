@@ -1,75 +1,103 @@
 document.addEventListener('DOMContentLoaded', () => {
     const overlay = document.getElementById('runner-overlay');
-    const boyContainer = document.getElementById('boy-frames-container');
+    const boyContainer = document.getElementById('boy-container');
     const feather = document.getElementById('feather');
     const frames = document.querySelectorAll('.boy-frame');
     const track = document.getElementById('carousel-track');
     const canvas = document.getElementById('about-canvas');
     const ctx = canvas.getContext('2d');
 
-    let currentFrame = 0;
+    const mouse = { x: -1000, y: -1000, radius: 180 };
+    let lastFrameIdx = 0;
 
-    // 1. RUNNER ANIMATION
-    function animate() {
+    // 1. RUNNER & FEATHER LOGIC
+    function updateRunner() {
         const y = window.scrollY;
-        const progress = Math.min(Math.max(y / 2000, 0), 1);
-        
-        overlay.style.opacity = (progress > 0.05 && progress < 0.95) ? 1 : 0;
+        const range = 2000;
+        let progress = Math.min(Math.max(y / range, 0), 1);
 
-        // Scoop Path
-        const bx = -300 + (window.innerWidth + 600) * progress;
-        const by = 400 + (700 * Math.pow(progress, 2)) - (600 * progress);
+        overlay.style.opacity = (progress > 0.02 && progress < 0.98) ? 1 : 0;
+
+        const bx = -400 + (window.innerWidth + 800) * progress;
+        const by = 450 + (650 * Math.pow(progress, 2)) - (550 * progress);
         boyContainer.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
 
-        // Feather Path (Faster)
-        const fx = bx + 250 + (progress * 700);
-        const fy = by - 100 + Math.sin(progress * 20) * 80;
-        feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${y * 2}deg)`;
+        const fx = bx + 300 + (progress * 850);
+        const fy = by - 140 + (Math.sin(progress * 15) * 100);
+        feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${y * 1.5}deg)`;
 
-        // Frame Toggling (No Flicker)
-        const fIdx = Math.floor(progress * 40) % frames.length;
-        if (fIdx !== currentFrame) {
-            frames[currentFrame].classList.remove('active');
+        const fIdx = Math.floor(progress * 45) % frames.length;
+        if (fIdx !== lastFrameIdx) {
+            frames[lastIdx].classList.remove('active');
             frames[fIdx].classList.add('active');
-            currentFrame = fIdx;
+            lastIdx = fIdx;
         }
-        requestAnimationFrame(animate);
     }
 
-    // 2. ART CAROUSEL
+    // 2. AUTOMATIC ART SCROLLING
     let slideIdx = 0;
     setInterval(() => {
         slideIdx = (slideIdx + 1) % 3;
-        track.style.transform = `translateX(-${slideIdx * 33.33}%)`;
-    }, 4000);
+        if (track) track.style.transform = `translateX(-${(slideIdx * 100) / 3}%)`;
+    }, 4500);
 
-    // 3. BIG SNOWFLAKES CANVAS
+    // 3. ABOUT PHYSICS (BIG SNOWFLAKES)
     let particles = [];
     function initCanvas() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        particles = Array.from({ length: 50 }, () => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 40 + 20, // BIG snowflakes
-            speed: Math.random() * 2 + 1
-        }));
+        particles = [];
+        for (let i = 0; i < 70; i++) {
+            let x = Math.random() * canvas.width;
+            let y = Math.random() * canvas.height;
+            particles.push({
+                x: x, y: y, bx: x, by: y,
+                vx: 0, vy: 0,
+                isFlake: Math.random() > 0.7,
+                size: Math.random() * 3 + 2
+            });
+        }
     }
 
-    function drawSnow() {
+    window.addEventListener('mousemove', e => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+    });
+
+    function drawPhysics() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "white";
-        ctx.font = "40px serif";
         particles.forEach(p => {
-            ctx.fillText("❅", p.x, p.y);
-            p.y += p.speed;
-            if (p.y > canvas.height) p.y = -50;
+            let dx = mouse.x - p.x;
+            let dy = mouse.y - p.y;
+            let dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < mouse.radius) {
+                let force = (mouse.radius - dist) / mouse.radius;
+                p.vx -= (dx / dist) * force * 12;
+                p.vy -= (dy / dist) * force * 12;
+            }
+
+            p.vx += (p.bx - p.x) * 0.04;
+            p.vy += (p.by - p.y) * 0.04;
+            p.vx *= 0.92; p.vy *= 0.92;
+            p.x += p.vx; p.y += p.vy;
+
+            ctx.fillStyle = "white";
+            if (p.isFlake) {
+                ctx.font = "55px serif"; // REINSTATED BIG SNOWFLAKES
+                ctx.fillText("❅", p.x, p.y);
+            } else {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
         });
-        requestAnimationFrame(drawSnow);
+        requestAnimationFrame(drawPhysics);
     }
 
+    window.addEventListener('scroll', updateRunner);
     window.addEventListener('resize', initCanvas);
     initCanvas();
-    drawSnow();
-    animate();
+    drawPhysics();
 });
