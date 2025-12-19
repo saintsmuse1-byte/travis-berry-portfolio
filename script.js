@@ -12,11 +12,20 @@ document.addEventListener('DOMContentLoaded', () => {
         'images/runner-boy-3.PNG', 'images/number three.PNG'
     ];
 
+    // --- PRELOAD LOGIC (Kills the Flicker) ---
+    const preloadedImages = [];
+    RUNNER_FRAMES.forEach((src) => {
+        const img = new Image();
+        img.src = src;
+        preloadedImages.push(img);
+    });
+
     let currentScroll = 0, targetScroll = 0;
+    let lastFrameIdx = -1;
     const SMOOTHING = 0.06; 
     const mouse = { x: -1000, y: -1000, radius: 180 };
 
-    // 1. SNOW
+    // SNOW
     if (snowContainer) {
         for (let i = 0; i < 20; i++) {
             const flake = document.createElement('div');
@@ -29,23 +38,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. THE ANIMATION UPDATE
     function updateAnimations(y) {
         if (!runnerBoy || !runnerOverlay || !feather) return;
 
         const startTrigger = 0;      
         const finishLine = 1600; 
-        
         let progress = (y - startTrigger) / (finishLine - startTrigger);
         progress = Math.min(Math.max(progress, 0), 1);
 
-        // DISAPPEAR/APPEAR LOGIC
-        // Fades in between 0.05 and 0.1, Fades out between 0.9 and 0.95
-        if (progress > 0.02 && progress < 0.98) {
-            runnerOverlay.style.opacity = 1;
-        } else {
-            runnerOverlay.style.opacity = 0;
-        }
+        // Disappear/Appear at screen edges
+        runnerOverlay.style.opacity = (progress > 0.02 && progress < 0.98) ? 1 : 0;
 
         // BOY POSITION
         const bx = -400 + ((window.innerWidth + 800) * progress);
@@ -53,19 +55,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const by = 450 + bCurve;
         runnerBoy.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
 
-        // FEATHER POSITION (SPEED BOOSTED)
-        const fx = bx + 250 + (progress * 500); // Faster horizontal pull
-        const squiggle = Math.sin(progress * 14) * 70; // Higher/faster wiggle
+        // FEATHER POSITION (Faster + Bigger)
+        const fx = bx + 280 + (progress * 550); 
+        const squiggle = Math.sin(progress * 14) * 75; 
         const fy = by - 100 + squiggle;
-        const rotateFeather = progress * 2000;
+        feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${progress * 2200}deg)`;
         
-        feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${rotateFeather}deg)`;
-        
+        // FRAME SWAPPING (Only swaps if the frame actually changes)
         const fIdx = Math.floor(progress * 45) % RUNNER_FRAMES.length;
-        runnerBoy.src = RUNNER_FRAMES[fIdx];
+        if (fIdx !== lastFrameIdx) {
+            runnerBoy.src = RUNNER_FRAMES[fIdx];
+            lastFrameIdx = fIdx;
+        }
     }
 
-    // 3. ABOUT CANVAS
+    // ABOUT CANVAS
     const ctx = aboutCanvas.getContext('2d');
     let particles = [];
     function initCanvas() {
@@ -90,8 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
     function engine() {
         targetScroll = window.scrollY;
         currentScroll += (targetScroll - currentScroll) * SMOOTHING;
-        
-        // Anti-Glitch: Rounding the pixels to prevent sub-pixel jumping
         const scrollPos = parseFloat(currentScroll.toFixed(2));
 
         if(smoothContent) {
@@ -135,5 +137,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initCanvas();
     syncHeight();
     engine();
-    setTimeout(syncHeight, 2000); // Wait for videos/images to set height
+    setTimeout(syncHeight, 2000);
 });
