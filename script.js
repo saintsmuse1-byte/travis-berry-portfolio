@@ -16,12 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentScroll = 0;
     let targetScroll = 0;
-    
-    // FIX 1: Slowed down from 0.08 to 0.05 for a much more "weighted" slow feel
     const SMOOTHING = 0.05; 
     const mouse = { x: -1000, y: -1000, radius: 180 };
 
-    // SNOW
+    // 1. SNOW
     if (snowContainer) {
         for (let i = 0; i < 20; i++) {
             const flake = document.createElement('div');
@@ -34,33 +32,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ANIMATION PATHS
-    function animateElements(scrollY) {
+    // 2. THE ANIMATION UPDATE (Called inside engine to stop glitching)
+    function updateAnimations(y) {
         if (!runnerBoy || !runnerOverlay || !feather) return;
 
-        // Increase finishLine to 1600 to make the journey last longer (slower)
         const startTrigger = 0;      
-        const finishLine = 1600;      
+        const finishLine = 1600; 
         
-        if (scrollY >= startTrigger && scrollY <= (finishLine + 100)) {
-            let progress = (scrollY - startTrigger) / (finishLine - startTrigger);
-            progress = Math.min(Math.max(progress, 0), 1);
-            
-            // Fix 3: opacity transition to prevent glitching at edges
-            runnerOverlay.style.opacity = (progress > 0.01 && progress < 0.98) ? 1 : 0;
+        let progress = (y - startTrigger) / (finishLine - startTrigger);
+        progress = Math.min(Math.max(progress, 0), 1);
 
+        if (progress > 0 && progress < 0.99) {
+            runnerOverlay.style.opacity = 1;
+
+            // BOY POSITION
             const bx = -350 + ((window.innerWidth + 700) * progress);
             const bCurve = (650 * Math.pow(progress, 2)) - (550 * progress);
             const by = 450 + bCurve;
-            
             runnerBoy.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
 
-            // FIX 2: Pushed feather further ahead (from 130 to 220) 
-            // This puts it clearly in front of the outstretched hand
-            const fx = bx + 220; 
-            const squiggle = Math.sin(progress * 10) * 50; 
-            const fy = by - 40 + squiggle;
-            const rotateFeather = progress * 1500;
+            // FEATHER POSITION (SPEED BOOSTED)
+            // Added 1.5x horizontal multiplier for feather to make it "outrun" him
+            const fx = bx + 250 + (progress * 400); 
+            const squiggle = Math.sin(progress * 12) * 60; 
+            const fy = by - 80 + squiggle;
+            const rotateFeather = progress * 1800;
             
             feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${rotateFeather}deg)`;
             
@@ -71,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ABOUT CANVAS
+    // 3. ABOUT CANVAS
     const ctx = aboutCanvas.getContext('2d');
     let particles = [];
     function initCanvas() {
@@ -85,17 +81,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    window.addEventListener('mousemove', e => {
+        const rect = aboutCanvas.getBoundingClientRect();
+        if(rect.top < window.innerHeight && rect.bottom > 0) {
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        }
+    });
+
     function engine() {
         targetScroll = window.scrollY;
-        // Use currentScroll for both content and animation to keep them in sync
         currentScroll += (targetScroll - currentScroll) * SMOOTHING;
         
+        // Use translate3d for better performance (stops glitching)
         if(smoothContent) {
             smoothContent.style.transform = `translate3d(0, ${-currentScroll.toFixed(2)}px, 0)`;
         }
         
-        // Pass currentScroll instead of window.scrollY to prevent glitching
-        animateElements(currentScroll);
+        // Pass the SMOOTHED currentScroll to the animation
+        updateAnimations(currentScroll);
 
         ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
         particles.forEach(p => {
