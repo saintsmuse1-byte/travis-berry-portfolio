@@ -3,34 +3,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const boyContainer = document.getElementById('boy-container');
     const feather = document.getElementById('feather');
     const frames = document.querySelectorAll('.boy-frame');
-    const aboutCanvas = document.getElementById('about-canvas');
-
     let lastIdx = 0;
 
-    function updateAnimations() {
+    function animate() {
         const y = window.scrollY;
-        const start = 0;
-        const end = 1800; // How long the animation lasts in scroll pixels
-        
-        let progress = Math.min(Math.max((y - start) / end, 0), 1);
+        const range = 1800; // Animation duration in pixels
+        let progress = Math.min(Math.max(y / range, 0), 1);
 
-        // Disappear at screen edges
+        // Fade entire overlay in/out
         runnerOverlay.style.opacity = (progress > 0.02 && progress < 0.98) ? 1 : 0;
 
-        // BOY POSITION
+        // Boy Movement
         const bx = -400 + ((window.innerWidth + 800) * progress);
-        const bCurve = (650 * Math.pow(progress, 2)) - (550 * progress);
-        const by = 450 + bCurve;
+        const by = 450 + (600 * Math.pow(progress, 2)) - (500 * progress);
         boyContainer.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
 
-        // FEATHER POSITION (Fast lead + Big wiggles)
-        const fx = bx + 300 + (progress * 800); 
-        const squiggle = Math.sin(progress * 15) * 100; 
-        const fy = by - 140 + squiggle;
-        feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${progress * 2800}deg)`;
+        // Feather Lead Movement
+        const fx = bx + 300 + (progress * 800);
+        const fy = by - 120 + (Math.sin(progress * 15) * 80);
+        feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${progress * 2000}deg)`;
 
-        // FRAME TOGGLE
-        const frameIdx = Math.floor(progress * 45) % frames.length;
+        // Frame Toggling
+        const frameIdx = Math.floor(progress * 40) % frames.length;
         if (frameIdx !== lastIdx) {
             frames[lastIdx].classList.remove('active');
             frames[frameIdx].classList.add('active');
@@ -38,37 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ABOUT CANVAS Logic
-    const ctx = aboutCanvas.getContext('2d');
-    let particles = [];
-    function initCanvas() {
-        aboutCanvas.width = aboutCanvas.offsetWidth;
-        aboutCanvas.height = aboutCanvas.offsetHeight;
-        particles = [];
-        for (let i = 0; i < 70; i++) {
-            let px = Math.random() * aboutCanvas.width;
-            let py = Math.random() * aboutCanvas.height;
-            particles.push({ x: px, y: py, bx: px, by: py, vx: 0, vy: 0, sz: Math.random() * 3 + 1 });
-        }
-    }
-
-    function renderCanvas() {
-        ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
-        particles.forEach(p => {
-            p.vx += (p.bx - p.x) * 0.03; p.vy += (p.by - p.y) * 0.03;
-            p.vx *= 0.9; p.vy *= 0.9;
-            p.x += p.vx; p.y += p.vy;
-            ctx.fillStyle = 'white';
-            ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2); ctx.fill(); 
-        });
-        requestAnimationFrame(renderCanvas);
-    }
-
-    // Listen to native scroll instead of the custom engine
-    window.addEventListener('scroll', updateAnimations);
-    window.addEventListener('resize', initCanvas);
-    
-    initCanvas();
-    renderCanvas();
-    updateAnimations(); // Initial run
+    window.addEventListener('scroll', animate);
+    animate(); // Run once on load
 });
