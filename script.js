@@ -1,19 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
     const smoothContent = document.getElementById('smooth-content');
+    const ghostSpacer = document.getElementById('ghost-spacer');
     const runnerOverlay = document.getElementById('runner-overlay');
     const runnerBoy = document.getElementById('runner-boy'); 
+    const feather = document.getElementById('feather');
     const aboutCanvas = document.getElementById('about-canvas');
     const snowContainer = document.getElementById('falling-snow-container');
 
-    const RUNNER_FRAMES = ['images/boy 1.PNG', 'images/boy 2.PNG', 'images/boy 3.PNG', 'images/boy 4.PNG'];
-    let currentScroll = 0;
-    let targetScroll = 0;
+    // UPDATED FILENAMES
+    const RUNNER_FRAMES = [
+        'images/runner-boy-1.PNG', 
+        'images/number one.PNG', 
+        'images/runner-boy-3.PNG', 
+        'images/number three.PNG'
+    ];
+
+    let currentScroll = 0, targetScroll = 0;
     const SMOOTHING = 0.08;
     const mouse = { x: -1000, y: -1000, radius: 180 };
 
-    // 1. SNOW
+    // 1. SNOW LOGIC
     if (snowContainer) {
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 20; i++) {
             const flake = document.createElement('div');
             flake.className = 'snow-flake-js';
             flake.innerHTML = '❅';
@@ -24,40 +32,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. THE HERO-SECTION-ONLY SLOPE
-    function animateRunner(scrollY) {
-        if (!runnerBoy || !runnerOverlay) return;
+    // 2. RUNNER & FEATHER ANIMATION
+    function animateElements(scrollY) {
+        if (!runnerBoy || !runnerOverlay || !feather) return;
 
-        // --- ADJUST THESE THREE NUMBERS ---
         const startTrigger = 0;      
-        const finishLine = 850;      // Change this to adjust when he hits the right side
-        const verticalDrop = 120;    // Change this to adjust how deep the slope goes
+        const finishLine = 1200;      
         
-        const startX = -200;         
-        const startY = 460;          
-        // ----------------------------------
-
         if (scrollY >= startTrigger && scrollY <= (finishLine + 100)) {
             let progress = (scrollY - startTrigger) / (finishLine - startTrigger);
             progress = Math.min(Math.max(progress, 0), 1);
+            runnerOverlay.style.opacity = (progress > 0.98) ? 0 : 1;
 
-            const x = startX + ((window.innerWidth + 200 - startX) * progress);
-            const y = startY + (verticalDrop * progress);
+            // BOY'S SCOOP PATH
+            const bx = -250 + ((window.innerWidth + 500) * progress);
+            const bCurve = (600 * Math.pow(progress, 2)) - (500 * progress);
+            const by = 460 + bCurve;
+            runnerBoy.style.transform = `translate(${bx}px, ${by}px)`;
 
-            runnerBoy.style.transform = `translate(${x}px, ${y}px)`;
+            // FEATHER'S WAVY PATH
+            // It stays 120px ahead of the boy
+            const fx = bx + 120;
+            // Sine wave creates the squiggle (Math.sin)
+            const squiggle = Math.sin(progress * 15) * 40; 
+            const fy = by - 30 + squiggle;
+            // Rotation based on progress
+            const rotation = progress * 1000; 
+            feather.style.transform = `translate(${fx}px, ${fy}px) rotate(${rotation}deg)`;
             
-            // --- FRAME SPEED CONTROL ---
-            // Changed from 60 to 35 to make the legs move slower
             const fIdx = Math.floor(progress * 35) % RUNNER_FRAMES.length;
             runnerBoy.src = RUNNER_FRAMES[fIdx];
-            
-            runnerOverlay.style.opacity = (progress > 0.98) ? 0 : 1;
         } else {
             runnerOverlay.style.opacity = 0;
         }
     }
 
-    // 3. ABOUT CANVAS PHYSICS
+    // 3. ABOUT CANVAS
     const ctx = aboutCanvas.getContext('2d');
     let particles = [];
     function initCanvas() {
@@ -71,36 +81,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    window.addEventListener('mousemove', e => {
-        const rect = aboutCanvas.getBoundingClientRect();
-        if(rect.top < window.innerHeight && rect.bottom > 0) {
-            mouse.x = e.clientX - rect.left;
-            mouse.y = e.clientY - rect.top;
-        }
-    });
-
     function engine() {
         targetScroll = window.scrollY;
         currentScroll += (targetScroll - currentScroll) * SMOOTHING;
-        smoothContent.style.transform = `translateY(${-currentScroll}px)`;
         
-        animateRunner(window.scrollY);
+        if(smoothContent) {
+            smoothContent.style.transform = `translateY(${-currentScroll}px)`;
+        }
+        
+        animateElements(window.scrollY);
 
         ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
         particles.forEach(p => {
-            let dx = mouse.x - p.x;
-            let dy = mouse.y - p.y;
+            let dx = mouse.x - p.x, dy = mouse.y - p.y;
             let dist = Math.sqrt(dx*dx + dy*dy);
             if (dist < mouse.radius) {
                 let force = (mouse.radius - dist) / mouse.radius;
                 p.vx -= (dx / dist) * force * 15;
                 p.vy -= (dy / dist) * force * 15;
             }
-            p.vx += (p.bx - p.x) * 0.05;
-            p.vy += (p.by - p.y) * 0.05;
+            p.vx += (p.bx - p.x) * 0.05; p.vy += (p.by - p.y) * 0.05;
             p.vx *= 0.9; p.vy *= 0.9;
             p.x += p.vx; p.y += p.vy;
-
             ctx.fillStyle = 'white';
             if (p.isFlake) { 
                 ctx.font = "24px serif"; ctx.fillText('❅', p.x, p.y); 
@@ -111,12 +113,17 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(engine);
     }
 
-    window.addEventListener('resize', () => {
-        initCanvas();
-        document.body.style.height = smoothContent.offsetHeight + 'px';
-    });
+    function syncHeight() {
+        if (smoothContent && ghostSpacer) {
+            const h = smoothContent.offsetHeight;
+            ghostSpacer.style.height = h + 'px';
+            document.body.style.height = h + 'px';
+        }
+    }
 
+    window.addEventListener('resize', () => { initCanvas(); syncHeight(); });
     initCanvas();
-    setTimeout(() => { document.body.style.height = smoothContent.offsetHeight + 'px'; }, 800);
+    syncHeight();
     engine();
+    setTimeout(syncHeight, 1000);
 });
