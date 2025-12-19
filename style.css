@@ -8,6 +8,7 @@ html, body {
     width: 100%; position: fixed; top: 0; left: 0; z-index: 10; 
     will-change: transform;
     backface-visibility: hidden;
+    transform-style: preserve-3d;
 }
 
 #ghost-spacer { position: absolute; top: 0; left: 0; width: 1px; z-index: -1; }
@@ -34,21 +35,21 @@ h1 { font-size: clamp(4rem, 12vw, 10rem); margin: 0; z-index: 5; font-weight: 90
 }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
+/* ANIMATION LAYER */
 #runner-overlay { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
     pointer-events: none; z-index: 1500; opacity: 0; 
+    overflow: hidden;
+    transition: opacity 0.3s ease; /* Smooth appear/disappear */
 }
 
 #runner-boy, #feather { 
     position: absolute; 
     will-change: transform; 
     backface-visibility: hidden;
-    transform-style: preserve-3d;
 }
 
 #runner-boy { width: 260px; z-index: 1502; }
-
-/* BIGGER FEATHER */
 #feather { width: 120px; z-index: 1503; }
 
 .art-section { background: white; color: #111; padding: 100px 20px; position: relative; z-index: 100; }
