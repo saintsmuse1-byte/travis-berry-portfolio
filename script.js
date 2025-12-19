@@ -8,15 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const snowContainer = document.getElementById('falling-snow-container');
 
     const RUNNER_FRAMES = [
-        'images/runner-boy-1.PNG', 
-        'images/number one.PNG', 
-        'images/runner-boy-3.PNG', 
-        'images/number three.PNG'
+        'images/runner-boy-1.PNG', 'images/number one.PNG', 
+        'images/runner-boy-3.PNG', 'images/number three.PNG'
     ];
 
-    let currentScroll = 0;
-    let targetScroll = 0;
-    const SMOOTHING = 0.05; 
+    let currentScroll = 0, targetScroll = 0;
+    const SMOOTHING = 0.06; 
     const mouse = { x: -1000, y: -1000, radius: 180 };
 
     // 1. SNOW
@@ -32,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. THE ANIMATION UPDATE (Called inside engine to stop glitching)
+    // 2. THE ANIMATION UPDATE
     function updateAnimations(y) {
         if (!runnerBoy || !runnerOverlay || !feather) return;
 
@@ -42,29 +39,30 @@ document.addEventListener('DOMContentLoaded', () => {
         let progress = (y - startTrigger) / (finishLine - startTrigger);
         progress = Math.min(Math.max(progress, 0), 1);
 
-        if (progress > 0 && progress < 0.99) {
+        // DISAPPEAR/APPEAR LOGIC
+        // Fades in between 0.05 and 0.1, Fades out between 0.9 and 0.95
+        if (progress > 0.02 && progress < 0.98) {
             runnerOverlay.style.opacity = 1;
-
-            // BOY POSITION
-            const bx = -350 + ((window.innerWidth + 700) * progress);
-            const bCurve = (650 * Math.pow(progress, 2)) - (550 * progress);
-            const by = 450 + bCurve;
-            runnerBoy.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
-
-            // FEATHER POSITION (SPEED BOOSTED)
-            // Added 1.5x horizontal multiplier for feather to make it "outrun" him
-            const fx = bx + 250 + (progress * 400); 
-            const squiggle = Math.sin(progress * 12) * 60; 
-            const fy = by - 80 + squiggle;
-            const rotateFeather = progress * 1800;
-            
-            feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${rotateFeather}deg)`;
-            
-            const fIdx = Math.floor(progress * 40) % RUNNER_FRAMES.length;
-            runnerBoy.src = RUNNER_FRAMES[fIdx];
         } else {
             runnerOverlay.style.opacity = 0;
         }
+
+        // BOY POSITION
+        const bx = -400 + ((window.innerWidth + 800) * progress);
+        const bCurve = (650 * Math.pow(progress, 2)) - (550 * progress);
+        const by = 450 + bCurve;
+        runnerBoy.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
+
+        // FEATHER POSITION (SPEED BOOSTED)
+        const fx = bx + 250 + (progress * 500); // Faster horizontal pull
+        const squiggle = Math.sin(progress * 14) * 70; // Higher/faster wiggle
+        const fy = by - 100 + squiggle;
+        const rotateFeather = progress * 2000;
+        
+        feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${rotateFeather}deg)`;
+        
+        const fIdx = Math.floor(progress * 45) % RUNNER_FRAMES.length;
+        runnerBoy.src = RUNNER_FRAMES[fIdx];
     }
 
     // 3. ABOUT CANVAS
@@ -93,13 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
         targetScroll = window.scrollY;
         currentScroll += (targetScroll - currentScroll) * SMOOTHING;
         
-        // Use translate3d for better performance (stops glitching)
+        // Anti-Glitch: Rounding the pixels to prevent sub-pixel jumping
+        const scrollPos = parseFloat(currentScroll.toFixed(2));
+
         if(smoothContent) {
-            smoothContent.style.transform = `translate3d(0, ${-currentScroll.toFixed(2)}px, 0)`;
+            smoothContent.style.transform = `translate3d(0, ${-scrollPos}px, 0)`;
         }
         
-        // Pass the SMOOTHED currentScroll to the animation
-        updateAnimations(currentScroll);
+        updateAnimations(scrollPos);
 
         ctx.clearRect(0, 0, aboutCanvas.width, aboutCanvas.height);
         particles.forEach(p => {
@@ -136,5 +135,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initCanvas();
     syncHeight();
     engine();
-    setTimeout(syncHeight, 1500);
+    setTimeout(syncHeight, 2000); // Wait for videos/images to set height
 });
