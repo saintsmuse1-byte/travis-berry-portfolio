@@ -1,9 +1,18 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // --- ELEMENTS ---
     const overlay = document.getElementById('runner-overlay');
     const boyContainer = document.getElementById('boy-container');
     const feather = document.getElementById('feather');
     const frames = document.querySelectorAll('.boy-frame');
+    
+    // Art Section Elements
+    const artSectionTrigger = document.getElementById('art-section-trigger');
+    const artExpander = document.getElementById('art-expander');
     const track = document.getElementById('carousel-track');
+    const prevArrow = document.getElementById('prev-arrow');
+    const nextArrow = document.getElementById('next-arrow');
+    
+    // About Section Elements
     const snowContainer = document.getElementById('falling-snow-container');
     const canvas = document.getElementById('about-canvas');
     const ctx = canvas.getContext('2d');
@@ -11,7 +20,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const mouse = { x: -1000, y: -1000, radius: 180 };
     let lastFrameIdx = 0;
 
+
+    // =========================================
     // 1. HERO SNOW GENERATOR
+    // =========================================
     if (snowContainer) {
         for (let i = 0; i < 25; i++) {
             const flake = document.createElement('div');
@@ -19,28 +31,32 @@ document.addEventListener('DOMContentLoaded', () => {
             flake.innerHTML = '❅';
             flake.style.left = Math.random() * 100 + 'vw';
             flake.style.animationDuration = (Math.random() * 4 + 6) + 's';
-            flake.style.opacity = Math.random();
+            flake.style.opacity = Math.random() * 0.6 + 0.4;
             snowContainer.appendChild(flake);
         }
     }
 
-    // 2. RUNNER & FEATHER
+
+    // =========================================
+    // 2. RUNNER & FEATHER ANIMATION
+    // =========================================
     function updateRunner() {
         const y = window.scrollY;
-        const range = 2000;
+        // How long the runner animation lasts in scroll pixels
+        const range = 2200; 
         let progress = Math.min(Math.max(y / range, 0), 1);
 
-        overlay.style.opacity = (progress > 0.02 && progress < 0.98) ? 1 : 0;
+        // Fade out faster at end so it doesn't overlap art expansion too much
+        overlay.style.opacity = (progress > 0.02 && progress < 0.85) ? 1 : 0;
 
         const bx = -400 + (window.innerWidth + 800) * progress;
-        const by = 450 + (650 * Math.pow(progress, 2)) - (550 * progress);
+        const bCurve = (650 * Math.pow(progress, 2)) - (550 * progress);
         boyContainer.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
 
         const fx = bx + 300 + (progress * 850);
         const fy = by - 140 + (Math.sin(progress * 15) * 100);
         feather.style.transform = `translate3d(${fx}px, ${fy}px, 0) rotate(${y * 1.5}deg)`;
 
-        // Frame Toggling Fix
         const fIdx = Math.floor(progress * 45) % frames.length;
         if (fIdx !== lastFrameIdx) {
             frames[lastFrameIdx].classList.remove('active');
@@ -49,14 +65,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 3. ART CAROUSEL
-    let slideIdx = 0;
-    setInterval(() => {
-        slideIdx = (slideIdx + 1) % 3;
-        if (track) track.style.transform = `translateX(-${(slideIdx * 100) / 3}%)`;
-    }, 4500);
 
-    // 4. ABOUT PHYSICS
+    // =========================================
+    // 3. ART SECTION: SCROLL EXPANSION EFFECT
+    // =========================================
+    function updateArtExpansion() {
+        if (!artSectionTrigger || !artExpander) return;
+
+        const rect = artSectionTrigger.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+
+        // Calculate entry progress: 0 when section top enters bottom of screen, 1 when it reaches top
+        let entryProgress = 1 - (rect.top / viewportHeight);
+        entryProgress = Math.min(Math.max(entryProgress, 0), 1);
+        
+        // We want the expansion to finish slightly before it hits the exact center
+        // Smooth the progress curve for a better feel
+        const expansionProgress = Math.pow(Math.min(entryProgress * 1.3, 1), 2);
+
+        // --- CALCULATE 4:5 TARGET DIMENSIONS ---
+        // Target height: 85% of viewport
+        const targetHeight = viewportHeight * 0.85;
+        // Target width: based on 4:5 ratio off the target height
+        const targetWidth = targetHeight * (4/5); 
+        // Ensure width doesn't exceed screen width on mobile
+        const finalWidth = Math.min(targetWidth, window.innerWidth * 0.92);
+
+        // --- INTERPOLATE SIZES ---
+        // Start Width: 40% viewport -> End Width: calculated 4:5 width
+        const currentWidth = (window.innerWidth * 0.4) + ((finalWidth - (window.innerWidth * 0.4)) * expansionProgress);
+        
+        // Start Height: 400px -> End Height: calculated 85vh height
+        const currentHeight = 400 + ((targetHeight - 400) * expansionProgress);
+
+        artExpander.style.width = `${currentWidth}px`;
+        artExpander.style.height = `${currentHeight}px`;
+    }
+
+
+    // =========================================
+    // 4. ART SECTION: MANUAL CAROUSEL
+    // =========================================
+    let slideIdx = 0;
+    const totalSlides = 3;
+
+    function moveSlide(direction) {
+        slideIdx += direction;
+        // Loop around logic
+        if (slideIdx < 0) slideIdx = totalSlides - 1;
+        if (slideIdx >= totalSlides) slideIdx = 0;
+        
+        if (track) track.style.transform = `translateX(-${(slideIdx * 100) / totalSlides}%)`;
+    }
+
+    if(prevArrow && nextArrow) {
+        prevArrow.addEventListener('click', () => moveSlide(-1));
+        nextArrow.addEventListener('click', () => moveSlide(1));
+    }
+
+
+    // =========================================
+    // 5. ABOUT PHYSICS (BIG SNOWFLAKES)
+    // =========================================
     let particles = [];
     function initCanvas() {
         canvas.width = window.innerWidth;
@@ -97,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             ctx.fillStyle = "white";
             if (p.isFlake) {
-                ctx.font = "30px serif"; // SHRUNK SNOWFLAKES AS REQUESTED
+                ctx.font = "30px serif"; 
                 ctx.fillText("❅", p.x, p.y);
             } else {
                 ctx.beginPath();
@@ -108,9 +178,21 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(drawPhysics);
     }
 
-    window.addEventListener('scroll', updateRunner);
-    window.addEventListener('resize', initCanvas);
+    // =========================================
+    // MAIN LISTENERS
+    // =========================================
+    window.addEventListener('scroll', () => {
+        updateRunner();
+        updateArtExpansion();
+    });
+    window.addEventListener('resize', () => {
+        initCanvas();
+        updateArtExpansion(); // Recalculate sizes on resize
+    });
+
+    // Initial kicks
     initCanvas();
     drawPhysics();
     updateRunner();
+    updateArtExpansion();
 });
