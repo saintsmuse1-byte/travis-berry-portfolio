@@ -8,33 +8,29 @@ html, body {
 .nav-brand { font-size: 1.2em; letter-spacing: 2px; font-weight: bold; }
 .nav-logo-accent { color: #888; }
 
-/* HERO with SOFT GRADIENT */
+/* HERO with LONG SOFT GRADIENT */
 .main-content { 
     display: flex; flex-direction: column; align-items: center; 
     padding: 150px 20px 200px 20px; position: relative; min-height: 100vh;
-    
-    /* Dispersed Gradient: Starts dark, very slowly fades to white at the very bottom */
     background: linear-gradient(
         to bottom, 
         #1b1d26 0%, 
         #1b1d26 20%, 
-        rgba(27, 29, 38, 0.95) 40%, 
-        rgba(27, 29, 38, 0.6) 60%, 
-        rgba(255, 255, 255, 0.8) 85%, 
-        #ffffff 100%
+        #242732 50%, 
+        #6e7381 85%, 
+        #e0e2e6 100%
     );
 }
 
-/* HERO SNOW */
 #falling-snow-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-.snow-flake-js { position: absolute; color: white; user-select: none; top: -50px; animation: fall-js linear infinite; font-size: 20px; opacity: 0.8; }
+.snow-flake-js { position: absolute; color: white; top: -50px; animation: fall-js linear infinite; font-size: 20px; opacity: 0.5; }
 @keyframes fall-js { to { transform: translateY(110vh); } }
 
 h1 { font-size: clamp(4rem, 12vw, 10rem); font-weight: 900; z-index: 5; margin: 0; }
 .circle-wrapper { width: 450px; height: 450px; border-radius: 50%; overflow: hidden; margin-top: -60px; position: relative; }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- ART SECTION --- */
+/* --- ART SECTION with SOLID LINE --- */
 .art-section { 
     background: white; 
     height: 100vh; 
@@ -44,62 +40,73 @@ h1 { font-size: clamp(4rem, 12vw, 10rem); font-weight: 900; z-index: 5; margin: 
     display: flex;
     align-items: center; 
     justify-content: center;
+    border-top: 1px solid #000; /* Sharp, visible solid line */
 }
 
-/* The expanding container */
 .art-expander-container {
     background: white;
-    width: 20%; /* Starts small */
-    height: 300px;
+    width: 280px; 
+    height: 280px;
     position: relative;
     will-change: width, height, transform;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 15px 50px rgba(0,0,0,0.15);
-    /* No transition property here because JS handles the scroll update directly */
 }
-
-/* Rise Effect Trigger */
-.art-expander-container:hover { transform: translateY(-5px) !important; transition: transform 0.3s ease; }
 
 .carousel-viewport { width: 100%; height: 100%; overflow: hidden; position: relative; }
 .carousel-track { display: flex; width: 300%; height: 100%; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
 
-.slide { width: 33.3333%; height: 100%; flex-shrink: 0; }
-.art-link { text-decoration: none; display: block; width: 100%; height: 100%; position: relative; }
-.image-frame { width: 100%; height: 100%; }
+.slide { width: 33.3333%; height: 100%; flex-shrink: 0; position: relative; }
+.art-link { text-decoration: none; display: block; width: 100%; height: 100%; }
+.image-frame { width: 100%; height: 100%; overflow: hidden; }
 .image-frame img, .image-frame video { width: 100%; height: 100%; object-fit: cover; }
 
-/* ROLL TITLES */
+/* LABELS: Black, non-bold, underneath the image */
 .roll-title {
-    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-    height: 1.2em; overflow: hidden; font-weight: 700; font-size: 0.85rem;
-    text-transform: uppercase; color: white; letter-spacing: 1px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+    position: absolute; 
+    bottom: -40px; /* Positions it clearly under the white image area */
+    left: 50%; 
+    transform: translateX(-50%);
+    height: 1.2em; 
+    overflow: hidden; 
+    font-weight: 400; /* Non-bold */
+    font-size: 0.9rem;
+    text-transform: uppercase; 
+    color: black; 
+    letter-spacing: 1px;
     pointer-events: none;
 }
-.roll-inner { display: flex; flex-direction: column; transition: transform 0.3s ease; }
+.roll-inner { display: flex; flex-direction: column; transition: transform 0.35s ease; }
 .art-link:hover .roll-inner { transform: translateY(-50%); }
+.roll-inner span { display: block; height: 1.2em; text-align: center; }
 
-/* ARROWS */
+/* ARROWS: Minimalist, no circles */
 .nav-arrow {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    background: white; border: none; color: #111; font-size: 2rem;
-    width: 50px; height: 50px; border-radius: 50%; cursor: pointer; z-index: 10;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.2s;
+    position: absolute; 
+    top: 50%; 
+    transform: translateY(-50%);
+    background: none; 
+    border: none; 
+    color: #000; 
+    font-size: 3rem;
+    cursor: pointer; 
+    z-index: 10; 
+    opacity: 0.3; 
+    transition: opacity 0.3s, transform 0.2s;
+    font-family: serif; /* Gives a more classic Quentin Blake look */
 }
-.nav-arrow:hover { transform: translateY(-50%) scale(1.1); }
-.nav-arrow.left { left: -70px; } /* Outside the image */
-.nav-arrow.right { right: -70px; }
+.nav-arrow:hover { opacity: 1; transform: translateY(-50%) scale(1.1); }
+.nav-arrow.left { left: -80px; } 
+.nav-arrow.right { right: -80px; }
 
-/* RUNNER SYSTEM */
+/* RUNNER & FEATHER */
 #runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1500; opacity: 0; }
-#boy-container { position: absolute; width: 280px; height: 280px; } /* Fixed Size */
+#boy-container { position: absolute; width: 280px; height: 280px; }
 .boy-frame { position: absolute; top: 0; left: 0; width: 100%; display: none; }
 .boy-frame.active { display: block; }
 #feather { position: absolute; width: 160px; z-index: 1503; }
 
-/* ABOUT SECTION */
+/* ABOUT */
 .about-section { background: black; min-height: 100vh; position: relative; z-index: 101; display: flex; align-items: center; justify-content: center; }
 #about-canvas { position: absolute; top:0; left:0; width:100%; height:100%; }
 .about-container { position: relative; z-index: 10; pointer-events: none; text-align: center; }
