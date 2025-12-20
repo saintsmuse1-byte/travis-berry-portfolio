@@ -48,24 +48,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 3. SCROLL EXPANSION (Portrait 4:5)
+    // 3. ART SECTION EXPANSION (Section itself grows)
     function updateArtExpansion() {
         if (!artSectionTrigger || !artExpander) return;
         const rect = artSectionTrigger.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-        let entryProgress = 1 - (rect.top / viewportHeight);
+        const vh = window.innerHeight;
+        
+        let entryProgress = 1 - (rect.top / vh);
         entryProgress = Math.min(Math.max(entryProgress, 0), 1);
-        const expansionProgress = Math.pow(Math.min(entryProgress * 1.2, 1), 2);
+        const expand = Math.pow(Math.min(entryProgress * 1.2, 1), 2);
 
-        // Calculate Target: Vertical 4:5
-        const targetHeight = viewportHeight * 0.9;
-        const targetWidth = targetHeight * (4/5);
+        // Calculate Target: Vertical 4:5 aspect ratio
+        const targetH = vh * 0.85;
+        const targetW = targetH * (4/5);
 
-        const currentWidth = (window.innerWidth * 0.3) + ((targetWidth - (window.innerWidth * 0.3)) * expansionProgress);
-        const currentHeight = 300 + ((targetHeight - 300) * expansionProgress);
+        const curW = (window.innerWidth * 0.3) + ((targetW - (window.innerWidth * 0.3)) * expand);
+        const curH = 300 + ((targetH - 300) * expand);
 
-        artExpander.style.width = `${currentWidth}px`;
-        artExpander.style.height = `${currentHeight}px`;
+        artExpander.style.width = `${curW}px`;
+        artExpander.style.height = `${curH}px`;
     }
 
     // 4. MANUAL CAROUSEL
@@ -96,19 +97,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     window.addEventListener('mousemove', e => {
-        const rect = canvas.getBoundingClientRect();
-        mouse.x = e.clientX - rect.left;
-        mouse.y = e.clientY - rect.top;
+        const r = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
     });
 
     function drawPhysics() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => {
             let dx = mouse.x - p.x; let dy = mouse.y - p.y;
-            let dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < mouse.radius) {
-                let force = (mouse.radius - dist) / mouse.radius;
-                p.vx -= (dx / dist) * force * 10; p.vy -= (dy / dist) * force * 10;
+            let d = Math.sqrt(dx * dx + dy * dy);
+            if (d < mouse.radius) {
+                let f = (mouse.radius - d) / mouse.radius;
+                p.vx -= (dx / d) * f * 10; p.vy -= (dy / d) * f * 10;
             }
             p.vx += (p.bx - p.x) * 0.04; p.vy += (p.by - p.y) * 0.04;
             p.vx *= 0.9; p.vy *= 0.9; p.x += p.vx; p.y += p.vy;
