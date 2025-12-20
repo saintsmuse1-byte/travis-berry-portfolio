@@ -5,19 +5,25 @@ html, body { margin: 0; padding: 0; font-family: sans-serif; background: #1b1d26
 .nav-brand { font-size: 1.2em; letter-spacing: 2px; font-weight: bold; }
 .nav-logo-accent { color: #888; }
 
-/* HERO */
-.main-content { display: flex; flex-direction: column; align-items: center; padding: 150px 20px 400px 20px; position: relative; min-height: 100vh; }
+/* HERO with Gradient to White */
+.main-content { 
+    display: flex; flex-direction: column; align-items: center; 
+    padding: 150px 20px 400px 20px; position: relative; min-height: 100vh;
+    /* Gradient: Slate Grey -> Pure White */
+    background: linear-gradient(to bottom, #1b1d26 0%, #1b1d26 70%, #ffffff 100%);
+}
+
 #falling-snow-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
 .snow-flake-js { position: fixed; color: white; pointer-events: none; z-index: 10; top: -50px; animation: fall-js 8s linear infinite; font-size: 20px; }
 @keyframes fall-js { to { transform: translateY(110vh); } }
 
-h1 { font-size: clamp(4rem, 12vw, 10rem); font-weight: 900; z-index: 5; margin: 0; }
+h1 { font-size: clamp(4rem, 12vw, 10rem); font-weight: 900; z-index: 5; margin: 0; color: white; }
 .circle-wrapper { width: 450px; height: 450px; border-radius: 50%; overflow: hidden; margin-top: -60px; position: relative; border: none; }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- EXPANDING WHITE SECTION --- */
+/* --- ART SECTION --- */
 .art-section { 
-    background: #1b1d26; 
+    background: white; /* Clean white BG */
     height: 180vh; 
     width: 100%; 
     position: relative; 
@@ -35,76 +41,67 @@ h1 { font-size: clamp(4rem, 12vw, 10rem); font-weight: 900; z-index: 5; margin: 
     will-change: width, height;
     display: flex;
     flex-direction: column;
-    overflow: visible; /* Allows title and hover-float to be seen */
-    transition: transform 0.4s ease-out; /* For the lift effect */
+    box-shadow: 0 20px 60px rgba(0,0,0,0.05); /* Soft Quentin Blake shadow */
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
-/* THE HOVER FLOAT EFFECT */
-.art-expander-container:hover {
-    transform: translateY(-15px);
-}
+.art-expander-container:hover { transform: translateY(-15px); }
 
-.carousel-viewport { width: 100%; height: 100%; overflow: hidden; background: white; }
-.carousel-track { display: flex; width: 300%; height: 100%; transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+.carousel-viewport { width: 100%; height: 100%; overflow: hidden; position: relative; }
+
+/* Fixed Carousel Logic: Track is 300% wide (3 slides), each slide is 33.333% of that */
+.carousel-track { 
+    display: flex; 
+    width: 300%; 
+    height: 100%; 
+    transition: transform 0.8s cubic-bezier(0.85, 0, 0.15, 1); 
+}
 
 .slide { 
-    width: 100%; height: 100%; flex-shrink: 0; 
-    display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-}
-
-.art-link { text-decoration: none; color: black; display: flex; flex-direction: column; align-items: center; width: 100%; height: 100%; }
-
-/* Image Frame: Touches top and bottom edges */
-.image-frame {
-    width: 100%;
+    width: 33.333%; /* 100% of the viewport */
     height: 100%; 
-    display: flex;
-    align-items: center;
+    flex-shrink: 0; 
+    display: flex; 
+    align-items: center; 
     justify-content: center;
-    overflow: hidden;
 }
 
-.image-frame img, .image-frame video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Fill the frame completely */
-}
+.art-link { text-decoration: none; display: block; width: 100%; height: 100%; position: relative; }
 
-/* ROLL TITLE (Centered underneath) */
+.image-frame { width: 100%; height: 100%; overflow: hidden; }
+.image-frame img, .image-frame video { width: 100%; height: 100%; object-fit: cover; }
+
+/* --- ROLL TITLE (Centered and Black for White BG) --- */
 .roll-title {
     position: absolute;
-    bottom: -60px; /* Positions it below the white box */
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
     height: 1.5em;
     overflow: hidden;
     font-weight: 900;
     font-size: 1.8rem;
     line-height: 1.5em;
     text-transform: uppercase;
-    color: white; /* Contrast against dark bg */
+    color: black; 
+    pointer-events: none;
 }
 
 .roll-inner { display: flex; flex-direction: column; transition: transform 0.4s cubic-bezier(0.76, 0, 0.24, 1); }
 .art-link:hover .roll-inner { transform: translateY(-50%); }
 .roll-inner span { display: block; height: 1.5em; text-align: center; }
 
-/* ARROWS: Quentin Blake minimal style */
+/* ARROWS: Black and outside the box */
 .nav-arrow {
     position: absolute; top: 50%; transform: translateY(-50%);
-    background: none; border: none; color: white; font-size: 4rem;
-    cursor: pointer; z-index: 10; opacity: 0.5; transition: opacity 0.3s;
+    background: none; border: none; color: black; font-size: 4rem;
+    cursor: pointer; z-index: 10; opacity: 0.2; transition: opacity 0.3s, transform 0.3s;
 }
-.nav-arrow:hover { opacity: 1; }
-.nav-arrow.left { left: -80px; }
-.nav-arrow.right { right: -80px; }
+.nav-arrow:hover { opacity: 1; transform: translateY(-50%) scale(1.1); }
+.nav-arrow.left { left: 5vw; }
+.nav-arrow.right { right: 5vw; }
 
-/* ABOUT */
+/* ABOUT: Dark back to black */
 .about-section { background: black; min-height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; z-index: 101; }
 #about-canvas { position: absolute; top:0; left:0; width: 100%; height: 100%; }
 .about-container { position: relative; z-index: 10; pointer-events: none; text-align: center; }
-
-/* RUNNER */
-#runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1500; opacity: 0; }
-#boy-container { position: absolute; width: 280px; height: 280px; }
-.boy-frame { position: absolute; top: 0; left: 0; width: 100%; display: none; }
-.boy-frame.active { display: block; }
-#feather { position: absolute; width: 160px; z-index: 1503; }
