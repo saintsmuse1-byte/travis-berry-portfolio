@@ -7,10 +7,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const artExpander = document.getElementById('art-expander');
     const track = document.getElementById('carousel-track');
     const snowContainer = document.getElementById('falling-snow-container');
+    const canvas = document.getElementById('about-canvas');
+    const ctx = canvas.getContext('2d');
 
     let lastFrameIdx = 0;
 
-    // Runner Logic
+    // 1. Snowflakes and Runner logic remain the same as previous step to maintain function
+    if (snowContainer) {
+        for (let i = 0; i < 30; i++) {
+            const flake = document.createElement('div');
+            flake.className = 'snow-flake-js';
+            flake.innerHTML = '❅';
+            flake.style.left = Math.random() * 100 + 'vw';
+            flake.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            flake.appendChild(snowContainer);
+        }
+    }
+
     function updateRunner() {
         const y = window.scrollY;
         const progress = Math.min(Math.max(y / 2200, 0), 1);
@@ -29,33 +42,31 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Exact TimQ Expansion Logic
+    // 2. TIMQ EXPANSION (The "Rising" Card)
     function updateExpansion() {
         if (!artSection || !artExpander) return;
         const rect = artSection.getBoundingClientRect();
         const vh = window.innerHeight;
         
-        // Progress is 0 when the section enters, 1 when centered
-        let progress = 1 - (rect.top / vh);
+        // Progress of expansion based on scroll
+        let progress = 1 - (rect.top / (vh * 0.8));
         progress = Math.min(Math.max(progress, 0), 1);
         
-        // Target: 90% of height, 4:5 ratio
-        const targetH = vh * 0.9;
-        const targetW = targetH * 0.8;
-        
-        // Current Dimensions
-        const curW = 300 + (targetW - 300) * progress;
-        const curH = 400 + (targetH - 400) * progress;
-        
+        const targetH = vh * 0.85;
+        const targetW = targetH * 0.75;
+
+        const curW = 280 + (targetW - 280) * Math.pow(progress, 1.5);
+        const curH = 380 + (targetH - 380) * Math.pow(progress, 1.5);
+
         artExpander.style.width = `${curW}px`;
         artExpander.style.height = `${curH}px`;
         
-        // Rise effect: Move UP as it expands
-        const lift = (1 - progress) * 200;
+        // This creates the "Rising" effect from the bottom
+        const lift = (1 - progress) * 250;
         artExpander.style.transform = `translateY(${lift}px)`;
     }
 
-    // Carousel
+    // 3. Carousel Logic
     let slideIdx = 0;
     document.getElementById('next-arrow').onclick = () => {
         slideIdx = (slideIdx + 1) % 3;
@@ -66,11 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
         track.style.transform = `translateX(-${slideIdx * 33.3333}%)`;
     };
 
-    window.addEventListener('scroll', () => {
-        updateRunner();
-        updateExpansion();
-    });
-    
-    updateRunner();
-    updateExpansion();
+    window.addEventListener('scroll', () => { updateRunner(); updateExpansion(); });
+    updateRunner(); updateExpansion();
 });
