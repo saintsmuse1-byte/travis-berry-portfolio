@@ -1,31 +1,44 @@
-html, body { margin: 0; padding: 0; font-family: sans-serif; background: #1b1d26; color: white; overflow-x: hidden; }
+html, body { 
+    margin: 0; padding: 0; font-family: sans-serif; 
+    background: #1b1d26; color: white; overflow-x: hidden; 
+}
 
+/* NAVBAR */
 .navbar { position: fixed; top: 0; width: 100%; height: 60px; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; padding: 0 40px; }
 
-/* Hero with Transparent Gradient at bottom */
+/* HERO with SEMI-TRANSPARENT BOTTOM */
 .main-content { 
     display: flex; flex-direction: column; align-items: center; 
     padding: 150px 20px 200px 20px; position: relative; min-height: 100vh;
-    background: linear-gradient(to bottom, #1b1d26 0%, #1b1d26 60%, rgba(255,255,255,0.1) 90%, rgba(255,255,255,0.4) 100%);
+    /* Fades to a transparent wash so the background boy/snow still show slightly */
+    background: linear-gradient(
+        to bottom, 
+        #1b1d26 0%, 
+        #1b1d26 60%, 
+        rgba(27, 29, 38, 0.8) 85%, 
+        rgba(255, 255, 255, 0.3) 100%
+    );
 }
 
 #falling-snow-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
 .snow-flake-js { position: absolute; color: white; top: -50px; animation: fall-js linear infinite; font-size: 20px; opacity: 0.5; }
 @keyframes fall-js { to { transform: translateY(110vh); } }
 
-/* Art Section Wrapper - TRANSPARENT */
+/* THE ART SECTION WRAPPER */
 .art-section { 
-    height: 120vh; width: 100%; position: relative; z-index: 100; 
+    height: 130vh; width: 100%; position: relative; z-index: 100; 
     display: flex; align-items: center; justify-content: center;
-    background: transparent;
+    background: transparent; /* Crucial for the TimQ look */
 }
 
-/* The "Card" - This is exactly what rises and expands */
+/* THE RISING CARD */
 .art-expander-container {
-    background: white; width: 300px; height: 400px;
-    position: relative; will-change: width, height, transform;
+    background: white;
+    width: 280px; height: 380px; /* Starting size */
+    position: relative;
+    will-change: width, height, transform;
     display: flex; flex-direction: column;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
     overflow: hidden;
 }
 
@@ -35,25 +48,25 @@ html, body { margin: 0; padding: 0; font-family: sans-serif; background: #1b1d26
 .image-frame { width: 100%; height: 100%; }
 .image-frame img, .image-frame video { width: 100%; height: 100%; object-fit: cover; }
 
-/* Labels - Black, Non-Bold, Under Image */
+/* LABELS: Black, Non-bold, centered underneath */
 .roll-title {
     position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
     height: 1.2em; overflow: hidden; font-weight: 400; font-size: 0.9rem;
     text-transform: uppercase; color: black; letter-spacing: 1px;
-    background: rgba(255,255,255,0.8); padding: 2px 12px; border-radius: 2px;
+    background: rgba(255,255,255,0.8); padding: 4px 15px;
 }
 .roll-inner { display: flex; flex-direction: column; transition: transform 0.3s ease; }
 .art-link:hover .roll-inner { transform: translateY(-50%); }
 
-/* Minimalist Arrows */
+/* CLEAN MINIMALIST ARROWS */
 .nav-arrow {
     position: absolute; top: 50%; transform: translateY(-50%);
     background: none; border: none; color: white; font-size: 4rem;
     cursor: pointer; z-index: 10; opacity: 0.3; transition: 0.3s;
 }
 .nav-arrow:hover { opacity: 1; transform: translateY(-50%) scale(1.1); }
-.nav-arrow.left { left: 5%; }
-.nav-arrow.right { right: 5%; }
+.nav-arrow.left { left: 40px; }
+.nav-arrow.right { right: 40px; }
 
 #runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1500; opacity: 0; }
 #boy-container { position: absolute; width: 280px; height: 280px; }
