@@ -8,17 +8,18 @@ html, body {
 .nav-brand { font-size: 1.2em; letter-spacing: 2px; font-weight: bold; }
 .nav-logo-accent { color: #888; }
 
-/* HERO with LONG SOFT GRADIENT */
+/* HERO */
 .main-content { 
     display: flex; flex-direction: column; align-items: center; 
     padding: 150px 20px 200px 20px; position: relative; min-height: 100vh;
+    /* Soft Gradient that acts as the "Background" for the card to rise over */
     background: linear-gradient(
         to bottom, 
         #1b1d26 0%, 
         #1b1d26 20%, 
-        #242732 50%, 
+        #2a2d3a 50%, 
         #6e7381 85%, 
-        #e0e2e6 100%
+        #cfd2d6 100%
     );
 }
 
@@ -30,9 +31,9 @@ h1 { font-size: clamp(4rem, 12vw, 10rem); font-weight: 900; z-index: 5; margin: 
 .circle-wrapper { width: 450px; height: 450px; border-radius: 50%; overflow: hidden; margin-top: -60px; position: relative; }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- ART SECTION with SOLID LINE --- */
+/* --- ART SECTION WRAPPER (Transparent) --- */
 .art-section { 
-    background: white; 
+    background: transparent; /* TRANSPARENT so we see the hero behind it */
     height: 100vh; 
     width: 100%; 
     position: relative; 
@@ -40,20 +41,24 @@ h1 { font-size: clamp(4rem, 12vw, 10rem); font-weight: 900; z-index: 5; margin: 
     display: flex;
     align-items: center; 
     justify-content: center;
-    border-top: 1px solid #000; /* Sharp, visible solid line */
+    border: none; /* No line */
 }
 
+/* --- THE WHITE CARD (This expands) --- */
 .art-expander-container {
     background: white;
-    width: 280px; 
-    height: 280px;
+    width: 250px; 
+    height: 300px;
     position: relative;
     will-change: width, height, transform;
     display: flex;
     flex-direction: column;
+    /* High shadow makes it look like it's floating above the background */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); 
+    overflow: hidden; /* Clips the images to the card size */
 }
 
-.carousel-viewport { width: 100%; height: 100%; overflow: hidden; position: relative; }
+.carousel-viewport { width: 100%; height: 100%; position: relative; }
 .carousel-track { display: flex; width: 300%; height: 100%; transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
 
 .slide { width: 33.3333%; height: 100%; flex-shrink: 0; position: relative; }
@@ -61,43 +66,54 @@ h1 { font-size: clamp(4rem, 12vw, 10rem); font-weight: 900; z-index: 5; margin: 
 .image-frame { width: 100%; height: 100%; overflow: hidden; }
 .image-frame img, .image-frame video { width: 100%; height: 100%; object-fit: cover; }
 
-/* LABELS: Black, non-bold, underneath the image */
+/* LABELS: Minimalist Black */
 .roll-title {
     position: absolute; 
-    bottom: -40px; /* Positions it clearly under the white image area */
+    bottom: 25px; 
     left: 50%; 
     transform: translateX(-50%);
     height: 1.2em; 
     overflow: hidden; 
-    font-weight: 400; /* Non-bold */
+    font-weight: 400; /* Regular weight */
     font-size: 0.9rem;
     text-transform: uppercase; 
     color: black; 
     letter-spacing: 1px;
     pointer-events: none;
+    z-index: 20;
+    /* Small background fade to ensure text readability over image? 
+       TimQ usually has text below, but for full cover images, white text or contrast is needed.
+       Requested Black text: assuming images are light enough or text sits on white. 
+       If text is inside the card (which is full image), we might need a small white backdrop
+       OR if we want it strictly TimQ style, it might sit below the image?
+       Let's stick to Overlay for now as requested previously.
+    */
+    background: rgba(255,255,255,0.7); /* Subtle backing for black text */
+    padding: 2px 10px;
 }
 .roll-inner { display: flex; flex-direction: column; transition: transform 0.35s ease; }
 .art-link:hover .roll-inner { transform: translateY(-50%); }
 .roll-inner span { display: block; height: 1.2em; text-align: center; }
 
-/* ARROWS: Minimalist, no circles */
+/* ARROWS: Raw Symbols, No Circles */
 .nav-arrow {
     position: absolute; 
     top: 50%; 
     transform: translateY(-50%);
     background: none; 
     border: none; 
-    color: #000; 
-    font-size: 3rem;
+    color: white; /* Contrast against the dark hero background */
+    font-size: 4rem; /* Bigger since no circle */
     cursor: pointer; 
     z-index: 10; 
-    opacity: 0.3; 
+    opacity: 0.4; 
     transition: opacity 0.3s, transform 0.2s;
-    font-family: serif; /* Gives a more classic Quentin Blake look */
+    font-family: serif; 
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 .nav-arrow:hover { opacity: 1; transform: translateY(-50%) scale(1.1); }
-.nav-arrow.left { left: -80px; } 
-.nav-arrow.right { right: -80px; }
+.nav-arrow.left { left: 5%; } 
+.nav-arrow.right { right: 5%; }
 
 /* RUNNER & FEATHER */
 #runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1500; opacity: 0; }
