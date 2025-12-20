@@ -1,27 +1,106 @@
-html, body { margin: 0; padding: 0; font-family: sans-serif; background: #1b1d26; color: white; overflow-x: hidden; }
+html, body { 
+    margin: 0; padding: 0; font-family: sans-serif; 
+    background: #1b1d26; color: white; overflow-x: hidden; 
+}
 
-.navbar { position: fixed; top: 0; width: 100%; height: 60px; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); z-index: 2000; display: flex; align-items: center; padding: 0 40px; }
+/* NAVBAR */
+.navbar { 
+    position: fixed; top: 0; width: 100%; height: 60px; 
+    background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(10px); 
+    z-index: 2000; display: flex; align-items: center; padding: 0 40px; 
+}
 .nav-brand { font-size: 1.2em; letter-spacing: 2px; font-weight: bold; }
 .nav-logo-accent { color: #888; }
 
-/* HERO & FALLING SNOW */
-.main-content { display: flex; flex-direction: column; align-items: center; padding: 150px 20px 400px 20px; position: relative; min-height: 100vh; }
+/* HERO & SNOW */
+.main-content { 
+    display: flex; flex-direction: column; align-items: center; 
+    padding: 150px 20px 400px 20px; position: relative; min-height: 100vh;
+}
 #falling-snow-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
 .snow-flake-js { position: fixed; color: white; pointer-events: none; z-index: 10; top: -50px; animation: fall-js 8s linear infinite; font-size: 20px; }
 @keyframes fall-js { to { transform: translateY(110vh); } }
 
 h1 { font-size: clamp(4rem, 12vw, 10rem); font-weight: 900; z-index: 5; margin: 0; }
-.circle-wrapper { width: 450px; height: 450px; border-radius: 50%; overflow: hidden; margin-top: -60px; position: relative; border: none; }
+.circle-wrapper { 
+    width: 450px; height: 450px; border-radius: 50%; 
+    overflow: hidden; margin-top: -60px; position: relative; border: none;
+}
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* ART CAROUSEL */
-.art-section { background: white; height: 85vh; width: 100%; position: relative; z-index: 100; overflow: hidden; }
-.carousel-track { display: flex; width: 300%; height: 100%; transition: transform 1.2s cubic-bezier(0.65, 0, 0.35, 1); }
-.slide { width: 100%; height: 100%; flex-shrink: 0; position: relative; text-decoration: none; }
-.slide img, .slide video { width: 100%; height: 100%; object-fit: cover; }
-.art-label { position: absolute; bottom: 40px; left: 40px; color: white; font-weight: bold; font-size: 2.5rem; }
+/* --- NEW ART SECTION STYLES --- */
+.art-section { 
+    background: #1b1d26; /* Match body bg so expansion looks seamless */
+    /* Make section taller so we have scrolling space for the expansion animation */
+    height: 150vh; 
+    width: 100%; 
+    position: relative; 
+    z-index: 100; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-/* ABOUT */
+/* The container that actually expands */
+.art-expander-container {
+    position: relative;
+    /* Initial small state for animation start */
+    width: 40%;
+    height: 400px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    /* Will be manipulated by JS during scroll */
+    will-change: width, height;
+}
+
+.carousel-viewport { width: 100%; height: 100%; position: relative; }
+.carousel-track { 
+    display: flex; width: 300%; height: 100%; 
+    transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); 
+}
+
+/* Enforce 4:5 Aspect Ratio feel on slides */
+.slide { 
+    width: 100%; 
+    height: 100%; 
+    flex-shrink: 0; 
+    position: relative; 
+    text-decoration: none; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+}
+.slide img, .slide video { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    /* Ensure image itself adheres to aspect ratio if container shifts */
+    aspect-ratio: 4 / 5; 
+}
+.art-label { position: absolute; bottom: 30px; left: 30px; color: white; font-weight: bold; font-size: 2rem; text-shadow: 0 2px 10px rgba(0,0,0,0.7); }
+
+/* Navigation Arrows */
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.3);
+    color: white;
+    border: none;
+    font-size: 3rem;
+    padding: 10px 20px;
+    cursor: pointer;
+    z-index: 10;
+    transition: background 0.3s;
+    user-select: none;
+}
+.nav-arrow:hover { background: rgba(0,0,0,0.7); }
+.nav-arrow.left { left: 0; }
+.nav-arrow.right { right: 0; }
+
+
+/* ABOUT SECTION */
 .about-section { background: black; min-height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; z-index: 101; }
 #about-canvas { position: absolute; top:0; left:0; width: 100%; height: 100%; }
 .about-container { position: relative; z-index: 10; pointer-events: none; text-align: center; }
