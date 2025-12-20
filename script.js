@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             flake.innerHTML = '❅';
             flake.style.left = Math.random() * 100 + 'vw';
             flake.style.animationDuration = (Math.random() * 4 + 6) + 's';
-            flake.style.opacity = Math.random() * 0.6 + 0.4;
+            flake.style.opacity = Math.random() * 0.4 + 0.3;
             snowContainer.appendChild(flake);
         }
     }
@@ -48,17 +48,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 3. ART SECTION EXPANSION (Section itself grows)
+    // 3. ART SECTION EXPANSION
     function updateArtExpansion() {
         if (!artSectionTrigger || !artExpander) return;
         const rect = artSectionTrigger.getBoundingClientRect();
         const vh = window.innerHeight;
-        
         let entryProgress = 1 - (rect.top / vh);
         entryProgress = Math.min(Math.max(entryProgress, 0), 1);
         const expand = Math.pow(Math.min(entryProgress * 1.2, 1), 2);
 
-        // Calculate Target: Vertical 4:5 aspect ratio
         const targetH = vh * 0.85;
         const targetW = targetH * (4/5);
 
@@ -69,13 +67,14 @@ document.addEventListener('DOMContentLoaded', () => {
         artExpander.style.height = `${curH}px`;
     }
 
-    // 4. MANUAL CAROUSEL
+    // 4. MANUAL CAROUSEL (Corrected Shuffling)
     let slideIdx = 0;
     function moveSlide(direction) {
         slideIdx += direction;
         if (slideIdx < 0) slideIdx = 2;
         if (slideIdx >= 3) slideIdx = 0;
-        if (track) track.style.transform = `translateX(-${(slideIdx * 100) / 3}%)`;
+        // Shift track by 33.333% increments because track is 300% wide
+        if (track) track.style.transform = `translateX(-${slideIdx * 33.3333}%)`;
     }
     if(prevArrow) prevArrow.addEventListener('click', () => moveSlide(-1));
     if(nextArrow) nextArrow.addEventListener('click', () => moveSlide(1));
