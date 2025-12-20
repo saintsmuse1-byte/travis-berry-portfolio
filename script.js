@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 2. RUNNER & FEATHER
+    // 2. RUNNER ANIMATION
     function updateRunner() {
         const y = window.scrollY;
         const progress = Math.min(Math.max(y / 2200, 0), 1);
@@ -48,23 +48,36 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 3. ART EXPANSION
+    // 3. ART EXPANSION (RISING CARD EFFECT)
     function updateExpansion() {
         if (!artSection || !artExpander) return;
         const rect = artSection.getBoundingClientRect();
         const vh = window.innerHeight;
         
+        // Progress: 0 when top of section hits bottom of screen, 1 when focused
         let progress = 1 - (rect.top / vh);
         progress = Math.min(Math.max(progress, 0), 1);
         
-        const targetH = vh * 0.85;
-        const targetW = targetH * 0.8;
+        // Use an ease-out curve for a "floating" feel
+        const ease = 1 - Math.pow(1 - progress, 3);
 
-        const curW = 280 + (targetW - 280) * Math.pow(progress, 1.2);
-        const curH = 280 + (targetH - 280) * Math.pow(progress, 1.2);
+        const targetH = vh * 0.85;
+        const targetW = targetH * 0.8; // 4:5 Ratio
+
+        // Start dimensions
+        const startW = 300;
+        const startH = 400;
+
+        const curW = startW + (targetW - startW) * ease;
+        const curH = startH + (targetH - startH) * ease;
 
         artExpander.style.width = `${curW}px`;
         artExpander.style.height = `${curH}px`;
+        
+        // RISING EFFECT: 
+        // Move the box UP as it grows to simulate lifting off the background
+        const lift = (1 - ease) * 150; 
+        artExpander.style.transform = `translateY(${lift}px)`;
     }
 
     // 4. CAROUSEL
