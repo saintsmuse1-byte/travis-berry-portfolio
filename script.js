@@ -1,144 +1,143 @@
-/* ========== SNOW SYSTEM ========== */
+/* =========================
+   BASIC SNOW SYSTEM
+   ========================= */
 
-class SnowSystem {
-    constructor(container, options = {}) {
-        this.container = container;
-        this.canvas = document.createElement("canvas");
-        this.ctx = this.canvas.getContext("2d");
-        this.container.appendChild(this.canvas);
+function Snow(container, options = {}) {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    container.appendChild(canvas);
 
-        this.width = this.canvas.width = window.innerWidth;
-        this.height = this.canvas.height = window.innerHeight;
+    let w, h;
+    function resize() {
+        w = canvas.width = container.offsetWidth;
+        h = canvas.height = container.offsetHeight;
+    }
+    resize();
+    window.addEventListener("resize", resize);
 
-        this.flakes = [];
-        this.mouse = { x: null, y: null };
+    const flakes = [];
+    const maxFlakes = options.maxFlakes || 180;
+    const repelCircle = options.repelCircle || null;
+    const mouseRepel = options.mouseRepel || false;
 
-        this.profileCircle = options.profileCircle || null;
-        this.enableMouseRepel = options.mouseRepel || false;
-
-        this.spawnRate = options.spawnRate || 1;
-
-        window.addEventListener("resize", () => this.resize());
-        if (this.enableMouseRepel) {
-            window.addEventListener("mousemove", e => {
-                this.mouse.x = e.clientX;
-                this.mouse.y = e.clientY;
-            });
-        }
-
-        this.animate();
+    const mouse = { x: 0, y: 0 };
+    if (mouseRepel) {
+        window.addEventListener("mousemove", e => {
+            const rect = canvas.getBoundingClientRect();
+            mouse.x = e.clientX - rect.left;
+            mouse.y = e.clientY - rect.top;
+        });
     }
 
-    resize() {
-        this.width = this.canvas.width = window.innerWidth;
-        this.height = this.canvas.height = window.innerHeight;
-    }
-
-    createFlake(xOverride = null) {
-        return {
-            x: xOverride ?? Math.random() * this.width,
-            y: -10,
-            r: Math.random() * 1.5 + 0.5,
+    function addFlake(xOverride = null) {
+        flakes.push({
+            x: xOverride ?? Math.random() * w,
+            y: Math.random() * -h,
+            r: Math.random() * 1.4 + 0.6,
             vy: Math.random() * 0.6 + 0.4,
             vx: 0
-        };
+        });
     }
 
-    animate() {
-        requestAnimationFrame(() => this.animate());
-        this.ctx.clearRect(0, 0, this.width, this.height);
+    while (flakes.length < maxFlakes) addFlake();
 
-        /* GLOBAL SPAWN */
-        if (Math.random() < this.spawnRate) {
-            this.flakes.push(this.createFlake());
-        }
+    function update() {
+        ctx.clearRect(0, 0, w, h);
 
-        /* PROFILE SHADOW SPAWN (REDUCED) */
-        if (this.profileCircle && Math.random() < 0.25) {
-            const x = this.profileCircle.x +
-                (Math.random() - 0.5) * this.profileCircle.r * 1.2;
-            this.flakes.push(this.createFlake(x));
-        }
+        flakes.forEach(f => {
 
-        this.flakes.forEach((f, i) => {
-            /* PROFILE COLLISION */
-            if (this.profileCircle) {
-                const dx = f.x - this.profileCircle.x;
-                const dy = f.y - this.profileCircle.y;
+            /* PROFILE IMAGE DEFLECTION */
+            if (repelCircle) {
+                const dx = f.x - repelCircle.x;
+                const dy = f.y - repelCircle.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
 
-                if (dist < this.profileCircle.r) {
-                    const angle = Math.atan2(dy, dx);
-                    f.x = this.profileCircle.x + Math.cos(angle) * this.profileCircle.r;
-                    f.vx = Math.cos(angle) * 0.4;   // symmetrical slide
-                    f.vy = 0.9;
+                if (dist < repelCircle.r) {
+                    const nx = dx / dist;
+                    const ny = dy / dist;
+                    f.x = repelCircle.x + nx * repelCircle.r;
+                    f.vx += nx * 0.3;   // equal left/right push
+                    f.vy += 0.2;
                 }
             }
 
-            /* MOUSE REPEL (ABOUT SECTION) */
-            if (this.enableMouseRepel && this.mouse.x !== null) {
-                const dx = f.x - this.mouse.x;
-                const dy = f.y - this.mouse.y;
+            /* MOUSE REPEL (ABOUT ONLY) */
+            if (mouseRepel) {
+                const dx = f.x - mouse.x;
+                const dy = f.y - mouse.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-
                 if (dist < 80) {
-                    f.vx += dx / dist * 0.3;
-                    f.vy += dy / dist * 0.05;
+                    f.vx += dx / dist * 0.2;
                 }
             }
 
             f.y += f.vy;
             f.x += f.vx;
-            f.vx *= 0.95;
+            f.vx *= 0.92;
 
-            this.ctx.beginPath();
-            this.ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
-            this.ctx.fillStyle = "rgba(255,255,255,0.9)";
-            this.ctx.fill();
+            if (f.y > h) {
+                f.y = -10;
+                f.x = Math.random() * w;
+                f.vx = 0;
+            }
 
-            if (f.y > this.height) this.flakes.splice(i, 1);
+            ctx.beginPath();
+            ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(255,255,255,0.85)";
+            ctx.fill();
         });
+
+        requestAnimationFrame(update);
     }
+
+    update();
 }
 
-/* HERO SNOW (PROFILE REPEL) */
-const heroCircle = document.querySelector(".circle-wrapper").getBoundingClientRect();
+/* =========================
+   HERO SNOW (PROFILE AWARE)
+   ========================= */
 
-new SnowSystem(
-    document.getElementById("hero-snow"),
-    {
-        profileCircle: {
-            x: heroCircle.left + heroCircle.width / 2,
-            y: heroCircle.top + heroCircle.height / 2,
-            r: heroCircle.width / 2
-        },
-        spawnRate: 0.9
+const profile = document.querySelector(".circle-wrapper");
+const heroSnow = document.getElementById("hero-snow");
+
+const rect = profile.getBoundingClientRect();
+const heroRect = heroSnow.getBoundingClientRect();
+
+Snow(heroSnow, {
+    maxFlakes: 160,
+    repelCircle: {
+        x: rect.left - heroRect.left + rect.width / 2,
+        y: rect.top - heroRect.top + rect.height / 2,
+        r: rect.width / 2
     }
-);
+});
 
-/* ABOUT SNOW (MOUSE REPEL) */
-new SnowSystem(
-    document.getElementById("about-snow"),
-    {
-        mouseRepel: true,
-        spawnRate: 0.8
-    }
-);
+/* =========================
+   ABOUT SNOW (MOUSE REPEL)
+   ========================= */
 
-/* RUNNER EXIT ANIMATION */
+Snow(document.getElementById("about-snow"), {
+    maxFlakes: 140,
+    mouseRepel: true
+});
+
+/* =========================
+   RUNNER EXIT (UNCHANGED)
+   ========================= */
+
 const frames = document.querySelectorAll(".boy-frame");
-let frame = 0;
-let pos = -200;
+let frameIndex = 0;
+let runnerX = -200;
 
 setInterval(() => {
     frames.forEach(f => f.classList.remove("active"));
-    frames[frame % frames.length].classList.add("active");
-    frame++;
+    frames[frameIndex % frames.length].classList.add("active");
+    frameIndex++;
 }, 120);
 
 function moveRunner() {
-    pos += 2;
-    document.getElementById("runner-overlay").style.left = pos + "px";
-    if (pos < window.innerWidth + 200) requestAnimationFrame(moveRunner);
+    runnerX += 2;
+    document.getElementById("runner-overlay").style.left = runnerX + "px";
+    if (runnerX < window.innerWidth + 200) requestAnimationFrame(moveRunner);
 }
 moveRunner();
