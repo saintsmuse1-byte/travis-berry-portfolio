@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
-    // 1. RUNNER BOY LOGIC (EXIT SCREEN)
+    // 1. RUNNER BOY LOGIC (UNCHANGED, WORKING)
     // ==========================================
     const overlay = document.getElementById('runner-overlay');
     const boy = document.getElementById('boy-container');
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (progress > 1.4) return;
 
         const startX = -250;
-        const endX = window.innerWidth + 400; // exits fully
+        const endX = window.innerWidth + 400;
         const startY = 150;
         const endY = window.innerHeight - 250;
 
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-    // 2. CAROUSEL LOGIC (UNCHANGED)
+    // 2. CAROUSEL (UNCHANGED)
     // ==========================================
     const track = document.getElementById('carousel-track');
     let slideIdx = 0;
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ==========================================
-    // 3. SNOW ENGINE (YOUR ORIGINAL, FIXED)
+    // 3. SNOW ENGINE (REFINED COLLISION)
     // ==========================================
     class Utils {
         static random(min, max) { return min + Math.random() * (max - min); }
@@ -80,7 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         drawPattern() {
+            this.ctx.save();
             this.ctx.translate(this.radius, this.radius);
+
             if (this.patternType === 0) {
                 this.ctx.beginPath();
                 this.ctx.arc(0, 0, this.radius / 2, 0, Math.PI * 2);
@@ -88,16 +90,13 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 for (let i = 0; i < 6; i++) {
                     this.ctx.rotate(Math.PI / 3);
-                    this.drawBranch();
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, 0);
+                    this.ctx.lineTo(0, -this.radius);
+                    this.ctx.stroke();
                 }
             }
-        }
-
-        drawBranch() {
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, 0);
-            this.ctx.lineTo(0, -this.radius);
-            this.ctx.stroke();
+            this.ctx.restore();
         }
     }
 
@@ -117,19 +116,12 @@ document.addEventListener('DOMContentLoaded', () => {
             ];
 
             this.particles = [];
-            this.cursor = { x: -1000, y: -1000 };
-
             this.init();
         }
 
         init() {
             this.resize();
             window.addEventListener('resize', () => this.resize());
-            document.addEventListener('mousemove', e => {
-                const rect = this.canvas.getBoundingClientRect();
-                this.cursor.x = e.clientX - rect.left;
-                this.cursor.y = e.clientY - rect.top;
-            });
             this.loop();
         }
 
@@ -149,18 +141,21 @@ document.addEventListener('DOMContentLoaded', () => {
             this.particles = [];
 
             for (let i = 0; i < count; i++) {
-                this.particles.push({
-                    x: Math.random() * this.container.offsetWidth,
-                    y: Math.random() * this.container.offsetHeight,
-                    vx: 0,
-                    vy: Math.random() * 1.5 + 0.5,
-                    speedY: Math.random() * 1.5 + 0.5,
-                    rotation: Math.random() * Math.PI * 2,
-                    rotationSpeed: Utils.random(-0.02, 0.02),
-                    radius: Utils.random(3, 8),
-                    sprite: this.sprites[Math.floor(Math.random() * 4)].canvas
-                });
+                this.particles.push(this.newParticle(Math.random() * this.container.offsetWidth, Math.random() * this.container.offsetHeight));
             }
+        }
+
+        newParticle(x, y) {
+            return {
+                x,
+                y,
+                vx: 0,
+                vy: Utils.random(0.6, 1.6),
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: Utils.random(-0.02, 0.02),
+                radius: Utils.random(3, 8),
+                sprite: this.sprites[Math.floor(Math.random() * 4)].canvas
+            };
         }
 
         handleProfileCollision(p) {
@@ -180,27 +175,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const dy = p.y - cy;
             const dist = Math.hypot(dx, dy);
 
-            if (dist < r + p.radius) {
+            if (dist < r + p.radius && dy < 0) {
+                // Spawn a "ghost" flake to keep snow under the portrait
+                this.particles.push(this.newParticle(p.x, cy + r + 5));
+
+                // Resolve collision to top of circle
                 const angle = Math.atan2(dy, dx);
                 p.x = cx + Math.cos(angle) * (r + p.radius);
                 p.y = cy + Math.sin(angle) * (r + p.radius);
 
-                const tangent = angle + Math.PI / 2;
-                p.vx += Math.cos(tangent) * 0.4;
-                p.vy += Math.sin(tangent) * 0.4;
+                // Symmetrical gravity-based split
+                const side = dx === 0 ? (Math.random() < 0.5 ? -1 : 1) : Math.sign(dx);
+                p.vx += side * 0.35;
+                p.vy *= 0.6;
             }
         }
 
         update() {
-            const w = this.container.offsetWidth;
             const h = this.container.offsetHeight;
+            const w = this.container.offsetWidth;
 
             for (let p of this.particles) {
                 if (this.mode === 'falling') {
-                    p.y += p.speedY;
+                    p.y += p.vy;
                     p.x += p.vx;
                     p.rotation += p.rotationSpeed;
-                    p.vx *= 0.96;
+                    p.vx *= 0.98;
 
                     this.handleProfileCollision(p);
 
@@ -208,11 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         p.y = -20;
                         p.x = Math.random() * w;
                     }
-                } else {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    p.vx *= 0.92;
-                    p.vy *= 0.92;
                 }
             }
         }
@@ -238,3 +233,4 @@ document.addEventListener('DOMContentLoaded', () => {
     new SnowEngine('hero-snow', 'falling');
     new SnowEngine('about-snow', 'repel');
 });
+
