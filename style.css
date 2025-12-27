@@ -1,69 +1,73 @@
-/* --- GLOBAL --- */
+/* --- 1. RESET --- */
 html, body { 
-    margin: 0; padding: 0; font-family: sans-serif; 
+    margin: 0; padding: 0; font-family: 'Helvetica', Arial, sans-serif; 
     background: #1b1d26; color: white; overflow-x: hidden; 
 }
 
-/* --- HERO SECTION: Stays Dark --- */
+/* --- 2. HERO --- */
 .main-content { 
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    min-height: 100vh; width: 100%; position: relative; z-index: 10;
-    padding-bottom: 100px;
+    display: flex; flex-direction: column; align-items: center; 
+    padding: 100px 20px; min-height: 100vh; position: relative; z-index: 10;
 }
-
-h1 { font-size: clamp(3rem, 10vw, 7rem); font-weight: 900; margin: 0; z-index: 5; }
-
 .circle-wrapper { 
-    width: 350px; height: 350px; border-box: 50%; border-radius: 50%; 
-    overflow: hidden; margin-top: 20px; position: relative; z-index: 2;
+    width: 300px; height: 300px; border-radius: 50%; 
+    overflow: hidden; margin-top: 20px;
 }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- ART SECTION: The White "Rising" Page --- */
+/* --- 3. ART SECTION (The White "Window") --- */
 .art-section { 
     background-color: white !important; 
-    min-height: 130vh; width: 100%; 
-    position: relative; z-index: 20; 
+    width: 100%; height: 150vh; /* Extra height for scroll space */
+    position: relative; z-index: 20;
     display: flex; align-items: center; justify-content: center;
-    margin-top: 0; /* Ensures it sits right under the hero */
-}
-
-/* THE CARD: This is the container that expands */
-.art-expander-container {
-    background: white; width: 320px; height: 420px;
-    position: relative; will-change: width, height, transform;
-    display: flex; flex-direction: column;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.1);
     overflow: hidden;
 }
 
-.carousel-viewport { width: 100%; height: 100%; position: relative; }
-.carousel-track { display: flex; width: 600%; height: 100%; transition: transform 0.6s ease-out; }
+/* THE RISING CARD: Fixed initial size, will expand via JS */
+.art-expander-container {
+    background: white; 
+    width: 300px; height: 400px; 
+    position: relative;
+    display: flex; flex-direction: column;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.1);
+    will-change: transform, width, height;
+}
+
+.carousel-viewport { width: 100%; height: 100%; overflow: hidden; position: relative; }
+.carousel-track { 
+    display: flex; width: 600%; height: 100%; 
+    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); 
+}
 
 .slide { width: 16.6666%; height: 100%; display: flex; flex-direction: column; align-items: center; }
-.image-frame { width: 100%; height: 85%; overflow: hidden; }
+.image-frame { width: 100%; height: 85%; }
 .image-frame img, .image-frame video { width: 100%; height: 100%; object-fit: cover; }
 
-/* ROLLING LABELS: Thin black text */
+/* ROLLING LABELS */
 .roll-title {
     margin-top: 15px; height: 1.2em; overflow: hidden; 
     font-weight: 300; font-size: 0.9rem; text-transform: uppercase; color: black;
 }
 .roll-inner { display: flex; flex-direction: column; transition: transform 0.3s ease; }
 .slide:hover .roll-inner { transform: translateY(-50%); }
+.roll-inner span { display: block; height: 1.2em; text-align: center; }
 
-/* ARROWS: Minimalist black */
+/* ARROWS */
 .nav-arrow {
     position: absolute; top: 50%; transform: translateY(-50%);
     background: none; border: none; color: black; font-size: 4rem;
-    cursor: pointer; z-index: 30; opacity: 0.3;
+    cursor: pointer; z-index: 50; opacity: 0.2;
 }
 .nav-arrow:hover { opacity: 1; }
 .nav-arrow.left { left: 40px; }
 .nav-arrow.right { right: 40px; }
 
-/* --- ABOUT SECTION --- */
-.about-section { 
-    background: black; min-height: 100vh; width: 100%;
-    position: relative; z-index: 30; display: flex; align-items: center; justify-content: center;
-}
+/* --- 4. RUNNER & ABOUT --- */
+#runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1500; opacity: 0; }
+#boy-container { position: absolute; width: 200px; height: 200px; }
+.boy-frame { position: absolute; top: 0; left: 0; width: 100%; display: none; }
+.boy-frame.active { display: block; }
+#feather { position: absolute; width: 120px; z-index: 1503; }
+
+.about-section { background: black; min-height: 100vh; position: relative; z-index: 30; display: flex; align-items: center; justify-content: center; }
