@@ -53,4 +53,4 @@ h1 { font-size: clamp(3rem, 10vw, 8rem); font-weight: 900; z-index: 5; margin: 0
 .boy-frame.active { display: block; }
 #feather { position: absolute; width: 160px; z-index: 1503; }
 
-.about-section { background: black; min-height: 100vh; position: relative; z-index: 101; display: flex; align-items: center; justify-content: center; }
+.about-section { background: white; min-height: 100vh; position: relative; z-index: 101; display: flex; align-items: center; justify-content: center; }
