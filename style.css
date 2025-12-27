@@ -15,12 +15,19 @@ html, body {
 .nav-brand { font-size: 2rem; letter-spacing: 6px; font-weight: 900; }
 .nav-logo-accent { font-weight: 200; opacity: 0.7; }
 
-/* --- HERO SECTION --- */
+/* --- HERO SECTION (Longer Runway) --- */
 .main-content { 
     display: flex; flex-direction: column; align-items: center; justify-content: center; 
-    height: 100vh; /* Fixed height for precise runner timing */
+    height: 150vh; /* Made longer for the runner */
     position: relative; overflow: hidden;
 }
+
+/* Sticky content keeps the text centered while we scroll the long hero section */
+.hero-sticky-content {
+    position: sticky; top: 20vh;
+    display: flex; flex-direction: column; align-items: center;
+}
+
 .snow-canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 h1 { font-size: clamp(3rem, 12vw, 9rem); z-index: 5; margin: 0; position: relative; pointer-events: none; }
 .circle-wrapper { 
@@ -71,4 +78,4 @@ h1 { font-size: clamp(3rem, 12vw, 9rem); z-index: 5; margin: 0; position: relati
     background: black; min-height: 100vh; position: relative; 
     display: flex; align-items: center; justify-content: center; z-index: 160; 
 }
-.about-section h2 { font-size: 5rem; letter-spacing: 10px; opacity: 0.9; position: relative; z-index: 2; }
+.about-section h2 { font-size: 5rem; letter-spacing: 10px; opacity: 0.9; position: relative; z-index: 2; pointer-events: none; }
