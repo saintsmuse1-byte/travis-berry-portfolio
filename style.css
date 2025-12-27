@@ -102,3 +102,9 @@ body {
 .boy-frame.active {
     opacity: 1;
 }
+/* Snow canvases never affect layout */
+.snow-canvas-container canvas {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
