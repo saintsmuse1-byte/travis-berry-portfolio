@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. SELECT ELEMENTS
     const artSection = document.getElementById('art-section-trigger');
     const artExpander = document.getElementById('art-expander');
     const track = document.getElementById('carousel-track');
@@ -7,70 +6,70 @@ document.addEventListener('DOMContentLoaded', () => {
     const boyContainer = document.getElementById('boy-container');
     const frames = document.querySelectorAll('.boy-frame');
     const feather = document.getElementById('feather');
-    const snowContainer = document.getElementById('falling-snow-container');
 
-    // CONFIGURATION
     let slideIdx = 0;
-    const totalSlides = 6; // Streets, Chaos, Clem, Silver, Book, Home
+    const totalSlides = 6;
     let lastFrameIdx = 0;
 
-    // 2. HERO SNOW GENERATION
-    if (snowContainer) {
-        for (let i = 0; i < 30; i++) {
-            const flake = document.createElement('div');
-            flake.className = 'snow-flake-js';
-            flake.innerHTML = '❅';
-            flake.style.left = Math.random() * 100 + 'vw';
-            flake.style.animationDuration = (Math.random() * 5 + 5) + 's';
-            flake.style.opacity = Math.random() * 0.5;
-            snowContainer.appendChild(flake);
-        }
-    }
+    // 1. CAROUSEL
+    document.getElementById('next-arrow').onclick = () => {
+        slideIdx = (slideIdx + 1) % totalSlides;
+        track.style.transform = `translateX(-${slideIdx * (100 / totalSlides)}%)`;
+    };
+    document.getElementById('prev-arrow').onclick = () => {
+        slideIdx = (slideIdx - 1 + totalSlides) % totalSlides;
+        track.style.transform = `translateX(-${slideIdx * (100 / totalSlides)}%)`;
+    };
 
-    // 3. CAROUSEL NAVIGATION (6 Slides)
-    const nextBtn = document.getElementById('next-arrow');
-    const prevBtn = document.getElementById('prev-arrow');
-
-    if (nextBtn && prevBtn && track) {
-        nextBtn.onclick = () => {
-            slideIdx = (slideIdx + 1) % totalSlides;
-            track.style.transform = `translateX(-${slideIdx * (100 / totalSlides)}%)`;
-        };
-        prevBtn.onclick = () => {
-            slideIdx = (slideIdx - 1 + totalSlides) % totalSlides;
-            track.style.transform = `translateX(-${slideIdx * (100 / totalSlides)}%)`;
-        };
-    }
-
-    // 4. TIMQ EXPANSION & RISE (The entire white section effect)
+    // 2. STABLE EXPANSION MATH
     function updateExpansion() {
         if (!artSection || !artExpander) return;
         
         const rect = artSection.getBoundingClientRect();
         const vh = window.innerHeight;
         
-        // Progress: 0 when bottom enters, 1 when middle is in view
+        // Progress is 0 when the section starts entering, 1 when it fills screen
         let progress = 1 - (rect.top / vh);
         progress = Math.min(Math.max(progress, 0), 1);
         
-        // Growth logic (Starting at 320x420 scaling to nearly full screen)
-        const targetH = vh * 0.9;
+        const targetH = vh * 0.95;
         const targetW = targetH * 0.8;
 
-        const currentW = 320 + (targetW - 320) * progress;
-        const currentH = 420 + (targetH - 420) * progress;
+        // Smoothly interpolate size
+        const currentW = 300 + (targetW - 300) * progress;
+        const currentH = 400 + (targetH - 400) * progress;
 
         artExpander.style.width = `${currentW}px`;
         artExpander.style.height = `${currentH}px`;
         
-        // THE RISE: Makes the white box slide up from the bottom as it grows
-        // You can change '200' to a higher number if you want more "lift"
-        const lift = (1 - progress) * 200;
+        // The "Rise" - Card moves from 300px down to 0px (centered)
+        const lift = (1 - progress) * 300;
         artExpander.style.transform = `translateY(${lift}px)`;
     }
 
-    // 5. RUNNER BOY SYSTEM
+    // 3. RUNNER PATH
     function updateRunner() {
         const y = window.scrollY;
-        // Adjust the 2200 to make the boy finish his run earlier or later
-        const progress =
+        const progress = Math.min(Math.max(y / 2500, 0), 1);
+        overlay.style.opacity = (progress > 0.05 && progress < 0.9) ? 1 : 0;
+        
+        const bx = -300 + (window.innerWidth + 600) * progress;
+        const by = 400 + (600 * Math.pow(progress, 2)) - (500 * progress);
+        boyContainer.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
+        
+        const fIdx = Math.floor(progress * 40) % frames.length;
+        if (fIdx !== lastFrameIdx) {
+            frames[lastFrameIdx].classList.remove('active');
+            frames[fIdx].classList.add('active');
+            lastFrameIdx = fIdx;
+        }
+    }
+
+    window.addEventListener('scroll', () => {
+        updateExpansion();
+        updateRunner();
+    });
+
+    updateExpansion();
+    updateRunner();
+});
