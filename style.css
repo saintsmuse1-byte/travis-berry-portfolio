@@ -1,73 +1,67 @@
-/* --- 1. RESET --- */
+/* --- RESET --- */
 html, body { 
-    margin: 0; padding: 0; font-family: 'Helvetica', Arial, sans-serif; 
+    margin: 0; padding: 0; font-family: sans-serif; 
     background: #1b1d26; color: white; overflow-x: hidden; 
 }
 
-/* --- 2. HERO --- */
+/* --- SNOW ANIMATION --- */
+#falling-snow-container { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    pointer-events: none; z-index: 1; 
+}
+.snow-flake-js { 
+    position: absolute; color: white; top: -50px; 
+    animation: fall-js linear infinite; font-size: 20px; opacity: 0.5; 
+}
+@keyframes fall-js { 
+    to { transform: translateY(110vh); } 
+}
+
+/* --- HERO --- */
 .main-content { 
     display: flex; flex-direction: column; align-items: center; 
-    padding: 100px 20px; min-height: 100vh; position: relative; z-index: 10;
+    padding: 120px 20px; min-height: 100vh; position: relative; 
 }
 .circle-wrapper { 
-    width: 300px; height: 300px; border-radius: 50%; 
-    overflow: hidden; margin-top: 20px;
+    width: 350px; height: 350px; border-radius: 50%; 
+    overflow: hidden; margin-top: 20px; z-index: 2;
 }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- 3. ART SECTION (The White "Window") --- */
+/* --- ART SECTION (WHITE) --- */
 .art-section { 
-    background-color: white !important; 
-    width: 100%; height: 150vh; /* Extra height for scroll space */
-    position: relative; z-index: 20;
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
+    background: white; color: black; min-height: 100vh; 
+    position: relative; z-index: 10; display: flex; 
+    align-items: center; justify-content: center; 
+}
+.art-expander-container { 
+    width: 80%; height: 80vh; background: white; 
+    position: relative; overflow: hidden; 
 }
 
-/* THE RISING CARD: Fixed initial size, will expand via JS */
-.art-expander-container {
-    background: white; 
-    width: 300px; height: 400px; 
-    position: relative;
-    display: flex; flex-direction: column;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.1);
-    will-change: transform, width, height;
-}
-
-.carousel-viewport { width: 100%; height: 100%; overflow: hidden; position: relative; }
-.carousel-track { 
-    display: flex; width: 600%; height: 100%; 
-    transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1); 
-}
-
-.slide { width: 16.6666%; height: 100%; display: flex; flex-direction: column; align-items: center; }
-.image-frame { width: 100%; height: 85%; }
-.image-frame img, .image-frame video { width: 100%; height: 100%; object-fit: cover; }
+.carousel-viewport { width: 100%; height: 100%; }
+.carousel-track { display: flex; width: 600%; height: 100%; transition: transform 0.5s ease; }
+.slide { width: 16.6666%; height: 100%; position: relative; }
+.slide img, .slide video { width: 100%; height: 100%; object-fit: cover; }
 
 /* ROLLING LABELS */
 .roll-title {
-    margin-top: 15px; height: 1.2em; overflow: hidden; 
-    font-weight: 300; font-size: 0.9rem; text-transform: uppercase; color: black;
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    height: 1.2em; overflow: hidden; background: rgba(255,255,255,0.9);
+    padding: 5px 15px; font-size: 0.9rem;
 }
 .roll-inner { display: flex; flex-direction: column; transition: transform 0.3s ease; }
 .slide:hover .roll-inner { transform: translateY(-50%); }
-.roll-inner span { display: block; height: 1.2em; text-align: center; }
 
-/* ARROWS */
-.nav-arrow {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    background: none; border: none; color: black; font-size: 4rem;
-    cursor: pointer; z-index: 50; opacity: 0.2;
-}
-.nav-arrow:hover { opacity: 1; }
-.nav-arrow.left { left: 40px; }
-.nav-arrow.right { right: 40px; }
+.nav-arrow { position: absolute; top: 50%; background: none; border: none; font-size: 3rem; cursor: pointer; color: black; z-index: 20; }
+.nav-arrow.left { left: 20px; }
+.nav-arrow.right { right: 20px; }
 
-/* --- 4. RUNNER & ABOUT --- */
-#runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1500; opacity: 0; }
+/* --- RUNNER --- */
+#runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; opacity: 0; }
 #boy-container { position: absolute; width: 200px; height: 200px; }
-.boy-frame { position: absolute; top: 0; left: 0; width: 100%; display: none; }
+.boy-frame { position: absolute; width: 100%; display: none; }
 .boy-frame.active { display: block; }
-#feather { position: absolute; width: 120px; z-index: 1503; }
+#feather { position: absolute; width: 100px; }
 
-.about-section { background: black; min-height: 100vh; position: relative; z-index: 30; display: flex; align-items: center; justify-content: center; }
+.about-section { background: black; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
