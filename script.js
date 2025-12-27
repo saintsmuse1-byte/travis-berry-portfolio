@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalSlides = 6;
     let lastFrameIdx = 0;
 
-    // 1. CAROUSEL NAVIGATION
+    // Carousel Navigation
     document.getElementById('next-arrow').onclick = () => {
         slideIdx = (slideIdx + 1) % totalSlides;
         track.style.transform = `translateX(-${slideIdx * (100 / totalSlides)}%)`;
@@ -21,25 +21,27 @@ document.addEventListener('DOMContentLoaded', () => {
         track.style.transform = `translateX(-${slideIdx * (100 / totalSlides)}%)`;
     };
 
-    // 2. TIMQ EXPANSION (Rising Card)
+    // THE RISING EFFECT (TimQ Style)
     function updateExpansion() {
         if (!artSection || !artExpander) return;
         const rect = artSection.getBoundingClientRect();
         const vh = window.innerHeight;
+        
+        // Progress: 0 at the bottom, 1 when centered
         let progress = 1 - (rect.top / (vh * 0.8));
         progress = Math.min(Math.max(progress, 0), 1);
         
-        const targetH = vh * 0.85;
-        const targetW = targetH * 0.8;
-
-        artExpander.style.width = `${300 + (targetW - 300) * Math.pow(progress, 1.5)}px`;
-        artExpander.style.height = `${400 + (targetH - 400) * Math.pow(progress, 1.5)}px`;
+        // Expansion logic
+        const targetH = vh * 0.9;
+        const targetW = targetH * 0.75;
+        artExpander.style.width = `${300 + (targetW - 300) * progress}px`;
+        artExpander.style.height = `${400 + (targetH - 400) * progress}px`;
         
-        const lift = (1 - progress) * 200;
+        // Rising Logic: Moves UP from the bottom
+        const lift = (1 - progress) * 300;
         artExpander.style.transform = `translateY(${lift}px)`;
     }
 
-    // 3. RUNNER SYSTEM
     function updateRunner() {
         const y = window.scrollY;
         const progress = Math.min(Math.max(y / 2200, 0), 1);
