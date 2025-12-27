@@ -1,26 +1,62 @@
-html, body { margin: 0; padding: 0; font-family: sans-serif; background: #1b1d26; color: white; overflow-x: hidden; }
+/* --- GLOBAL & NAVBAR --- */
+html, body { margin: 0; padding: 0; font-family: 'Helvetica', sans-serif; background: #1b1d26; color: white; overflow-x: hidden; }
 
-/* SNOW ANIMATION STYLES */
-#falling-snow-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-.snow-flake-js { position: absolute; color: white; top: -50px; animation: fall-js linear infinite; font-size: 20px; opacity: 0.5; }
-@keyframes fall-js { to { transform: translateY(110vh); } }
+.navbar { 
+    position: fixed; top: 0; width: 100%; height: 80px; 
+    background: rgba(255, 255, 255, 0.05); 
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    z-index: 2000; display: flex; align-items: center; padding: 0 50px;
+}
+.nav-brand { font-size: 1.8rem; letter-spacing: 4px; font-weight: 900; }
 
+/* --- SNOW --- */
+.snow-zone { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.snow-flake-js { position: absolute; color: white; top: -20px; animation: fall linear infinite; }
+@keyframes fall { to { transform: translateY(100vh); } }
+
+/* --- HERO --- */
 .main-content { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; position: relative; }
-h1 { font-size: clamp(3rem, 10vw, 7rem); z-index: 5; margin: 0; }
-.circle-wrapper { width: 300px; height: 300px; border-radius: 50%; overflow: hidden; z-index: 2; }
+h1 { font-size: clamp(3rem, 10vw, 8rem); z-index: 5; margin: 0; }
+.circle-wrapper { width: 350px; height: 350px; border-radius: 50%; overflow: hidden; margin-top: 20px; z-index: 2; }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-.art-section { background: white !important; min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
-.art-expander-container { width: 80%; height: 70vh; overflow: hidden; background: white; }
-.carousel-track { display: flex; width: 600%; height: 100%; transition: transform 0.5s ease; }
-.slide { width: 16.6666%; height: 100%; }
-.slide img, .slide video { width: 100%; height: 100%; object-fit: cover; }
+/* --- ART SECTION (4:5 VERTICAL RATIO) --- */
+.art-section { 
+    background: white !important; min-height: 120vh; position: relative; z-index: 100;
+    display: flex; align-items: center; justify-content: center; 
+}
+.art-expander-container { 
+    width: 60vh; height: 75vh; /* 4:5 Ratio roughly */
+    max-width: 90vw; background: white; position: relative; 
+    box-shadow: 0 30px 60px rgba(0,0,0,0.1); overflow: hidden;
+}
 
-#runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 100; opacity: 0; }
-#boy-container { position: absolute; width: 200px; height: 200px; }
+.carousel-viewport { width: 100%; height: 100%; }
+.carousel-track { display: flex; width: 600%; height: 100%; transition: transform 0.6s cubic-bezier(0.2, 1, 0.3, 1); }
+.slide { width: 16.6666%; height: 100%; display: flex; flex-direction: column; }
+.image-frame { width: 100%; height: 90%; overflow: hidden; }
+.image-frame img, .image-frame video { width: 100%; height: 100%; object-fit: cover; }
+
+/* ROLLING TEXT UNDER IMAGES */
+.roll-title {
+    height: 10%; display: flex; align-items: center; justify-content: center;
+    overflow: hidden; font-weight: 300; font-size: 0.8rem; color: black; letter-spacing: 2px;
+}
+.roll-inner { display: flex; flex-direction: column; transition: transform 0.3s ease; }
+.slide:hover .roll-inner { transform: translateY(-50%); }
+.roll-inner span { display: block; height: 1.2em; text-align: center; line-height: 1.2em; }
+
+.nav-arrow { position: absolute; top: 50%; background: none; border: none; font-size: 3rem; color: black; cursor: pointer; opacity: 0.2; transition: 0.3s; }
+.nav-arrow:hover { opacity: 1; }
+.nav-arrow.left { left: 5%; }
+.nav-arrow.right { right: 5%; }
+
+/* --- RUNNER (LIMITED TO HERO) --- */
+#runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+#boy-container { position: absolute; width: 220px; }
 .boy-frame { position: absolute; width: 100%; display: none; }
 .boy-frame.active { display: block; }
+#feather { position: absolute; width: 100px; }
 
-.nav-arrow { position: absolute; top: 50%; background: none; border: none; font-size: 3rem; cursor: pointer; color: black; z-index: 20; }
-.nav-arrow.left { left: 20px; }
-.nav-arrow.right { right: 20px; }
+/* --- ABOUT --- */
+.about-section { background: black; min-height: 100vh; position: relative; display: flex; align-items: center; justify-content: center; z-index: 101; }
