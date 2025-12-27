@@ -1,180 +1,52 @@
-import React, { StrictMode, useRef, useEffect } from "https://esm.sh/react";
-import { createRoot } from "https://esm.sh/react-dom/client";
-
-// --- 1. REACT SNOWFLAKE ENGINE (Converted to Vanilla JS for Browser Support) ---
-function InteractiveSnowfall() {
-    const canvasRef = useRef(null);
-    const cursor = useRef({ radius: 80 });
-    const frameRef = useRef(0);
-    const snowflakes = useRef([]);
-
-    useEffect(() => {
-        const canvas = canvasRef.current;
-        const ctx = canvas?.getContext("2d");
-        if (!canvas || !ctx) return;
-
-        const sprites = [];
-        for (let s = 0; s <= 3; ++s) { sprites.push(new SnowflakeSprite(s)); }
-
-        const animate = () => {
-            const dpr = window.devicePixelRatio || 1;
-            const width = canvas.width / dpr;
-            const height = canvas.height / dpr;
-            
-            ctx.clearRect(0, 0, width, height);
-            ctx.globalAlpha = 0.6;
-            snowflakes.current.forEach((flake) => {
-                flake.update(cursor.current, width, height);
-                flake.draw(ctx);
-            });
-            frameRef.current = requestAnimationFrame(animate);
-        };
-
-        const createSnowflakes = () => {
-            const dpr = window.devicePixelRatio || 1;
-            const width = canvas.width / dpr;
-            const height = canvas.height / dpr;
-            const snowflakeCount = Math.min(Math.round(width * height / 1000), 400);
-            snowflakes.current = [];
-            for (let i = 0; i < snowflakeCount; i++) {
-                const radius = Utils.random(2, 5);
-                const pattern = Math.round(Utils.random(0, 3));
-                snowflakes.current.push(new Snowflake(width, height, radius, sprites[pattern].canvas));
-            }
-        };
-
-        const resize = () => {
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = window.innerWidth * dpr;
-            canvas.height = window.innerHeight * dpr;
-            canvas.style.width = window.innerWidth + "px";
-            canvas.style.height = window.innerHeight + "px";
-            ctx.scale(dpr, dpr);
-            createSnowflakes();
-        };
-
-        const handleMove = (e) => {
-            cursor.current.x = e.clientX;
-            cursor.current.y = e.clientY;
-        };
-
-        resize();
-        animate();
-        window.addEventListener("resize", resize);
-        window.addEventListener("pointermove", handleMove);
-
-        return () => {
-            window.removeEventListener("resize", resize);
-            window.removeEventListener("pointermove", handleMove);
-            cancelAnimationFrame(frameRef.current);
-        };
-    }, []);
-
-    // We use React.createElement instead of <canvas /> tags
-    return React.createElement('canvas', {
-        ref: canvasRef,
-        style: { pointerEvents: 'none', display: 'block' }
-    });
-}
-
-// --- SUPPORT CLASSES ---
-class Snowflake {
-    constructor(width, height, radius, pattern) {
-        this.x = Utils.random(0, width);
-        this.y = Utils.random(0, height);
-        this.radius = radius;
-        this.pattern = pattern;
-        this.rotation = Utils.random(0, Math.PI);
-        this.rotationSpeed = Utils.random(-0.02, 0.02);
-        this.speedX = Utils.random(-0.5, 0.5);
-        this.speedY = Utils.random(1, 3);
-        this.density = 30;
-    }
-    draw(ctx) {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rotation);
-        ctx.drawImage(this.pattern, -this.radius, -this.radius, this.radius * 2, this.radius * 2);
-        ctx.restore();
-    }
-    update(cursor, width, height) {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        this.rotation += this.rotationSpeed;
-        if (cursor.x) {
-            const dx = cursor.x - this.x;
-            const dy = cursor.y - this.y;
-            const dist = Math.hypot(dx, dy);
-            if (dist < cursor.radius) {
-                const force = (cursor.radius - dist) / cursor.radius;
-                this.x -= (dx / dist) * force * this.density;
-                this.y -= (dy / dist) * force * this.density;
-            }
-        }
-        if (this.y > height + 10) { this.y = -10; this.x = Utils.random(0, width); }
-    }
-}
-
-class SnowflakeSprite {
-    constructor(patternIndex) {
-        this.canvas = document.createElement("canvas");
-        this.ctx = this.canvas.getContext("2d");
-        const radius = 10;
-        const dpr = window.devicePixelRatio || 1;
-        this.canvas.width = radius * 2 * dpr;
-        this.canvas.height = radius * 2 * dpr;
-        this.ctx.scale(dpr, dpr);
-        this.ctx.fillStyle = "white";
-        this.ctx.strokeStyle = "white";
-        this.ctx.lineWidth = 1;
-        this.ctx.lineCap = "round";
-        this.ctx.translate(radius, radius);
-        if (patternIndex === 0) {
-            this.ctx.beginPath(); this.ctx.arc(0,0, radius/2, 0, Math.PI*2); this.ctx.fill();
-        } else {
-            for (let i = 0; i < 6; i++) {
-                this.ctx.rotate(Math.PI/3);
-                this.ctx.beginPath(); this.ctx.moveTo(0,0); this.ctx.lineTo(0, radius-1); this.ctx.stroke();
-            }
-        }
-    }
-}
-
-class Utils {
-    static random(min, max) { return min + Math.random() * (max - min); }
-}
-
-// --- 2. INITIALIZE REACT ---
-const rootEl = document.getElementById("root");
-if (rootEl) {
-    // We wrap InteractiveSnowfall in StrictMode using createElement
-    createRoot(rootEl).render(
-        React.createElement(StrictMode, null, 
-            React.createElement(InteractiveSnowfall)
-        )
-    );
-}
-
-// --- 3. PORTFOLIO LOGIC (Runner & Carousel) ---
 document.addEventListener('DOMContentLoaded', () => {
+    
+    // ==========================================
+    // 1. RUNNER BOY LOGIC (FIXED MATH)
+    // ==========================================
     const overlay = document.getElementById('runner-overlay');
     const boy = document.getElementById('boy-container');
     const frames = document.querySelectorAll('.boy-frame');
+    const feather = document.getElementById('feather');
     let lastFrame = 0;
 
     window.addEventListener('scroll', () => {
         const y = window.scrollY;
-        const heroH = window.innerHeight;
-        let progress = Math.min(Math.max(y / heroH, 0), 1);
+        const heroHeight = window.innerHeight; // The height of the hero section
         
-        if (overlay) overlay.style.opacity = (progress > 0 && progress < 0.9) ? 1 : 0;
-        if (boy) {
-            const bx = -250 + (window.innerWidth + 500) * progress;
-            const by = 400 + (250 * Math.pow(progress, 2));
-            boy.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
+        // Progress: 0 (top) to 1 (bottom of hero)
+        let progress = y / heroHeight;
+
+        // Limit progress: if we scroll past hero, cap it at 1 (or slightly more to fade out)
+        if (progress > 1.1) {
+            overlay.style.opacity = 0;
+            return;
+        } else {
+            // Fade in quickly, stay visible until the end
+            overlay.style.opacity = (progress > 0.05) ? 1 : 0;
         }
+
+        // --- POSITION MATH ---
+        // X: Start at -200px (left), End at Window Width - 300px (right)
+        const startX = -200;
+        const endX = window.innerWidth - 350; // 350px buffer from right edge
+        const bx = startX + (endX - startX) * Math.min(progress, 1);
+
+        // Y: Start at 200px, End at Bottom of Screen (minus boy height)
+        const startY = 200;
+        const endY = window.innerHeight - 300; // Lands near bottom
+        // Add a slight curve (parabola) for visual flair
+        const curve = 100 * Math.sin(progress * Math.PI); 
+        const by = startY + (endY - startY) * Math.min(progress, 1) - curve;
+
+        boy.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
         
-        const fIdx = Math.floor(progress * 25) % frames.length;
+        // Feather follows slightly behind
+        if(feather) {
+            feather.style.transform = `translate3d(${bx - 50}px, ${by + 50}px, 0) rotate(${progress * 360}deg)`;
+        }
+
+        // --- FRAME ANIMATION ---
+        const fIdx = Math.floor(progress * 20) % frames.length; // Speed of animation
         if (frames[fIdx] && fIdx !== lastFrame) {
             frames[lastFrame].classList.remove('active');
             frames[fIdx].classList.add('active');
@@ -182,11 +54,130 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+
+    // ==========================================
+    // 2. CAROUSEL LOGIC
+    // ==========================================
     const track = document.getElementById('carousel-track');
     let slideIdx = 0;
-    const next = document.getElementById('next-arrow');
-    const prev = document.getElementById('prev-arrow');
+    const nextBtn = document.getElementById('next-arrow');
+    const prevBtn = document.getElementById('prev-arrow');
+    const totalSlides = 6;
 
-    if (next && prev && track) {
-        next.onclick = () => { slideIdx = (slideIdx + 1) % 6; track.style.transform = `translateX(-${slideIdx * 16.666}%)`; };
-        prev.onclick = () => { slideIdx =
+    if (nextBtn && prevBtn && track) {
+        nextBtn.onclick = () => {
+            slideIdx = (slideIdx + 1) % totalSlides;
+            track.style.transform = `translateX(-${slideIdx * 16.666}%)`;
+        };
+        prevBtn.onclick = () => {
+            slideIdx = (slideIdx - 1 + totalSlides) % totalSlides;
+            track.style.transform = `translateX(-${slideIdx * 16.666}%)`;
+        };
+    }
+
+
+    // ==========================================
+    // 3. PURE JS INTERACTIVE SNOW (HERO & ABOUT)
+    // ==========================================
+    class SnowEffect {
+        constructor(containerId) {
+            this.container = document.getElementById(containerId);
+            if (!this.container) return;
+
+            this.canvas = document.createElement('canvas');
+            this.ctx = this.canvas.getContext('2d');
+            this.container.appendChild(this.canvas);
+            
+            this.snowflakes = [];
+            this.cursor = { x: null, y: null, radius: 100 }; // Interaction radius
+            
+            this.init();
+        }
+
+        init() {
+            this.resize();
+            window.addEventListener('resize', () => this.resize());
+            document.addEventListener('mousemove', (e) => {
+                this.cursor.x = e.clientX;
+                this.cursor.y = e.clientY;
+            });
+            this.loop();
+        }
+
+        resize() {
+            this.canvas.width = window.innerWidth;
+            this.canvas.height = window.innerHeight;
+            this.createSnowflakes();
+        }
+
+        createSnowflakes() {
+            const count = Math.floor(window.innerWidth * window.innerHeight / 10000); // Density
+            this.snowflakes = [];
+            for (let i = 0; i < count; i++) {
+                this.snowflakes.push({
+                    x: Math.random() * this.canvas.width,
+                    y: Math.random() * this.canvas.height,
+                    radius: Math.random() * 2 + 1,
+                    speedX: Math.random() * 1 - 0.5,
+                    speedY: Math.random() * 1 + 0.5,
+                    opacity: Math.random() * 0.5 + 0.3
+                });
+            }
+        }
+
+        update() {
+            for (let flake of this.snowflakes) {
+                // Gravity
+                flake.y += flake.speedY;
+                flake.x += flake.speedX;
+
+                // Mouse Interaction (The "Cool" Effect)
+                if (this.cursor.x != null) {
+                    const dx = flake.x - this.cursor.x;
+                    const dy = flake.y - this.cursor.y;
+                    const distance = Math.sqrt(dx*dx + dy*dy);
+
+                    if (distance < this.cursor.radius) {
+                        const forceDirectionX = dx / distance;
+                        const forceDirectionY = dy / distance;
+                        const force = (this.cursor.radius - distance) / this.cursor.radius;
+                        
+                        // Push flake away
+                        flake.x += forceDirectionX * force * 5; 
+                        flake.y += forceDirectionY * force * 5;
+                    }
+                }
+
+                // Reset if off screen
+                if (flake.y > this.canvas.height) {
+                    flake.y = 0;
+                    flake.x = Math.random() * this.canvas.width;
+                }
+                if (flake.x > this.canvas.width) flake.x = 0;
+                if (flake.x < 0) flake.x = this.canvas.width;
+            }
+        }
+
+        draw() {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.ctx.fillStyle = 'white';
+            
+            for (let flake of this.snowflakes) {
+                this.ctx.globalAlpha = flake.opacity;
+                this.ctx.beginPath();
+                this.ctx.arc(flake.x, flake.y, flake.radius, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+        }
+
+        loop() {
+            this.update();
+            this.draw();
+            requestAnimationFrame(() => this.loop());
+        }
+    }
+
+    // Initialize the snow in both locations
+    new SnowEffect('hero-snow');
+    new SnowEffect('about-snow');
+});
