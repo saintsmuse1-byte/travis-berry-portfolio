@@ -1,12 +1,10 @@
 import React, { StrictMode, useRef, useEffect } from "https://esm.sh/react";
 import { createRoot } from "https://esm.sh/react-dom/client";
 
-// --- 1. REACT SNOWFLAKE ENGINE (Hero Section) ---
-const SnowflakePatternMap = { Dot: 0, Branches: 1, Spearheads: 2, Asterisk: 3 };
-
+// --- 1. REACT SNOWFLAKE ENGINE (Converted to Vanilla JS for Browser Support) ---
 function InteractiveSnowfall() {
     const canvasRef = useRef(null);
-    const cursor = useRef({ radius: 80 }); // Slightly bigger push radius
+    const cursor = useRef({ radius: 80 });
     const frameRef = useRef(0);
     const snowflakes = useRef([]);
 
@@ -19,7 +17,10 @@ function InteractiveSnowfall() {
         for (let s = 0; s <= 3; ++s) { sprites.push(new SnowflakeSprite(s)); }
 
         const animate = () => {
-            const { width, height } = getCanvas();
+            const dpr = window.devicePixelRatio || 1;
+            const width = canvas.width / dpr;
+            const height = canvas.height / dpr;
+            
             ctx.clearRect(0, 0, width, height);
             ctx.globalAlpha = 0.6;
             snowflakes.current.forEach((flake) => {
@@ -30,7 +31,9 @@ function InteractiveSnowfall() {
         };
 
         const createSnowflakes = () => {
-            const { width, height } = getCanvas();
+            const dpr = window.devicePixelRatio || 1;
+            const width = canvas.width / dpr;
+            const height = canvas.height / dpr;
             const snowflakeCount = Math.min(Math.round(width * height / 1000), 400);
             snowflakes.current = [];
             for (let i = 0; i < snowflakeCount; i++) {
@@ -40,18 +43,13 @@ function InteractiveSnowfall() {
             }
         };
 
-        const getCanvas = () => {
-            const { devicePixelRatio } = window;
-            return { width: canvas.width / devicePixelRatio, height: canvas.height / devicePixelRatio };
-        };
-
         const resize = () => {
-            const { devicePixelRatio, innerWidth, innerHeight } = window;
-            canvas.width = innerWidth * devicePixelRatio;
-            canvas.height = innerHeight * devicePixelRatio;
-            canvas.style.width = innerWidth + "px";
-            canvas.style.height = innerHeight + "px";
-            ctx.scale(devicePixelRatio, devicePixelRatio);
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = window.innerWidth * dpr;
+            canvas.height = window.innerHeight * dpr;
+            canvas.style.width = window.innerWidth + "px";
+            canvas.style.height = window.innerHeight + "px";
+            ctx.scale(dpr, dpr);
             createSnowflakes();
         };
 
@@ -72,10 +70,14 @@ function InteractiveSnowfall() {
         };
     }, []);
 
-    return <canvas ref={canvasRef} style={{ pointerEvents: 'none' }} />;
+    // We use React.createElement instead of <canvas /> tags
+    return React.createElement('canvas', {
+        ref: canvasRef,
+        style: { pointerEvents: 'none', display: 'block' }
+    });
 }
 
-// --- SUPPORT CLASSES FOR ENGINE ---
+// --- SUPPORT CLASSES ---
 class Snowflake {
     constructor(width, height, radius, pattern) {
         this.x = Utils.random(0, width);
@@ -126,7 +128,6 @@ class SnowflakeSprite {
         this.ctx.strokeStyle = "white";
         this.ctx.lineWidth = 1;
         this.ctx.lineCap = "round";
-        
         this.ctx.translate(radius, radius);
         if (patternIndex === 0) {
             this.ctx.beginPath(); this.ctx.arc(0,0, radius/2, 0, Math.PI*2); this.ctx.fill();
@@ -146,12 +147,16 @@ class Utils {
 // --- 2. INITIALIZE REACT ---
 const rootEl = document.getElementById("root");
 if (rootEl) {
-    createRoot(rootEl).render(<StrictMode><InteractiveSnowfall /></StrictMode>);
+    // We wrap InteractiveSnowfall in StrictMode using createElement
+    createRoot(rootEl).render(
+        React.createElement(StrictMode, null, 
+            React.createElement(InteractiveSnowfall)
+        )
+    );
 }
 
 // --- 3. PORTFOLIO LOGIC (Runner & Carousel) ---
 document.addEventListener('DOMContentLoaded', () => {
-    // RUNNER BOY
     const overlay = document.getElementById('runner-overlay');
     const boy = document.getElementById('boy-container');
     const frames = document.querySelectorAll('.boy-frame');
@@ -177,7 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // CAROUSEL
     const track = document.getElementById('carousel-track');
     let slideIdx = 0;
     const next = document.getElementById('next-arrow');
@@ -185,6 +189,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (next && prev && track) {
         next.onclick = () => { slideIdx = (slideIdx + 1) % 6; track.style.transform = `translateX(-${slideIdx * 16.666}%)`; };
-        prev.onclick = () => { slideIdx = (slideIdx - 1 + 6) % 6; track.style.transform = `translateX(-${slideIdx * 16.666}%)`; };
-    }
-});
+        prev.onclick = () => { slideIdx =
