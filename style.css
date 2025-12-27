@@ -4,7 +4,7 @@ html, body {
     background: #1b1d26; color: white; overflow-x: hidden; 
 }
 
-/* --- NAVBAR (Frosted Glass) --- */
+/* --- NAVBAR --- */
 .navbar { 
     position: fixed; top: 0; width: 100%; height: 90px; 
     background: rgba(255, 255, 255, 0.03); 
@@ -15,12 +15,13 @@ html, body {
 .nav-brand { font-size: 2rem; letter-spacing: 6px; font-weight: 900; }
 .nav-logo-accent { font-weight: 200; opacity: 0.7; }
 
-/* --- HERO & INTERACTIVE SNOW --- */
+/* --- HERO SECTION --- */
 .main-content { 
     display: flex; flex-direction: column; align-items: center; justify-content: center; 
-    min-height: 100vh; position: relative; 
+    height: 100vh; /* Fixed height for precise runner timing */
+    position: relative; overflow: hidden;
 }
-#root { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+.snow-canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 h1 { font-size: clamp(3rem, 12vw, 9rem); z-index: 5; margin: 0; position: relative; pointer-events: none; }
 .circle-wrapper { 
     width: 380px; height: 380px; border-radius: 50%; 
@@ -29,24 +30,22 @@ h1 { font-size: clamp(3rem, 12vw, 9rem); z-index: 5; margin: 0; position: relati
 }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- ART SECTION (4:5 Ratio) --- */
+/* --- ART SECTION --- */
 .art-section { 
     background: white !important; min-height: 110vh; position: relative; z-index: 100;
     display: flex; align-items: center; justify-content: center; padding: 100px 0;
 }
 .art-expander-container { 
-    width: 60vh; height: 75vh; /* This creates the 4:5 vertical look */
+    width: 60vh; height: 75vh; 
     max-width: 90vw; background: white; position: relative; 
     box-shadow: 0 40px 80px rgba(0,0,0,0.15); overflow: hidden;
 }
-
 .carousel-viewport { width: 100%; height: 100%; }
 .carousel-track { display: flex; width: 600%; height: 100%; transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1); }
 .slide { width: 16.6666%; height: 100%; display: flex; flex-direction: column; }
 .image-frame { width: 100%; height: 92%; overflow: hidden; }
 .image-frame img, .image-frame video { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- ROLLING TEXT UNDER IMAGE --- */
 .roll-title {
     height: 8%; display: flex; align-items: center; justify-content: center;
     overflow: hidden; font-weight: 400; font-size: 0.75rem; color: black; letter-spacing: 3px;
@@ -55,15 +54,14 @@ h1 { font-size: clamp(3rem, 12vw, 9rem); z-index: 5; margin: 0; position: relati
 .slide:hover .roll-inner { transform: translateY(-50%); }
 .roll-inner span { display: block; height: 1.5em; text-align: center; line-height: 1.5em; }
 
-/* --- CAROUSEL ARROWS --- */
 .nav-arrow { position: absolute; top: 50%; background: none; border: none; font-size: 4rem; color: black; cursor: pointer; opacity: 0.15; transition: 0.4s; z-index: 110; }
 .nav-arrow:hover { opacity: 0.8; transform: translateY(-50%) scale(1.1); }
 .nav-arrow.left { left: 4%; }
 .nav-arrow.right { right: 4%; }
 
 /* --- RUNNER --- */
-#runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 150; opacity: 0; }
-#boy-container { position: absolute; width: 220px; }
+#runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 150; opacity: 0; transition: opacity 0.2s; }
+#boy-container { position: absolute; width: 220px; will-change: transform; }
 .boy-frame { position: absolute; width: 100%; display: none; }
 .boy-frame.active { display: block; }
 #feather { position: absolute; width: 110px; }
@@ -73,5 +71,4 @@ h1 { font-size: clamp(3rem, 12vw, 9rem); z-index: 5; margin: 0; position: relati
     background: black; min-height: 100vh; position: relative; 
     display: flex; align-items: center; justify-content: center; z-index: 160; 
 }
-.about-section h2 { font-size: 5rem; letter-spacing: 10px; opacity: 0.9; }
-.snow-zone { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+.about-section h2 { font-size: 5rem; letter-spacing: 10px; opacity: 0.9; position: relative; z-index: 2; }
