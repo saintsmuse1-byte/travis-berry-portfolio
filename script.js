@@ -1,236 +1,144 @@
-document.addEventListener('DOMContentLoaded', () => {
+/* ========== SNOW SYSTEM ========== */
 
-    // ==========================================
-    // 1. RUNNER BOY LOGIC (UNCHANGED, WORKING)
-    // ==========================================
-    const overlay = document.getElementById('runner-overlay');
-    const boy = document.getElementById('boy-container');
-    const frames = document.querySelectorAll('.boy-frame');
-    const feather = document.getElementById('feather');
-    let lastFrame = 0;
+class SnowSystem {
+    constructor(container, options = {}) {
+        this.container = container;
+        this.canvas = document.createElement("canvas");
+        this.ctx = this.canvas.getContext("2d");
+        this.container.appendChild(this.canvas);
 
-    window.addEventListener('scroll', () => {
-        const y = window.scrollY;
-        const heroSectionHeight = window.innerHeight * 2;
-        let progress = y / (heroSectionHeight - window.innerHeight);
+        this.width = this.canvas.width = window.innerWidth;
+        this.height = this.canvas.height = window.innerHeight;
 
-        overlay.style.opacity = (progress > 0.01 && progress < 1.3) ? 1 : 0;
-        if (progress > 1.4) return;
+        this.flakes = [];
+        this.mouse = { x: null, y: null };
 
-        const startX = -250;
-        const endX = window.innerWidth + 400;
-        const startY = 150;
-        const endY = window.innerHeight - 250;
+        this.profileCircle = options.profileCircle || null;
+        this.enableMouseRepel = options.mouseRepel || false;
 
-        const bx = startX + (endX - startX) * progress;
-        const by = startY + (endY - startY) * progress - (100 * Math.sin(progress * Math.PI));
+        this.spawnRate = options.spawnRate || 1;
 
-        boy.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
-        feather.style.transform = `translate3d(${bx - 50}px, ${by + 50}px, 0) rotate(${progress * 720}deg)`;
-
-        const fIdx = Math.floor(progress * 20) % frames.length;
-        if (frames[fIdx] && fIdx !== lastFrame) {
-            frames[lastFrame].classList.remove('active');
-            frames[fIdx].classList.add('active');
-            lastFrame = fIdx;
+        window.addEventListener("resize", () => this.resize());
+        if (this.enableMouseRepel) {
+            window.addEventListener("mousemove", e => {
+                this.mouse.x = e.clientX;
+                this.mouse.y = e.clientY;
+            });
         }
-    });
 
-    // ==========================================
-    // 2. CAROUSEL (UNCHANGED)
-    // ==========================================
-    const track = document.getElementById('carousel-track');
-    let slideIdx = 0;
-
-    document.getElementById('next-arrow').onclick = () => {
-        slideIdx = (slideIdx + 1) % 6;
-        track.style.transform = `translateX(-${slideIdx * 16.666}%)`;
-    };
-
-    document.getElementById('prev-arrow').onclick = () => {
-        slideIdx = (slideIdx - 1 + 6) % 6;
-        track.style.transform = `translateX(-${slideIdx * 16.666}%)`;
-    };
-
-    // ==========================================
-    // 3. SNOW ENGINE (REFINED COLLISION)
-    // ==========================================
-    class Utils {
-        static random(min, max) { return min + Math.random() * (max - min); }
+        this.animate();
     }
 
-    class SnowflakeSprite {
-        constructor(patternIndex) {
-            this.canvas = document.createElement("canvas");
-            this.ctx = this.canvas.getContext("2d");
-            this.patternType = patternIndex;
-            this.radius = 12;
-            const size = this.radius * 2 * (window.devicePixelRatio || 1);
+    resize() {
+        this.width = this.canvas.width = window.innerWidth;
+        this.height = this.canvas.height = window.innerHeight;
+    }
 
-            this.canvas.width = size;
-            this.canvas.height = size;
+    createFlake(xOverride = null) {
+        return {
+            x: xOverride ?? Math.random() * this.width,
+            y: -10,
+            r: Math.random() * 1.5 + 0.5,
+            vy: Math.random() * 0.6 + 0.4,
+            vx: 0
+        };
+    }
 
-            this.ctx.scale(window.devicePixelRatio || 1, window.devicePixelRatio || 1);
-            this.ctx.fillStyle = "white";
-            this.ctx.strokeStyle = "white";
-            this.ctx.lineCap = "round";
-            this.ctx.lineJoin = "round";
-            this.ctx.lineWidth = 1;
-            this.drawPattern();
+    animate() {
+        requestAnimationFrame(() => this.animate());
+        this.ctx.clearRect(0, 0, this.width, this.height);
+
+        /* GLOBAL SPAWN */
+        if (Math.random() < this.spawnRate) {
+            this.flakes.push(this.createFlake());
         }
 
-        drawPattern() {
-            this.ctx.save();
-            this.ctx.translate(this.radius, this.radius);
+        /* PROFILE SHADOW SPAWN (REDUCED) */
+        if (this.profileCircle && Math.random() < 0.25) {
+            const x = this.profileCircle.x +
+                (Math.random() - 0.5) * this.profileCircle.r * 1.2;
+            this.flakes.push(this.createFlake(x));
+        }
 
-            if (this.patternType === 0) {
-                this.ctx.beginPath();
-                this.ctx.arc(0, 0, this.radius / 2, 0, Math.PI * 2);
-                this.ctx.fill();
-            } else {
-                for (let i = 0; i < 6; i++) {
-                    this.ctx.rotate(Math.PI / 3);
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(0, 0);
-                    this.ctx.lineTo(0, -this.radius);
-                    this.ctx.stroke();
+        this.flakes.forEach((f, i) => {
+            /* PROFILE COLLISION */
+            if (this.profileCircle) {
+                const dx = f.x - this.profileCircle.x;
+                const dy = f.y - this.profileCircle.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < this.profileCircle.r) {
+                    const angle = Math.atan2(dy, dx);
+                    f.x = this.profileCircle.x + Math.cos(angle) * this.profileCircle.r;
+                    f.vx = Math.cos(angle) * 0.4;   // symmetrical slide
+                    f.vy = 0.9;
                 }
             }
-            this.ctx.restore();
-        }
-    }
 
-    class SnowEngine {
-        constructor(containerId, mode) {
-            this.container = document.getElementById(containerId);
-            this.mode = mode;
-            this.canvas = document.createElement('canvas');
-            this.ctx = this.canvas.getContext('2d');
-            this.container.appendChild(this.canvas);
+            /* MOUSE REPEL (ABOUT SECTION) */
+            if (this.enableMouseRepel && this.mouse.x !== null) {
+                const dx = f.x - this.mouse.x;
+                const dy = f.y - this.mouse.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
 
-            this.sprites = [
-                new SnowflakeSprite(0),
-                new SnowflakeSprite(1),
-                new SnowflakeSprite(2),
-                new SnowflakeSprite(3)
-            ];
-
-            this.particles = [];
-            this.init();
-        }
-
-        init() {
-            this.resize();
-            window.addEventListener('resize', () => this.resize());
-            this.loop();
-        }
-
-        resize() {
-            const dpr = window.devicePixelRatio || 1;
-            this.canvas.width = this.container.offsetWidth * dpr;
-            this.canvas.height = this.container.offsetHeight * dpr;
-            this.canvas.style.width = this.container.offsetWidth + "px";
-            this.canvas.style.height = this.container.offsetHeight + "px";
-            this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-            this.createParticles();
-        }
-
-        createParticles() {
-            const density = this.mode === 'falling' ? 4000 : 12000;
-            const count = (this.container.offsetWidth * this.container.offsetHeight) / density;
-            this.particles = [];
-
-            for (let i = 0; i < count; i++) {
-                this.particles.push(this.newParticle(Math.random() * this.container.offsetWidth, Math.random() * this.container.offsetHeight));
-            }
-        }
-
-        newParticle(x, y) {
-            return {
-                x,
-                y,
-                vx: 0,
-                vy: Utils.random(0.6, 1.6),
-                rotation: Math.random() * Math.PI * 2,
-                rotationSpeed: Utils.random(-0.02, 0.02),
-                radius: Utils.random(3, 8),
-                sprite: this.sprites[Math.floor(Math.random() * 4)].canvas
-            };
-        }
-
-        handleProfileCollision(p) {
-            if (this.mode !== 'falling') return;
-
-            const circle = document.querySelector('.circle-wrapper');
-            if (!circle) return;
-
-            const cRect = circle.getBoundingClientRect();
-            const canvasRect = this.canvas.getBoundingClientRect();
-
-            const cx = cRect.left + cRect.width / 2 - canvasRect.left;
-            const cy = cRect.top + cRect.height / 2 - canvasRect.top;
-            const r = cRect.width / 2;
-
-            const dx = p.x - cx;
-            const dy = p.y - cy;
-            const dist = Math.hypot(dx, dy);
-
-            if (dist < r + p.radius && dy < 0) {
-                // Spawn a "ghost" flake to keep snow under the portrait
-                this.particles.push(this.newParticle(p.x, cy + r + 5));
-
-                // Resolve collision to top of circle
-                const angle = Math.atan2(dy, dx);
-                p.x = cx + Math.cos(angle) * (r + p.radius);
-                p.y = cy + Math.sin(angle) * (r + p.radius);
-
-                // Symmetrical gravity-based split
-                const side = dx === 0 ? (Math.random() < 0.5 ? -1 : 1) : Math.sign(dx);
-                p.vx += side * 0.35;
-                p.vy *= 0.6;
-            }
-        }
-
-        update() {
-            const h = this.container.offsetHeight;
-            const w = this.container.offsetWidth;
-
-            for (let p of this.particles) {
-                if (this.mode === 'falling') {
-                    p.y += p.vy;
-                    p.x += p.vx;
-                    p.rotation += p.rotationSpeed;
-                    p.vx *= 0.98;
-
-                    this.handleProfileCollision(p);
-
-                    if (p.y > h + 20) {
-                        p.y = -20;
-                        p.x = Math.random() * w;
-                    }
+                if (dist < 80) {
+                    f.vx += dx / dist * 0.3;
+                    f.vy += dy / dist * 0.05;
                 }
             }
-        }
 
-        draw() {
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            for (let p of this.particles) {
-                this.ctx.save();
-                this.ctx.translate(p.x, p.y);
-                this.ctx.rotate(p.rotation);
-                this.ctx.drawImage(p.sprite, -p.radius, -p.radius, p.radius * 2, p.radius * 2);
-                this.ctx.restore();
-            }
-        }
+            f.y += f.vy;
+            f.x += f.vx;
+            f.vx *= 0.95;
 
-        loop() {
-            this.update();
-            this.draw();
-            requestAnimationFrame(() => this.loop());
-        }
+            this.ctx.beginPath();
+            this.ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            this.ctx.fillStyle = "rgba(255,255,255,0.9)";
+            this.ctx.fill();
+
+            if (f.y > this.height) this.flakes.splice(i, 1);
+        });
     }
+}
 
-    new SnowEngine('hero-snow', 'falling');
-    new SnowEngine('about-snow', 'repel');
-});
+/* HERO SNOW (PROFILE REPEL) */
+const heroCircle = document.querySelector(".circle-wrapper").getBoundingClientRect();
 
+new SnowSystem(
+    document.getElementById("hero-snow"),
+    {
+        profileCircle: {
+            x: heroCircle.left + heroCircle.width / 2,
+            y: heroCircle.top + heroCircle.height / 2,
+            r: heroCircle.width / 2
+        },
+        spawnRate: 0.9
+    }
+);
+
+/* ABOUT SNOW (MOUSE REPEL) */
+new SnowSystem(
+    document.getElementById("about-snow"),
+    {
+        mouseRepel: true,
+        spawnRate: 0.8
+    }
+);
+
+/* RUNNER EXIT ANIMATION */
+const frames = document.querySelectorAll(".boy-frame");
+let frame = 0;
+let pos = -200;
+
+setInterval(() => {
+    frames.forEach(f => f.classList.remove("active"));
+    frames[frame % frames.length].classList.add("active");
+    frame++;
+}, 120);
+
+function moveRunner() {
+    pos += 2;
+    document.getElementById("runner-overlay").style.left = pos + "px";
+    if (pos < window.innerWidth + 200) requestAnimationFrame(moveRunner);
+}
+moveRunner();
