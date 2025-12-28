@@ -53,13 +53,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ==========================================
-    // 3. CALM SNOW ENGINE (NO INTERACTION)
+    // 3. CALM, RELIABLE SNOW ENGINE
     // ==========================================
     class SnowEngine {
         constructor(containerId) {
             this.container = document.getElementById(containerId);
             this.canvas = document.createElement('canvas');
             this.ctx = this.canvas.getContext('2d');
+
             this.container.appendChild(this.canvas);
 
             this.particles = [];
@@ -74,14 +75,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
         resize() {
             const dpr = window.devicePixelRatio || 1;
-            this.canvas.width = this.container.offsetWidth * dpr;
-            this.canvas.height = this.container.offsetHeight * dpr;
-            this.canvas.style.width = this.container.offsetWidth + "px";
-            this.canvas.style.height = this.container.offsetHeight + "px";
+
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            this.canvas.width = width * dpr;
+            this.canvas.height = height * dpr;
+            this.canvas.style.width = width + "px";
+            this.canvas.style.height = height + "px";
+
             this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-            this.createParticles();
+            this.createParticles(width, height);
         }
 
-        createParticles() {
-            const density = 9000; // HIGHER = FEWER FLAKES
+        createParticles(w, h) {
+            const density = 11000; // higher = fewer flakes (calm)
+            const count = (w * h) / density;
+
+            this.particles = [];
+
+            for (let i = 0; i < count; i++) {
+                this.particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vy: Math.random() * 0.35 + 0.15,
+                    radius: Math.random() * 1.8 + 1.2,
+                    opacity: Math.random() * 0.35 + 0.25
+                });
+            }
+        }
+
+        update() {
+            const h = this.canvas.height /
