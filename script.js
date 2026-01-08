@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
-    // 1. RUNNER BOY LOGIC (Updated to Run Off Screen)
+    // 1. RUNNER BOY LOGIC (Tall Hero Safe)
     // ==========================================
     const overlay = document.getElementById('runner-overlay');
     const boy = document.getElementById('boy-container');
@@ -11,46 +11,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('scroll', () => {
         const y = window.scrollY;
-        // Hero is 200vh tall. 
+        // Hero is 200vh tall
         const heroSectionHeight = window.innerHeight * 2; 
         
-        // Progress: 0 (Top) -> 1 (Bottom of Hero)
+        // Progress: 0 to 1 based on scrolling through the hero section
         let progress = y / (heroSectionHeight - window.innerHeight);
 
-        // VISIBILITY: 
-        // Fade in quickly at start.
-        // Stay visible even as we pass 1.0 so he can finish running off screen.
+        // Visibility Check
         if (progress > 1.5) { 
-             overlay.style.opacity = 0; // Hide only after he is definitely gone
+             overlay.style.opacity = 0; 
         } else {
              overlay.style.opacity = (progress > 0.01) ? 1 : 0;
         }
 
         if (progress > 1.5) return; 
 
-        // --- POSITION MATH ---
-        // X: Start Left (-200) -> End OFF SCREEN RIGHT
+        // Movement
         const startX = -200;
-        // CHANGED: Added +200 to width so he runs completely out of frame
+        // Run fully off screen (+200 buffer)
         const endX = window.innerWidth + 200; 
-        
-        // We allow progress to go slightly past 1 so he finishes the run
         const moveProgress = Math.min(progress, 1.1); 
         const bx = startX + (endX - startX) * moveProgress;
 
-        // Y: Start Top (150) -> End Bottom (Screen Height - 250)
         const startY = 150;
         const endY = window.innerHeight - 250;
         
-        // Slight hop curve
+        // Hop curve
         const hop = 100 * Math.sin(moveProgress * Math.PI); 
-        // We clamp Y progress at 1 so he doesn't keep dropping into the void
         const by = startY + (endY - startY) * Math.min(progress, 1) - hop;
 
         if (boy) boy.style.transform = `translate3d(${bx}px, ${by}px, 0)`;
         if (feather) feather.style.transform = `translate3d(${bx - 50}px, ${by + 50}px, 0) rotate(${progress * 720}deg)`;
 
-        // --- FRAME ANIMATION ---
+        // Frame Update
         const fIdx = Math.floor(progress * 25) % frames.length;
         if (frames[fIdx] && fIdx !== lastFrame) {
             frames[lastFrame].classList.remove('active');
@@ -61,27 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // ==========================================
-    // 2. CAROUSEL LOGIC
-    // ==========================================
-    const track = document.getElementById('carousel-track');
-    let slideIdx = 0;
-    const nextBtn = document.getElementById('next-arrow');
-    const prevBtn = document.getElementById('prev-arrow');
-    
-    if (nextBtn && prevBtn && track) {
-        nextBtn.onclick = () => {
-            slideIdx = (slideIdx + 1) % 6;
-            track.style.transform = `translateX(-${slideIdx * 16.666}%)`;
-        };
-        prevBtn.onclick = () => {
-            slideIdx = (slideIdx - 1 + 6) % 6;
-            track.style.transform = `translateX(-${slideIdx * 16.666}%)`;
-        };
-    }
-
-
-    // ==========================================
-    // 3. ADVANCED SNOW ENGINE (LOCKED IN - NO CHANGES)
+    // 2. ADVANCED SNOW ENGINE (Preserved)
     // ==========================================
     class Utils {
         static random(min, max) { return min + Math.random() * (max - min); }
