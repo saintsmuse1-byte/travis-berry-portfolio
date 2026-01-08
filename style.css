@@ -21,13 +21,10 @@ html, body {
 .main-content { 
     position: relative; width: 100%; height: 200vh; /* Long runway */
 }
-
-/* Sticky Content */
 .hero-sticky-content {
     position: sticky; top: 0; height: 100vh;
     display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-
 .snow-canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
 h1 { font-size: clamp(3rem, 12vw, 9rem); z-index: 5; margin: 0; position: relative; text-align: center; }
 .circle-wrapper { 
@@ -36,57 +33,6 @@ h1 { font-size: clamp(3rem, 12vw, 9rem); z-index: 5; margin: 0; position: relati
     box-shadow: 0 20px 50px rgba(0,0,0,0.3);
 }
 .circle-wrapper img { width: 100%; height: 100%; object-fit: cover; }
-
-/* --- ART SECTION (BIGGER) --- */
-.art-section { 
-    background: white !important; min-height: 100vh; position: relative; z-index: 100;
-    display: flex; align-items: center; justify-content: center; padding: 0;
-}
-.art-expander-container { 
-    /* CHANGED: Made much larger to fill the screen */
-    width: 95vw; height: 85vh; 
-    background: white; position: relative; 
-    box-shadow: 0 40px 80px rgba(0,0,0,0.15); overflow: hidden;
-}
-.carousel-viewport { width: 100%; height: 100%; }
-.carousel-track { display: flex; width: 600%; height: 100%; transition: transform 0.7s cubic-bezier(0.19, 1, 0.22, 1); }
-.slide { width: 16.6666%; height: 100%; display: flex; flex-direction: column; }
-.image-frame { width: 100%; height: 90%; overflow: hidden; }
-.image-frame img, .image-frame video { width: 100%; height: 100%; object-fit: cover; }
-
-/* --- ROLLING TEXT FIX --- */
-.roll-title {
-    height: 10%; /* Fixed height area for text */
-    display: flex; align-items: center; justify-content: center;
-    overflow: hidden; /* Hides the second line */
-    font-weight: 500; font-size: 0.85rem; color: black; letter-spacing: 3px;
-    cursor: default;
-}
-
-.roll-inner { 
-    display: block; 
-    position: relative;
-    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); 
-    height: 1.5em; /* Define height of ONE line */
-    line-height: 1.5em;
-}
-
-/* Push the text up when hovering the SLIDE, not just the text */
-.slide:hover .roll-inner { 
-    transform: translateY(-1.5em); /* Move up exactly one line height */
-}
-
-.roll-inner span { 
-    display: block; 
-    height: 1.5em; /* Each span is one line high */
-    text-align: center;
-}
-
-/* Nav Arrows */
-.nav-arrow { position: absolute; top: 50%; background: none; border: none; font-size: 4rem; color: black; cursor: pointer; opacity: 0.15; transition: 0.4s; z-index: 110; }
-.nav-arrow:hover { opacity: 0.8; transform: translateY(-50%) scale(1.1); }
-.nav-arrow.left { left: 2%; }
-.nav-arrow.right { right: 2%; }
 
 /* --- RUNNER --- */
 #runner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 150; opacity: 0; transition: opacity 0.2s; }
@@ -101,3 +47,112 @@ h1 { font-size: clamp(3rem, 12vw, 9rem); z-index: 5; margin: 0; position: relati
     display: flex; align-items: center; justify-content: center; z-index: 160; 
 }
 .about-section h2 { font-size: 5rem; letter-spacing: 10px; opacity: 0.9; position: relative; z-index: 2; pointer-events: none; }
+
+
+/* =========================================
+   NEW ART SECTION (Rising Effect)
+   ========================================= */
+
+/* 1. Define the rotation property for smooth interpolation */
+@property --card-rotation-progress {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+.art-section {
+    background: white;
+    min-height: 100vh;
+    position: relative;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 0;
+    /* Create the 3D space */
+    perspective: 1500px;
+    overflow: hidden;
+}
+
+/* 2. The Rising Container (Divider) */
+.calendar-container {
+    width: 90vw;
+    max-width: 1400px;
+    /* Ensures the 3D effect works */
+    transform-style: preserve-3d; 
+}
+
+/* 3. The Animated Element */
+.calendar-wide {
+    width: 100%;
+    background: #f0f0f0; /* Slight gray background for the card */
+    border-radius: 30px;
+    padding: 40px;
+    box-shadow: 0 50px 100px rgba(0,0,0,0.2);
+    
+    /* THE MAGIC: View Timeline Animation */
+    animation: calendarLargeAppear linear both;
+    animation-timeline: view();
+    /* Triggers as soon as the section touches the bottom of screen (entry) 
+       and finishes when it's 40% up the screen */
+    animation-range: entry 0% cover 40%;
+}
+
+/* 4. The Grid inside the rising card */
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.portfolio-item {
+    position: relative;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #ccc;
+    cursor: pointer;
+}
+
+.portfolio-item img, 
+.portfolio-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.portfolio-item:hover img,
+.portfolio-item:hover video {
+    transform: scale(1.05);
+}
+
+.item-title {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%;
+    padding: 15px;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    color: white;
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    transform: translateY(100%);
+    transition: transform 0.3s;
+}
+
+.portfolio-item:hover .item-title {
+    transform: translateY(0);
+}
+
+/* 5. The Animation Keyframes */
+@keyframes calendarLargeAppear {
+    from {
+        opacity: 0;
+        /* Start tilted back 45deg and pushed deep into the screen */
+        transform: translateZ(-40rem) rotateX(45deg);
+    }
+    to {
+        opacity: 1;
+        /* End flat and normal */
+        transform: translateZ(0rem) rotateX(0deg);
+    }
+}
